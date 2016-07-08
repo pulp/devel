@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import subprocess
+import time
+import yaml
+
+import utils
+
+
+MOCK_CMD = ("mock --no-clean -r {chroot} --buildsrpm --spec {spec} --sources"
+            " {source_dir} --resultdir {destination}")
+
+
+def build_srpms(config):
+    """
+    Build source RPMs.
+
+    This expects that the source tarballs and any patches are present in a
+    directory in packages/rpms/<package-name>/sources/.
+    """
+    for platform in config['platforms']:
+        # The mock_root arch we choose to build the SRPM in shouldn't matter
+        mock_root = config['platforms'][platform][0]
+        utils.checkout(platform)
+        destination = os.path.join(os.getcwd(), 'SRPMS', platform)
+        os.makedirs(destination, exist_ok=True)
+
+        for package in config['external-deps'] + config['pulp-packages']:
+            name = package['name'].replace('_', '-')
+            if not os.path.exists('packaging/rpms/{dep}/{dep}.spec'.format(dep=name)):
+                print('Skipping {dep} on {platform} as the spec file is not present.'.format(
+                    dep=name, platform=platform))
+                continue
+
+            base_dir = os.path.join(os.getcwd(), 'packaging/rpms/{dep}/'.format(
+                dep=name))
+            source_dir = os.path.join(base_dir, 'sources/')
+            specfile = os.path.join(base_dir, name + '.spec')
+
+            if package['release'] == 'nightly':
+                release = package['snap_release']
+            else:
+                release = package['release']
+            utils.set_release(specfile, release)
+            utils.set_version(specfile, package['version'])
+
+            command = MOCK_CMD.format(chroot=mock_root, spec=specfile, source_dir=source_dir,
+                                      destination=destination)
+            print('Running "' + command + '"')
+            try:
+                subprocess.check_output(command, shell=True)
+            except subprocess.CalledProcessError as e:
+                print('Failed to build SRPM: \n' + str(e.output))
+
+
+parser = argparse.ArgumentParser(description='Build the SRPMs for all Pulp projects and deps')
+parser.add_argument('config', help='YAML file describing the versions of each project')
+args = parser.parse_args()
+build_srpms(utils.load_config(args.config))
