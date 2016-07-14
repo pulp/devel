@@ -1,4 +1,4 @@
-.PHONY: all help archive srpm rpm clean
+.PHONY: all help specs archive srpm rpm clean
 
 
 SRPM_DIR=${PWD}/SRPMS/
@@ -14,21 +14,26 @@ help:
 	@echo "Usage: make <target>"
 	@echo "Available targets are:"
 	@echo " srpm                    build srpms in the ${DEFAULT_CHROOT} mock root"
-	@echo " copr-build              build rpms in COPR; defaults to building in the ${CHROOTS}"
-	@echo "                         chroots (define CHROOTS to override)"
-	@echo " mock-build              build rpms in the ${DEFAULT_CHROOT} mock root"
+	@echo " rpm			build rpms in mock"
+	@echo " copr-build              build rpms in COPR"
 	@echo " clean                   remove all build files"
 
-archive:
-	scripts/fetch-archives ${CONFIG}
+specs:
+	if [ ! -d packaging ]; then \
+		git clone https://github.com/pulp/packaging; \
+	fi
+
+
+archive: specs
+	pulp-devel archives ${CONFIG} --spec-dir ${PWD}/packaging/
 
 
 srpm: archive
-	scripts/build-srpms ${CONFIG}
+	pulp-devel srpm ${CONFIG} --spec-dir ${PWD}/packaging/
 
 
 rpm: srpm
-	scripts/build-rpms ${CONFIG} mock
+	pulp-devel rpm ${CONFIG} --srpm-dir ${PWD}/SRPMS/
 
 
 clean:
