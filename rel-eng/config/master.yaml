@@ -55,35 +55,59 @@ platforms:
   - fedora-23-x86_64
   - fedora-23-i386
 pulp-packages:
-- name: pulp
+- commit: 50bde1e3af248dd5ad583ac48f1d6d0cbb886e1d
+  name: pulp
   release: nightly
+  snap_release: 0.1n201607151545git50bde1e%{?dist}
   treeish: master
-  version: '2.10.0'
-- name: pulp_docker
+  url: https://github.com/pulp/pulp/
+  version: 2.10.0
+- commit: 1306fad1eba1b837e64392a1fc3909e229790da2
+  name: pulp_docker
   release: nightly
+  snap_release: 0.1n201607151545git1306fad%{?dist}
   treeish: master
-  version: '2.0.0'
-- name: pulp_ostree
+  url: https://github.com/pulp/pulp_docker/
+  version: 2.0.0
+- commit: 937c90a7f773991f5361767ca06f99a6a4dae267
+  name: pulp_ostree
   release: nightly
+  snap_release: 0.1n201607151545git937c90a%{?dist}
   treeish: master
-  version: '1.2.0'
-- name: pulp_puppet
+  url: https://github.com/pulp/pulp_ostree/
+  version: 1.2.0
+- commit: 410ebc9c6a1f9cdfbb26a0fd8c85f408ac216f94
+  name: pulp_puppet
   release: nightly
+  snap_release: 0.1n201607151545git410ebc9%{?dist}
   treeish: master
-  version: '2.10.0'
-- name: pulp_python
+  url: https://github.com/pulp/pulp_puppet/
+  version: 2.10.0
+- commit: 51c3f66c113aaf298f7ffdeabc2554c06157bdad
+  name: pulp_python
   release: nightly
+  snap_release: 0.1n201607151545git51c3f66%{?dist}
   treeish: master
-  version: '2.0.0'
-- name: pulp_rpm
+  url: https://github.com/pulp/pulp_python/
+  version: 2.0.0
+- commit: 2fed2c59455850323d2327ecab986256b9d5deaf
+  name: pulp_rpm
   release: nightly
+  snap_release: 0.1n201607151545git2fed2c5%{?dist}
   treeish: master
-  version: '2.10.0'
-- name: crane
+  url: https://github.com/pulp/pulp_rpm/
+  version: 2.10.0
+- commit: ba817d1aa11234f0288b0181922dd1c05f5d204f
+  name: crane
   release: nightly
+  snap_release: 0.1n201607151545gitba817d1%{?dist}
   treeish: master
-  version: '2.0.0'
-- name: nectar
+  url: https://github.com/pulp/crane/
+  version: 2.0.0
+- commit: 76992276d4b8efcc790261c7934fc00ecced87e8
+  name: nectar
   release: nightly
+  snap_release: 0.1n201607151545git7699227%{?dist}
   treeish: master
-  version: '1.6.0'
+  url: https://github.com/pulp/nectar/
+  version: 1.6.0

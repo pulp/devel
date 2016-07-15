@@ -87,3 +87,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Packaging files
+rel-eng/packaging/
+rel-eng/RPMS/
+rel-eng/SRPMS/
+rel-eng/.copr
