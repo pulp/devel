@@ -81,7 +81,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # This script is only guaranteed to work with the default official fedora image, and is
         # only needed it you changed machine_virtual_size above.
         # For other boxen, use at your own risk
-        # override.vm.provision "shell", path: "playpen/vagrant-resize-disk.sh"
+        # override.vm.provision "shell", path: "scripts/vagrant-resize-disk.sh"
     end
 
     dev.vm.provider :docker do |d, override|
