@@ -2,15 +2,11 @@ import sys
 
 from setuptools import setup, find_packages
 
-PYTHON_MAJOR_MINOR = '%s.%s' % (sys.version_info[0], sys.version_info[1])
-
-install_requires = ['pyyaml']
-if PYTHON_MAJOR_MINOR < '2.7':
-    install_requires.append('argparse')
+install_requires = ['pyyaml', 'copr']
 
 setup(
-    name='pulp-devel',
-    version='1.0.dev0',
+    name='pulp-dev',
+    version='1.0.dev1',
     license='GPLv2+',
     packages=find_packages(exclude=['tests']),
     author='Pulp Team',
@@ -21,13 +17,14 @@ setup(
         'Intended Audience :: Developers',
         ('License :: OSI Approved :: GNU General Public License v2 or later '
          '(GPLv2+)'),
+        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
     test_suite='tests',
     entry_points={
         'console_scripts': [
-            'pulp-devel = pulp.devel.commands.pulp_devel:main',
+            'pulp-dev = pulp_dev.commands.pulp_dev:main',
         ]
     },
 )

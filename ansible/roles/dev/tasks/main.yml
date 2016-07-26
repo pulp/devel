@@ -90,6 +90,16 @@
 - name: Ensure homedir mode suitable for ssh keys
   file: dest=/home/{{ ansible_env.SUDO_USER }} mode=0750
 
+- name: Stat pulp-dev
+  stat: path=/home/{{ ansible_env.SUDO_USER }}/devel/devel/pulp-dev
+  register: pulp_dev_dir
+
+- name: Install pulp-dev
+# Doing this with the pip plugin fails to install pulp-dev as editable,
+# so use the command plugin :(
+  command: pip3 install -e {{pulp_dev_dir.stat.path}}
+  when: pulp_dev_dir.stat.isdir
+
 - copy: src=bashrc dest=/home/{{ ansible_env.SUDO_USER }}/.bashrc
 - copy: src=drop_database.js dest=/home/{{ ansible_env.SUDO_USER }}/drop_database.js
 - copy: src=motd dest=/etc/motd
