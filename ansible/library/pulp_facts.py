@@ -48,14 +48,21 @@ for project in projects:
         rpm_dependency_list += [rpm.split()[0] for rpm in stdout.splitlines()]
 
 # Remove any duplicates
-rpm_dependency_list = list(set(rpm_dependency_list))
+rpm_dependency_list = set(rpm_dependency_list)
+
+# XXX Temporary handling of the python-twisted -> python2-twisted rename
+#     This needs to be fixed in the spec files, but the code above is reading
+#     the wrong specfiles.
+if 'python-twisted' in rpm_dependency_list:
+    rpm_dependency_list.remove('python-twisted')
+    rpm_dependency_list.add('python2-twisted')
 
 # Build the facts for Ansible
 facts = {
     'ansible_facts': {
         'pulp_nightly_repo_enabled': pulp_nightly_repo_enabled,
         'selinux_enabled': selinux_enabled,
-        'pulp_rpm_dependencies': rpm_dependency_list,
+        'pulp_rpm_dependencies': list(rpm_dependency_list),
     }
 }
 
