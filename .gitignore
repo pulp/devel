@@ -89,7 +89,11 @@ ENV/
 .ropeproject
 
 # Packaging files
-rel-eng/packaging/
-rel-eng/RPMS/
-rel-eng/SRPMS/
-rel-eng/.copr
+rel-eng/*
+!rel-eng/config
+
+# Vagrant
+Vagrantfile
+.vagrant
+.dnf-cache
+ansible/vagrant-playbook.retry
