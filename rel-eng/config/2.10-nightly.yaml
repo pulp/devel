@@ -1,0 +1,113 @@
+buildrequires:
+- python-amqp
+- python-kombu
+- python-pymongo
+- python-bson
+copr-projects:
+- '@pulp/2.10-nightly'
+external-deps:
+  gofer:
+    release: 1
+    version: 2.7.6
+  python-amqp:
+    release: 2
+    version: 1.4.9
+  python-billiard:
+    release: 3
+    version: 3.3.0.17
+  python-celery:
+    release: 2
+    version: 3.1.11
+  python-isodate:
+    release: 4.pulp
+    version: 0.5.0
+  python-kombu:
+    release: 6.pulp
+    version: 3.0.33
+  python-mongoengine:
+    release: 3
+    version: 0.10.5
+  python-pymongo:
+    release: 3
+    version: 3.2.2
+  python-qpid:
+    release: 11
+    version: '0.18'
+  python-rhsm:
+    release: 2.pulp
+    version: 1.8.0
+  python-semantic_version:
+    release: 6
+    version: 2.2.0
+  saslwrapper:
+    release: 8
+    version: '0.10'
+platforms:
+  el6:
+  - epel-6-x86_64
+  - epel-6-i386
+  el7:
+  - epel-7-x86_64
+  fc23:
+  - fedora-23-x86_64
+  - fedora-23-i386
+  fc24:
+  - fedora-24-x86_64
+  - fedora-24-i386
+pulp-packages:
+  pulp:
+    commit: e10dc957a45837dcefd3188ebb5b7414dd039a8b
+    release: nightly
+    snap_release: 0.0.n201608021643gite10dc95
+    treeish: master
+    url: git@github.com:pulp/pulp.git
+    version: 2.10.1
+  pulp-docker:
+    commit: 28458d599bb65a5560a0ea43ce133831e8dcd5ec
+    release: nightly
+    snap_release: 0.0.n201608021642git28458d5
+    treeish: master
+    url: git@github.com:pulp/pulp_docker.git
+    version: 2.1.1
+  pulp-ostree:
+    commit: aa1d2fa66ce6d5176b7a8caee0764cb2fa3d14dc
+    release: nightly
+    snap_release: 0.0.n201608021642gitaa1d2fa
+    treeish: 1.1-dev
+    url: git@github.com:pulp/pulp_ostree.git
+    version: 1.1.4
+  pulp-puppet:
+    commit: bd036e3125b4c3e62807cbf4e7a4d39d464648d8
+    release: nightly
+    snap_release: 0.0.n201608021642gitbd036e3
+    treeish: master
+    url: git@github.com:pulp/pulp_puppet.git
+    version: 2.10.1
+  pulp-python:
+    commit: b1553bcfb9ad97acbe76a4c9e0b277b06d444b4d
+    release: nightly
+    snap_release: 0.0.n201608021641gitb1553bc
+    treeish: 1.1-dev
+    url: git@github.com:pulp/pulp_python.git
+    version: 1.1.4
+  pulp-rpm:
+    commit: 758cef3d863a4865a5ff32c5fb8728f8dd34900c
+    release: nightly
+    snap_release: 0.0.n201608021642git758cef3
+    treeish: master
+    url: git@github.com:pulp/pulp_rpm.git
+    version: 2.10.1
+  python-crane:
+    commit: 8c248dd6e74df63d89ca855f7ab9a277921c9068
+    release: nightly
+    snap_release: 0.0.n201608021643git8c248dd
+    treeish: 2.0-dev
+    url: git@github.com:pulp/crane.git
+    version: 2.0.2
+  python-nectar:
+    commit: 76992276d4b8efcc790261c7934fc00ecced87e8
+    release: nightly
+    snap_release: 0.0.n201608021642git7699227
+    treeish: master
+    url: git@github.com:pulp/nectar.git
+    version: 1.5.3
