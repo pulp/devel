@@ -256,5 +256,5 @@ setup_crane_links() {
     fi
 }
 
-export DJANGO_SETTINGS_MODULE=pulp.server.webservices.settings
+export DJANGO_SETTINGS_MODULE=pulp.platform.settings
 export CRANE_CONFIG_PATH=$HOME/devel/crane/crane.conf

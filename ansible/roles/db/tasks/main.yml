@@ -1,5 +1,7 @@
 ---
-- name: Install packages
+# mongo is separated out from postgres since we'll be disabling it soon
+# it's still included in here since it might be useful during the transition to pulp 3
+- name: Install mongo packages
   dnf: name={{ item }} state=present
   with_items:
       - mongodb
@@ -13,5 +15,44 @@
       line: "nojournal = true"
   notify: restart mongod
 
-- name: Start and enable services
+- name: Start and enable mongo services
   service: name=mongod state=started enabled=yes
+
+# postgres!
+- name: Install postgres packages
+  dnf: name={{ item }} state=present
+  with_items:
+      - postgresql
+      - postgresql-server
+      # needed to install psycopg2 with python
+      - postgresql-devel
+      # needed by postgres-related tasks and other things
+      # using python outside of a virtualenv
+      - python-psycopg2
+
+- name: Set up postgres data dir
+  command: postgresql-setup --initdb
+  args:
+      creates: /var/lib/pgsql/data/base
+
+- name: Set up postgress access rules
+  copy:
+      src: pg_hba.conf
+      dest: /var/lib/pgsql/data/pg_hba.conf
+      owner: postgres
+      group: postgres
+      mode: 0600
+  notify: restart postgresql
+
+- name: Start and enable postgresql
+  service: name=postgresql state=restarted enabled=yes
+
+- name: Set up pulp DB user
+  postgresql_user:
+      name: pulp
+      role_attr_flags: SUPERUSER,LOGIN
+
+- name: Create pulp database
+  postgresql_db:
+      name: pulp
+      owner: pulp

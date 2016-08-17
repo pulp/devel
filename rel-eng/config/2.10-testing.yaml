@@ -1,0 +1,106 @@
+buildrequires:
+- python-amqp
+- python-kombu
+- python-pymongo
+- python-bson
+copr-projects:
+- '@pulp/2.y-testing'
+- '@pulp/2.10-testing'
+external-deps:
+  gofer:
+    release: 1
+    version: 2.7.6
+  python-amqp:
+    release: 2
+    version: 1.4.9
+  python-billiard:
+    release: 3
+    version: 3.3.0.17
+  python-celery:
+    release: 2
+    version: 3.1.11
+  python-isodate:
+    release: 4.pulp
+    version: 0.5.0
+  python-kombu:
+    release: 6.pulp
+    version: 3.0.33
+  python-mongoengine:
+    release: 3
+    version: 0.10.5
+  python-pymongo:
+    release: 3
+    version: 3.2.2
+  python-qpid:
+    release: 11
+    version: '0.18'
+  python-rhsm:
+    release: 2.pulp
+    version: 1.8.0
+  python-semantic_version:
+    release: 6
+    version: 2.2.0
+  saslwrapper:
+    release: 8
+    version: '0.10'
+platforms:
+  el6:
+  - epel-6-x86_64
+  - epel-6-i386
+  el7:
+  - epel-7-x86_64
+  fc23:
+  - fedora-23-x86_64
+  - fedora-23-i386
+  fc24:
+  - fedora-24-x86_64
+  - fedora-24-i386
+pulp-packages:
+  pulp:
+    commit: d6d25b1ba97c578f2e861e8ea18d9577cf62f0a8
+    release: 0.1.beta
+    treeish: 2.10.0-0.1.beta
+    url: git@github.com:pulp/pulp.git
+    version: 2.10.0
+  pulp-docker:
+    commit: c82c6e2a176b36255e295a63e92e3ac1b32d0a93
+    release: 0.1.beta
+    treeish: 2.1.0-0.1.beta
+    url: git@github.com:pulp/pulp_docker.git
+    version: 2.1.0
+  pulp-ostree:
+    commit: 0c65b86071bd16d462f708a07e5a62e06295975c
+    release: 1
+    treeish: pulp-ostree-1.1.3-1
+    url: git@github.com:pulp/pulp_ostree.git
+    version: 1.1.3
+  pulp-puppet:
+    commit: 809b0c5c6d0d4433dfefe001aaba8a124223c938
+    release: 0.1.beta
+    treeish: 2.10.0-0.1.beta
+    url: git@github.com:pulp/pulp_puppet.git
+    version: 2.10.0
+  pulp-python:
+    commit: a0eba8f0768b26baf5101e08f78c198d50674618
+    release: 1
+    treeish: pulp-python-1.1.3-1
+    url: git@github.com:pulp/pulp_python.git
+    version: 1.1.3
+  pulp-rpm:
+    commit: e82230dd7ac2cbbee19ac546ce9832280ecfaa14
+    release: 0.1.beta
+    treeish: 2.10.0-0.1.beta
+    url: git@github.com:pulp/pulp_rpm.git
+    version: 2.10.0
+  python-crane:
+    commit: a3b53c23a392a44beaf7cfd15e02220c8067e470
+    release: 1
+    treeish: python-crane-2.0.1-1
+    url: git@github.com:pulp/crane.git
+    version: 2.0.1
+  python-nectar:
+    commit: 76992276d4b8efcc790261c7934fc00ecced87e8
+    release: 1
+    treeish: python-nectar-1.5.2-1
+    url: git@github.com:pulp/nectar.git
+    version: 1.5.2

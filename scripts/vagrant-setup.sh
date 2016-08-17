@@ -87,6 +87,13 @@ for s in goferd httpd pulp_workers pulp_celerybeat pulp_resource_manager; do
   sudo systemctl enable $s
 done
 
+# If devel is present, install it
+if [ -d devel ]; then
+    echo "installing pulp-devel script and library"
+    pushd devel/pulp_devel
+    sudo pip install -e .
+    popd
+fi
 
 sudo -u apache pulp-manage-db;
 setup_crane_links;
