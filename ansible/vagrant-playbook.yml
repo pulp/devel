@@ -15,4 +15,4 @@
     - qpidd
     - dev
     - lazy
-    - pulp_ca
+    - pulp-certs
