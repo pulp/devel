@@ -38,8 +38,8 @@ read -p 'Which plugin repos would you like to clone from your GitHub account? [c
 if [ "$REPOS" = "" ]; then
     REPOS="crane packaging pulp_deb pulp_docker pulp_openstack pulp_ostree pulp_puppet pulp_python pulp_rpm pulp-smash"
 fi
-# pulp is required and must be installed first so let's prepend it.
-REPOS="pulp $REPOS"
+# pulp and devel are required and must be installed first so let's prepend them.
+REPOS="pulp devel $REPOS"
 echo "These repos will be cloned into your development path: $REPOS"
 
 if [ $# = 0 ]; then
@@ -112,12 +112,12 @@ for r in $REPOS; do
 done
 
 # Install some of Ansible's dependencies
-$HOME/devel/pulp/playpen/bootstrap-ansible.sh
+bash $HOME/devel/devel/scripts/bootstrap-ansible.sh
 
-pushd pulp
+pushd devel
 if [ ! -f /tmp/ansible_inventory ]; then
     echo -e "localhost ansible_connection=local" >> /tmp/ansible_inventory
 fi
-ansible-playbook --inventory-file=/tmp/ansible_inventory playpen/ansible/dev-playbook.yml
+ansible-playbook --inventory-file=/tmp/ansible_inventory ansible/dev-playbook.yml
 cd $HOME
-bash -e $HOME/devel/pulp/playpen/vagrant-setup.sh
+bash -e $HOME/devel/devel/scripts/vagrant-setup.sh
