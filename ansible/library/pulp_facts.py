@@ -4,8 +4,11 @@ This module gathers Pulp specific Ansible facts about the remote machine.
 """
 import json
 import os
+import platform
 import pwd
+import shutil
 import subprocess
+import tempfile
 
 
 pipe = subprocess.Popen('/usr/bin/yum-config-manager pulp-nightlies', stdout=subprocess.PIPE,
@@ -23,19 +26,36 @@ selinux_enabled = 'Enforcing' in stdout
 projects = [
     'crane',
     'pulp',
-    'pulp_deb',
-    'pulp_docker',
-    'pulp_openstack',
-    'pulp_ostree',
-    'pulp_puppet',
-    'pulp_python',
-    'pulp_rpm'
+    'pulp-deb',
+    'pulp-docker',
+    'pulp-openstack',
+    'pulp-ostree',
+    'pulp-puppet',
+    'pulp-python',
+    'pulp-rpm'
 ]
 rpm_dependency_list = []
 # This is run using sudo, but the code is checked out in the normal user directory.
 user_homedir = pwd.getpwuid(int(os.environ['SUDO_UID'])).pw_dir
+
+# Figure out the platform and checkout the packaging repository branch
+platform_dist = platform.linux_distribution()
+if platform_dist[0].lower() == 'fedora':
+    # Maybe we'll support other platforms for development, but right now Fedora is
+    # all we work with.
+    branch = 'f' + str(platform_dist[1])
+else:
+    raise OSError(str(platform_dist) + ' is not a supported development platform')
+
+tmpdir = tempfile.mkdtemp()
+git_clone = ('git clone -b {branch} --single-branch https://git@github.com/pulp/'
+             'packaging.git {path}'.format(branch=branch, path=tmpdir))
+proc = subprocess.Popen(git_clone, stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE, shell=True)
+stdout, stderr = proc.communicate()
+
 for project in projects:
-    project_path = os.path.join(user_homedir, 'devel', project)
+    project_path = os.path.join(tmpdir, 'rpms/', project)
     if os.path.isdir(project_path):
         # Determine the dependencies by inspecting the 'Requires' in each spec file.
         # The results are then filtered to only include packages not provided by Pulp.
@@ -46,6 +66,8 @@ for project in projects:
                                 stderr=subprocess.PIPE, shell=True)
         stdout, stderr = proc.communicate()
         rpm_dependency_list += [rpm.split()[0] for rpm in stdout.splitlines()]
+
+shutil.rmtree(tmpdir)
 
 # Remove any duplicates
 rpm_dependency_list = set(rpm_dependency_list)
