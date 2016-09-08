@@ -51,6 +51,8 @@
       - koji
       - httpie
       - mock
+      - ngrep
+      - nmap-ncat
       - plantuml
       - python-django-bash-completion
       - python-gofer-qpid
