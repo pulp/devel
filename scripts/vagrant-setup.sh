@@ -15,7 +15,7 @@ for r in {pulp,pulp_deb,pulp_docker,pulp_openstack,pulp_ostree,pulp_puppet,pulp_
     echo "installing $r dev code"
     pushd $r
     # This command has an exit code of 1 when it works?
-    ! mkvirtualenv --system-site-packages $r
+    ! mkvirtualenv --system-site-packages --python=python3 $r
     workon $r
     setvirtualenvproject
     # Install dependencies for automated tests
@@ -29,7 +29,7 @@ done
 if [ -d crane ]; then
     echo "installing crane's environment"
     pushd crane
-    ! mkvirtualenv --system-site-packages crane
+    ! mkvirtualenv --system-site-packages --python=python3 crane
     workon crane
     setvirtualenvproject
     # Install dependencies
