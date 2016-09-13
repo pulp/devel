@@ -1,0 +1,13 @@
+---
+
+# Whether to install recommended prerequisites
+pulp_install_prerequisites: true
+
+# Whether to install Pulp server
+pulp_install_server: true
+
+# Pulp version to install
+pulp_version: 2.9
+
+# Pulp build to install, the choices are: beta, nightly and stable
+pulp_build: nightly
