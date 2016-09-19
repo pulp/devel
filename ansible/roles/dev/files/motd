@@ -2,6 +2,8 @@
 Welcome to the Pulp dev environment!
 
 Here are some tips:
+* The 3.0-dev branch is experimental, and my be broken.
+
 * Your code is all checked out inside of ~/devel/.
 
 * The default username:password is admin:admin. When your session expires, you
@@ -13,8 +15,6 @@ Here are some tips:
     $ workon pulp_python
 
   Similarly, run "workon pulp" to jump into the pulp platform virtualenv.
-
-* Each project has a "run-tests.py" to run the unit tests.
 
 * There are a set of bash functions in your .bashrc that are useful.
 
