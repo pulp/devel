@@ -20,4 +20,4 @@
   service: name=squid state=started enabled=yes
 
 - name: Start and enable Pulp streamer service
-  service: name=pulp_streamer enabled=yes
+  service: name=pulp_streamer state=started enabled=yes
