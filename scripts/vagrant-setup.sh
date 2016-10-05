@@ -90,7 +90,7 @@ done
 
 sudo -u apache pulp-manage-db;
 setup_crane_links;
-pstart;
+prestart;
 ppopulate;
 
 # Give the user some use instructions
