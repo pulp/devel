@@ -1,0 +1,25 @@
+---
+
+- name: Remove the python-kombu rpm
+  command: rpm -e --nodeps python-kombu
+  become: true
+  become_method: sudo
+  register: command_result
+  failed_when: "'python-kombu is not installed' not in command_result.stderr"
+
+- name: Check that ~/devel/kombu is a directory
+  stat: path=~/devel/kombu/
+  register: kombu_stat
+
+- assert:
+    that:
+      - kombu_stat.stat.isdir is defined
+      - kombu_stat.stat.isdir
+    msg: "You have to clone kombu at ~/devel/kombu"
+
+- name: Install kombu with a developer checkout
+  command: python setup.py develop
+  args:
+    chdir: /home/vagrant/devel/kombu/
+  become: true
+  become_method: sudo
