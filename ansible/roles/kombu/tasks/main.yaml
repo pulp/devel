@@ -4,8 +4,7 @@
   command: rpm -e --nodeps python-kombu
   become: true
   become_method: sudo
-  register: command_result
-  failed_when: "'python-kombu is not installed' not in command_result.stderr"
+  ignore_errors: True
 
 - name: Check that ~/devel/kombu is a directory
   stat: path=~/devel/kombu/
