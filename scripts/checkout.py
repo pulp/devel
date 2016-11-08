@@ -43,7 +43,7 @@ def check_checkouts(args):
             try:
                 subprocess.run(["git", "diff", "--exit-code"], check=True, cwd=checkout_path)
             except subprocess.CalledProcessError:
-                print("\n\nThe repo %s' has uncommitted changes. Either commit or revert those changes to continue.\n\nNo changes were made." % repo)
+                print("\n\nThe repo '%s' has uncommitted changes. Either commit or revert those changes to continue.\n\nNo changes were made." % repo)
                 sys.exit(1)
                 
 
