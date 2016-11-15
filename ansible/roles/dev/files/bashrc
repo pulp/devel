@@ -215,6 +215,11 @@ pdebug() {
 }
 _pdebug_help="Telnet to a debugger listening locally on port 4444"
 
+pmongo() {
+  mongo pulp_database
+}
+_pmongo_help="Open a mongo console and connect to the pulp database"
+
 phelp() {
     # get a list of declared functions, filter out ones with leading underscores as "private"
     funcs=$(declare -F | awk '{ print $3 }'| grep -v ^_)
