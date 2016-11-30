@@ -1,4 +1,10 @@
----
+- name: Install packages for Pulp CA
+  package: name={{ item }} state=present
+  with_items:
+      - openssl
+      - httpd
+      - mod_ssl
+
 - name: Create Pulp Certificate Authority
   command: >
     /usr/bin/openssl req -x509 -newkey rsa:2048 -keyout private/cakey.pem -nodes -days 3650 \
@@ -8,7 +14,9 @@
     creates: cacert.pem
 
 - name: Create CA index.txt
-  command: /usr/bin/touch /etc/pki/CA/index.txt creates=/etc/pki/CA/index.txt
+  file:
+      dest: /etc/pki/CA/index.txt
+      state: touch
 
 - name: Add CA to trust store
   shell: >

@@ -1,0 +1,19 @@
+# mongo is separated out from postgres since we'll be disabling it soon
+# it's still included in the playbook since it will be useful during the transition to pulp 3,
+# particularly for migration testing from mongo to postgres
+- name: Install mongo packages
+  package: name={{ item }} state=present
+  with_items:
+      - mongodb
+      - mongodb-server
+
+- name: Disable MongoDB journal
+  lineinfile:
+      backrefs: yes
+      dest: /etc/mongod.conf
+      regexp: "^#nojournal = true"
+      line: "nojournal = true"
+  notify: restart mongod
+
+- name: Start and enable mongo services
+  service: name=mongod state=started enabled=yes

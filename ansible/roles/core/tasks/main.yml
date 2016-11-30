@@ -1,6 +1,8 @@
----
+- name: Upgrade installed packages
+  package: name=* state=latest
+
 - name: Install basic packages
-  dnf: name={{ item }} state=present
+  package: name={{ item }} state=present
   with_items:
       - bash-completion
       - fedora-easy-karma
@@ -11,10 +13,12 @@
       - vim-enhanced
 
 - name: Install packages requires to gather Pulp facts
-  dnf: name={{ item }} state=present
+  package: name={{ item }} state=present
   with_items:
       - git
       - rpm-build
 
 - name: Gathering Pulp facts
   pulp_facts:
+      devel_dir: "{{ pulp_devel_dir }}"
+      venv_dir: "{{ pulp_venv_dir }}"

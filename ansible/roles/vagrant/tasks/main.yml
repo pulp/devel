@@ -1,0 +1,27 @@
+# These can go away when https://fedorahosted.org/spin-kickstarts/ticket/59 is fixed
+- name: Grant vagrant all sudo rights
+  lineinfile:
+      dest: /etc/sudoers.d/vagrant-nopasswd
+      regexp: '^vagrant'
+      line: 'vagrant ALL=(ALL) NOPASSWD: ALL'
+      validate: 'visudo -cf %s'
+      mode: 0440
+
+- name: Ensure homedir mode suitable for calling processes in its virtualenvs
+  file:
+    dest: "{{ unprivileged_homedir }}"
+    mode: 0755
+
+- name: install bashrc
+  template:
+    src: templates/bashrc.j2
+    dest: "{{ unprivileged_homedir }}/.bashrc"
+
+- name: install vimrc
+  copy:
+    src: vimrc
+    dest: "{{ unprivileged_homedir }}/.vimrc"
+
+- copy:
+    src: motd
+    dest: /etc/motd

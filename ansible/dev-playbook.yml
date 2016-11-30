@@ -2,11 +2,31 @@
 - hosts: all
   become: true
   become_method: sudo
+  pre_tasks:
+    - name: Check python and ansible versions
+      assert:
+        that:
+          - "ansible_python_version|version_compare('3.5.0', operator='ge')"
+          - "ansible_version.full|version_compare('2.2.0', operator='ge')"
+        msg: "This playbook is intended to be run using python 3.5 or later with ansible 2.2 or later."
   vars:
+    # homedir of the unprivileged user; assumes that ssh drops you into the homedir
+    # of the user calling sudo before sudo is called
+    unprivileged_homedir: "{{ ansible_env.PWD }}"
+    # directory where virtualenvs will be created
+    pulp_venv_dir: "{{ unprivileged_homedir }}/.virtualenvs"
+    # directory where git clones will be expected to exist
+    pulp_devel_dir: "{{ unprivileged_homedir }}/devel"
+    # optional roles are disabled by default
+    use_vagrant_role: false
+    use_debug_role: false
   roles:
     - core
+    - { role: vagrant, when: use_vagrant_role }
     - db
-    - qpidd
-    - dev
+    - mongo
+    - broker
     - lazy
+    - dev
     - pulp_ca
+    - { role: debug, when: use_debug_role }

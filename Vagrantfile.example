@@ -36,16 +36,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
      config.hostmanager.manage_host = true
  end
 
- # Comment this line if you would like to disable the automatic update during provisioning
- config.vm.provision "shell", inline: "sudo dnf upgrade -y"
-
- # bootstrap and run with ansible
- config.vm.provision "shell", path: "scripts/bootstrap-ansible.sh"
+ # provision with ansible
  config.vm.provision "ansible" do |ansible|
-     # Uncomment this if you want debug tools like gdb, tcpdump, et al. installed
-     # (you don't, unless you know you do)
-     # ansible.extra_vars = { pulp_dev_debug: true }
-     ansible.playbook = "ansible/vagrant-playbook.yml"
+     ansible.playbook = "ansible/dev-playbook.yml"
+     ansible.extra_vars = {
+        # Uncomment this if you want debug tools like gdb, tcpdump, et al. installed
+        # (you probably don't, unless you know you do)
+        # use_debug_role: true,
+        # This role is required when provisioning in vagrant
+        use_vagrant_role: true,
+        # The dev playbook does not work without python3
+        ansible_python_interpreter: '/usr/bin/python3'
+     }
  end
 
  # Create the "dev" box
@@ -140,8 +142,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           shell.privileged = false
         end
     end
-
-
-    dev.vm.provision "shell", inline: "sudo -u vagrant bash /home/vagrant/devel/devel/scripts/vagrant-setup.sh"
  end
 end
