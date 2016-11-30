@@ -34,7 +34,6 @@
     - glib2-debuginfo
     - glibc-debuginfo
     - glibc-debuginfo-common
-    - gpgme-debuginfo
     - jbigkit-debuginfo
     - keyutils-debuginfo
     - krb5-debuginfo
@@ -68,7 +67,6 @@
     - pam-debuginfo
     - pcre-debuginfo
     - popt-debuginfo
-    - pygpgme-debuginfo
     - pyliblzma-debuginfo
     - python-billiard-debuginfo
     - python-debuginfo
