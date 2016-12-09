@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# set up the publishing symlinks so that the crane app files can be used
+
+if [ -d "{{ pulp_devel_dir }}"/crane ]; then
+    mkdir -p "{{ pulp_devel_dir }}"/crane/metadata/v1 "{{ pulp_devel_dir }}"/crane/metadata/v2
+    setfacl -m u:apache:rwx "{{ pulp_devel_dir }}"/crane/metadata/*
+    sudo -u apache mkdir -p /var/lib/pulp/published/docker/v1 /var/lib/pulp/published/docker/v2
+    sudo -u apache ln -s "{{ pulp_devel_dir }}"/crane/metadata/v1 /var/lib/pulp/published/docker/v1/app
+    sudo -u apache ln -s "{{ pulp_devel_dir }}"/crane/metadata/v2 /var/lib/pulp/published/docker/v2/app
+fi

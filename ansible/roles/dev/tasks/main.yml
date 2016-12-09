@@ -1,7 +1,6 @@
----
 - name: Disable selinux
   selinux: state=disabled
-  when: selinux_enabled == true
+  when: pulp_selinux_enforcing
 
 - name: Disable sshd strict modes
   lineinfile:
@@ -11,99 +10,168 @@
       line: "StrictModes no"
   notify: restart sshd
 
-- name: Install Pulp dnf repository
+- name: Install Pulp package repository
   when: ansible_distribution == 'Fedora' and ansible_distribution_version|int < 24
   get_url:
       url: https://repos.fedorapeople.org/repos/pulp/pulp/fedora-pulp.repo
       dest: /etc/yum.repos.d/fedora-pulp.repo
 
 - name: Install dnf config-manager
-  dnf: name=dnf-command(config-manager) state=present
+  package: name=dnf-command(config-manager) state=present
 
 - name: Enable Pulp Nightly repository
-  command: dnf config-manager --set-enabled pulp-nightlies
+  command: package config-manager --set-enabled pulp-nightlies
   when: ansible_distribution == 'Fedora' and ansible_distribution_version|int < 24 and pulp_nightly_repo_enabled == false
 
-# These can go away when https://fedorahosted.org/spin-kickstarts/ticket/59 is fixed
-- stat:
-      path: /etc/sudoers.d/vagrant-nopasswd
-  name: Detect vagrant sudoers file
-  register: vagrant_nopasswd
-- lineinfile:
-      dest: "{{ vagrant_nopasswd.stat.path }}"
-      regexp: '^vagrant'
-      line: 'vagrant ALL=(ALL) NOPASSWD: ALL'
-      validate: 'visudo -cf %s'
-      mode: 0440
-  when: vagrant_nopasswd.stat.exists
-  name: Rejigger vagrant sudoers file
-
+  # TODO: It's not clear how this list was created, it would be great
+  #       to know why we install all of these, and (if possible) get them
+  #       captured as requirements in the project itself.
 - name: Install packages
-  dnf: name={{ item }} state=present
+  package: name={{ item }} state=present
   with_items:
+      # System packages useful for most developers
       - git
       - dstat
       - fpaste
-      - graphviz
-      - gcc
       - iotop
       - jnettop
-      - koji
       - httpie
-      - mock
-      - plantuml
       - python-django-bash-completion
-      - python-gofer-qpid
-      - python-ipdb
-      - python-qpid
-      - python-qpid-qmf
-      - python-setuptools
-      - python-sphinx
-      - python-virtualenvwrapper
-      - python3-devel
-      - python3-rpdb
       - redhat-lsb-core
-      - rpm-build
-      - ruby-devel
       - telnet
-      - tito
       - yum-utils
+      # Python packages useful for developers
+      - python-ipdb
+      - python3-setuptools
+      - python-virtualenvwrapper
+      - python-rpdb
+      # Dependencies for building python packages with C components
+      - gcc
+      - postgresql-devel
+      - python3-devel
+      # Dependencies for building pulp RPMs
+      - rpm-build
+      - koji
+      - tito
+      # Dependencies for pulpproject.org & jekyll
+      - ruby-devel
       - zlib-devel
+      - rubygem-bundler
 
-- name: allow vagrant user to read the systemd journal
+- name: Ensure unprivileged user can read the systemd journal
   user:
-      name: vagrant
+      name: "{{ ansible_user }}"
       state: present
       groups: systemd-journal
       append: true
 
-- name: allow vagrant user to use mock
+- name: Ensure unprivileged user can use mock
   user:
-      name: vagrant
+      name: "{{ ansible_user }}"
       state: present
       groups: mock
       append: true
 
 - name: Install Pulp RPM dependencies
-  dnf: name={{ item }} state=present
+  package: name={{ item }} state=present
   with_items: "{{ pulp_rpm_dependencies }}"
 
-- name: Ensure homedir mode suitable for ssh keys
-  file: dest=/home/{{ ansible_env.SUDO_USER }} mode=0750
+- block:
+  # block acts as unprivileged user to set up virtualenvs and install packages
+  - name: Ensure virtualenvs dir exists
+    file:
+        path: "{{ pulp_venv_dir }}"
+        state: directory
 
-- name: Stat pulp-dev
-  stat: path=/home/{{ ansible_env.SUDO_USER }}/devel/devel/pulp-dev
-  register: pulp_dev_dir
+  - name: Create virtualenvs
+    # the python3 venv module does not install pip if pip3 is installed in the system and
+    # you specify --system-site-packages, so we have to use virtualenv
+    command: "virtualenv --python /usr/bin/python3 --system-site-packages {{ pulp_venv_dir }}/{{ item }}"
+    args:
+        creates: "{{ pulp_venv_dir }}/{{ item }}"
+    with_items: "{{ pulp_available_repositories | difference(pulp_created_virtualenvs) }}"
 
-- name: Install pulp-dev
-# Doing this with the pip plugin fails to install pulp-dev as editable,
-# so use the command plugin :(
-  command: pip3 install -e {{pulp_dev_dir.stat.path}}
-  when: pulp_dev_dir.stat.isdir is defined and pulp_dev_dir.stat.isdir
+  - name: Link virtualenv project dirs
+    lineinfile:
+        dest: "{{ pulp_venv_dir }}/{{ item }}/.project"
+        line: "{{ pulp_devel_dir }}/{{ item }}"
+        create: true
+        regexp: ".*"
+    with_items: "{{ pulp_available_repositories }}"
 
-- copy: src=bashrc dest=/home/{{ ansible_env.SUDO_USER }}/.bashrc
-- copy: src=motd dest=/etc/motd
+  - name: Install project requirements
+    pip:
+    args:
+        virtualenv: "{{ pulp_venv_dir }}/{{ item.key }}"
+        state: latest
+        chdir: "{{ pulp_devel_dir }}/{{ item.key }}"
+        requirements: "{{ item.value | join(' -r ') }}"
+    with_dict: "{{ pulp_requirements_files }}"
 
-- include: debug.yml
-  # set this to true in extra vars to enable debug-related tasks
-  when: pulp_dev_debug
+  - name: Install pulpproject.org gems
+    bundler:
+        gemfile: "{{ pulp_devel_dir }}/pulpproject.org/Gemfile"
+    when: "{{ ['pulpproject.org'] | issubset(pulp_available_repositories) }}"
+
+  - name: Initialize Pulp DB
+    command: "{{ pulp_devel_dir }}/pulp/app/pulp/app/db-reset.sh"
+    # If the task to create the "pulp" db reported that it made a change, that means the pulp db
+    # didn't exist before running and we're safe to populate it.
+    # If the pulp db already existed, don't destroy it here by running db-reset.
+    when: pulp_postgres_db.changed
+  become: false
+
+- name: Install Pulp Platform packages
+  # Platform packages and dependencies get installed system-wide, for use by all virtualenvs.
+  command: "/usr/bin/python3 setup.py develop"
+  args:
+    chdir: "{{ pulp_devel_dir }}/pulp/{{ item }}"
+  # Pulp 2 setup.py files still exist on 3.0-dev in platform, so we can't just find
+  # every setup.py and run develop on it with the virtualenv interpreter. This is also true
+  # for plugins, in which we'll likely want to install all plugin setup.py as well as
+  # all platform setup.pys for each plugin virtualenv. This should be much simpler once
+  # we reorganize our setup.pys: https://pulp.plan.io/issues/278
+  with_items:
+      - app
+      - common
+      - exceptions
+      - tasking
+
+- block:
+  - name: Install crane config
+    template:
+        src: templates/crane-conf.j2
+        dest: "{{ pulp_devel_dir }}/crane/crane.conf"
+    become: false
+
+  - name: Install setup_crane_links script
+    template:
+        src: templates/setup-crane-links.j2
+        dest: /usr/bin/setup_crane_links
+        mode: 0755
+
+  - name: Setup crane links
+    command: setup_crane_links
+    args:
+        creates: /var/lib/pulp/published/docker/v1
+    # This command fails when "setfacl" is called on sshfs-provided files, even when run as root
+    ignore_errors: True
+  when: "{{ ['crane'] | issubset(pulp_available_repositories) }}"
+
+- block:
+  - name: Create pulp-smash config dir
+    file:
+        path: "{{ unprivileged_homedir }}/.config/pulp_smash"
+        state: directory
+
+  - name: Install pulp-smash config
+    template:
+        src: templates/smash-settings.j2
+        dest: "{{ unprivileged_homedir }}/.config/pulp_smash/settings.json"
+
+  become: false
+  when: "{{ ['pulp-smash'] | issubset(pulp_available_repositories) }}"
+
+- name: Install pulp-dev library (system-wide)
+  command: pip3 install -e {{pulp_devel_dir}}/devel/pulp-dev
+  when: "{{ ['devel'] | issubset(pulp_available_repositories) }}"

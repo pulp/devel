@@ -96,4 +96,4 @@ rel-eng/*
 Vagrantfile
 .vagrant
 .dnf-cache
-ansible/vagrant-playbook.retry
+ansible/dev-playbook.retry

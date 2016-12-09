@@ -1,3 +1,17 @@
 ---
+- name: reload systemd units
+  command: systemctl daemon-reload
+
 - name: restart sshd
-  service: name=sshd state=restarted
+  service:
+      name: sshd
+      state: restarted
+
+- name: restart tasking services
+  service:
+      name: "{{ item }}"
+      state: restarted
+  with_items:
+      - pulp_workers
+      - pulp_celerybeat
+      - pulp_resource_manager
