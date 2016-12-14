@@ -69,6 +69,11 @@
       - yum-utils
       - zlib-devel
 
+- name: Install gofer
+  dnf: name={{ item }} state=present
+  with_items:
+      - gofer
+
 - name: allow vagrant user to read the systemd journal
   user:
       name: vagrant
