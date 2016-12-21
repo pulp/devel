@@ -50,6 +50,11 @@ for project in projects:
 # Remove any duplicates
 rpm_dependency_list = list(set(rpm_dependency_list))
 
+# Replace python-lxml with python2-lxml
+# https://www.redhat.com/archives/pulp-dev/2016-December/msg00042.html
+rpm_dependency_list.remove('python-lxml')
+rpm_dependency_list.append('python2-lxml')
+
 # Build the facts for Ansible
 facts = {
     'ansible_facts': {
