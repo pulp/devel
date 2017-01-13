@@ -21,7 +21,7 @@ BASE_DIR_TEMPLATE = '~/devel/%s'
 
 def get_args():
     parser = argparse.ArgumentParser(description='Checkout your repos to a version of Pulp')
-    parser.add_argument('--version', required=True, help='the version of Pulp to check out')
+    parser.add_argument('--version', default='master', help='the version of Pulp to check out')
     parser.add_argument('--remote', default='pulp', help='the name of the pulp remote to fetch from')
     return  parser.parse_args()
 
