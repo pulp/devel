@@ -60,6 +60,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     dev.vm.provider :libvirt do |domain, override|
         domain.cpus = 4
+        # In some cases, the guest gets stuck at "Waiting for domain to get an IP address..." if
+        # the default cpu_mode, 'host-model', is used. Using 'host-passthrough' cpu_mode prevents
+        # VM migration between hosts with different CPUs. However, development environments are
+        # expected to live on a single host for the duration of their existence. Due to this known
+        # issue and our use case, the default cpu_mode is overridden.
+        domain.cpu_mode = "host-passthrough"
         domain.graphics_type = "spice"
         domain.memory = 2048
         domain.video_type = "qxl"
