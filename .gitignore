@@ -84,7 +84,7 @@ ENV/
 
 # Vagrant environment
 .vagrant
-Vagrantfile
+Vagrantfile*
 
 # Spyder project settings
 .spyderproject
