@@ -21,35 +21,35 @@ VAGRANT_SYNCED_FOLDERS = {
 }
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
- # It is possible to use URLs to nightly images produced by the Fedora project here. You can find
- # the nightly composes here: https://kojipkgs.fedoraproject.org/compose/
- # Sometimes, a nightly compose is incomplete and does not contain a Vagrant image, so you may need
- # to browse that repository a bit to find the latest successful Vagrant image. For example, at the
- # time of this writing, I could set this setting like this for the latest F24 image:
- # config.vm.box = "https://kojipkgs.fedoraproject.org/compose/rawhide/latest-Fedora-Rawhide/compose/CloudImages/x86_64/images/<imagename>.vagrant-libvirt.box"
- config.vm.box = "fedora/25-cloud-base"
+  # It is possible to use URLs to nightly images produced by the Fedora project here. You can find
+  # the nightly composes here: https://kojipkgs.fedoraproject.org/compose/
+  # Sometimes, a nightly compose is incomplete and does not contain a Vagrant image, so you may need
+  # to browse that repository a bit to find the latest successful Vagrant image. For example, at the
+  # time of this writing, I could set this setting like this for the latest F24 image:
+  # config.vm.box = "https://kojipkgs.fedoraproject.org/compose/rawhide/latest-Fedora-Rawhide/compose/CloudImages/x86_64/images/<imagename>.vagrant-libvirt.box"
+  config.vm.box = "fedora/25-cloud-base"
 
- # Comment out if you don't want Vagrant to add and remove entries from /etc/hosts for each VM.
- # requires the vagrant-hostmanager plugin to be installed
- if Vagrant.has_plugin?("vagrant-hostmanager")
-     config.hostmanager.enabled = true
-     config.hostmanager.manage_host = true
- end
+  # Comment out if you don't want Vagrant to add and remove entries from /etc/hosts for each VM.
+  # requires the vagrant-hostmanager plugin to be installed
+  if Vagrant.has_plugin?("vagrant-hostmanager")
+      config.hostmanager.enabled = true
+      config.hostmanager.manage_host = true
+  end
 
- # Comment this line if you would like to disable the automatic update during provisioning
- config.vm.provision "shell", inline: "sudo dnf upgrade -y"
+  # Comment this line if you would like to disable the automatic update during provisioning
+  config.vm.provision "shell", inline: "sudo dnf upgrade -y"
 
- # bootstrap and run with ansible
- config.vm.provision "shell", path: "scripts/bootstrap-ansible.sh"
- config.vm.provision "ansible" do |ansible|
-     # Uncomment this if you want debug tools like gdb, tcpdump, et al. installed
-     # (you don't, unless you know you do)
-     # ansible.extra_vars = { pulp_dev_debug: true }
-     ansible.playbook = "ansible/vagrant-playbook.yml"
- end
+  # bootstrap and run with ansible
+  config.vm.provision "shell", path: "scripts/bootstrap-ansible.sh"
+  config.vm.provision "ansible" do |ansible|
+      # Uncomment this if you want debug tools like gdb, tcpdump, et al. installed
+      # (you don't, unless you know you do)
+      # ansible.extra_vars = { pulp_dev_debug: true }
+      ansible.playbook = "ansible/vagrant-playbook.yml"
+  end
 
- # Create the "dev" box
- config.vm.define "dev" do |dev|
+  # Create the "dev" box
+  config.vm.define "dev" do |dev|
     dev.vm.host_name = "dev.example.com"
 
     VAGRANT_SYNCED_FOLDERS.each do |host_path, guest_path|
@@ -146,5 +146,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 
     dev.vm.provision "shell", inline: "sudo -u vagrant bash /home/vagrant/devel/devel/scripts/vagrant-setup.sh"
- end
+  end
 end
