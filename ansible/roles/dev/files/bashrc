@@ -5,6 +5,13 @@ if [ -f /etc/bashrc ]; then
     . /etc/bashrc
 fi
 
+function _setterm () {
+    # don't use setterm unless $TERM is set
+    if [[ ! -z "$TERM" ]]; then
+        setterm $@
+    fi
+}
+
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
 
@@ -96,7 +103,7 @@ pclean() {
 }
 _pclean_help="Restore pulp to a clean-installed state"
 # can get away with not resetting terminal settings here since it gets reset in phelp
-_pclean_help="$_pclean_help - `setterm -foreground red -bold on`THIS DESTROYS YOUR PULP DATA"
+_pclean_help="$_pclean_help - THIS DESTROYS YOUR PULP DATA"
 
 pjournal() {
     # build up the journalctl cmdline per-unit
@@ -234,17 +241,17 @@ phelp() {
         # If the help var had a value, echo its value here (the value is function help text)
         if [ ! -z "$help" ]; then
             # make the function name easy to spot
-            setterm -foreground yellow -bold on
+            _setterm -foreground yellow -bold on
             echo -n "$func"
             # reset terminal formatting before printing the help text
             # (implicitly format it as normal text)
-            setterm -default
+            _setterm -default
             echo ": $help"
         fi
     done
 
     # explicitly restore terminal formatting is reset before exiting function
-    setterm -default
+    _setterm -default
 }
 _phelp_help="Print this help"
 
