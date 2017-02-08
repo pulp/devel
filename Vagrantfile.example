@@ -148,7 +148,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     config.vm.provision "shell", run: "always" do |s|
       # only gofer and httpd strictly need this, but for consistency, we'll just restart them all
-      s.inline = "sudo systemctl restart goferd httpd pulp_celerybeat pulp_workers pulp_resource_manager pulp_streamer"
+      s.inline = "sudo systemctl restart goferd httpd pulp_celerybeat pulp_workers pulp_resource_manager"
     end
   end
 end
