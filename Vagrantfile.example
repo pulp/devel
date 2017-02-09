@@ -146,7 +146,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     dev.vm.provision "shell", inline: "sudo -u vagrant bash /home/vagrant/devel/devel/scripts/vagrant-setup.sh"
 
-    config.vm.provision "shell", run: "always" do |s|
+    dev.vm.provision "shell", run: "always" do |s|
       # only gofer and httpd strictly need this, but for consistency, we'll just restart them all
       s.inline = "sudo systemctl restart goferd httpd pulp_celerybeat pulp_workers pulp_resource_manager"
     end
