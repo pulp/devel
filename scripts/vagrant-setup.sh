@@ -87,11 +87,11 @@ for s in goferd httpd pulp_workers pulp_celerybeat pulp_resource_manager; do
   sudo systemctl enable $s
 done
 
-
-sudo -u apache pulp-manage-db;
-setup_crane_links;
-prestart;
-ppopulate;
+pstop
+sudo -u apache pulp-manage-db
+setup_crane_links
+prestart
+ppopulate
 
 # Give the user some use instructions
 if [ $USER = "vagrant" ]; then
