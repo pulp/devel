@@ -4,7 +4,6 @@
   with_items:
       - squid
       - httpd
-      - python-pulp-streamer
 
 - name: Install squid proxy configuration
   copy: src=squid.conf dest=/etc/squid/squid.conf
@@ -18,6 +17,3 @@
 
 - name: Start and enable Squid service
   service: name=squid state=started enabled=yes
-
-- name: Start and enable Pulp streamer service
-  service: name=pulp_streamer state=started enabled=yes
