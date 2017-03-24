@@ -9,6 +9,7 @@
 - name: Install required OS packages
   action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
   with_items:
+    - attr
     - python
     - python-pip
     - python-virtualenv
