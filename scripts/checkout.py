@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import os
 import subprocess
@@ -10,7 +12,7 @@ import yaml
 #    pyvenv pulp_checkout
 #    source pulp_checkout/bin/activate
 #    pip install requests PyYAML
-# 
+#
 # Run the script using the Python3 interpreter
 #    python checkout.py
 
@@ -23,7 +25,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='Checkout your repos to a version of Pulp')
     parser.add_argument('--version', default='master', help='the version of Pulp to check out')
     parser.add_argument('--remote', default='pulp', help='the name of the pulp remote to fetch from')
-    return  parser.parse_args()
+    return parser.parse_args()
 
 
 def get_yaml(args):
@@ -45,7 +47,7 @@ def check_checkouts(args):
             except subprocess.CalledProcessError:
                 print("\n\nThe repo '%s' has uncommitted changes. Either commit or revert those changes to continue.\n\nNo changes were made." % repo)
                 sys.exit(1)
-                
+
 
 def fetch_and_checkout(args, yaml):
     for repo in REPOS:
@@ -67,4 +69,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
