@@ -93,7 +93,7 @@ rel-eng/*
 !rel-eng/config
 
 # Vagrant
-Vagrantfile
+Vagrantfile*
 .vagrant
 .dnf-cache
-ansible/dev-playbook.retry
+ansible/*.retry

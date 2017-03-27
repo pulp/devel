@@ -47,8 +47,10 @@ repositories = [
 ] + plugins
 
 # lists of requirements files to be installed into virtualenvs, when those virtualenvs exist
+# all requirements found in a given repository matching these filenames will be installed into
+# the corresponding virtualenvs using code from that repository
 requirements_files = {
-    'pulp': ['test_requirements.txt'],
+    'pulp': ['test_requirements.txt', 'dev_requirements.txt'],
     'crane': ['test-requirements.txt'],
     'pulp-smash': ['requirements.txt', 'requirements-dev.txt'],
 }
