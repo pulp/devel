@@ -154,7 +154,7 @@ psmash() {
     _return_code=1
     if make lint test
     then
-        py.test ~/devel/pulp-smash/pulp_smash;
+        python3 -m pulp_smash $@
         _return_code=$?
     fi
     if [ -z $_original_venv ]; then
@@ -165,7 +165,9 @@ psmash() {
     popd;
     return $_return_code
 }
-_psmash_help="Run pulp smash against the currently running pulp installation"
+_psmash_help="Run pulp smash against the currently running pulp installation.
+    Arguments given to this function will be passed through to the pulp smash runner."
+
 
 ppopulate() {
     if [ ! -f $HOME/.pulp/user-cert.pem ]; then
