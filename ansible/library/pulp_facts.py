@@ -27,11 +27,12 @@ rpm_projects = [
 
 # plugin repository names, declared deparately from all repositories for easy filtering later
 plugins = [
-    'pulp_puppet',
-    'pulp_rpm',
     'pulp_docker',
+    'pulp_file',
     'pulp_ostree',
+    'pulp_puppet',
     'pulp_python',
+    'pulp_rpm',
 ]
 
 # all repository names, used first to make sure the platform repository is cloned in its configured
