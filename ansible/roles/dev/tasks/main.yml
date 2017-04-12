@@ -135,6 +135,7 @@
       - app
       - common
       - exceptions
+      - plugin
       - tasking
 
 # We don't currently have a common method for installing plugins for development. In Pulp 2, it was
