@@ -135,7 +135,23 @@
       - app
       - common
       - exceptions
+      - plugin
       - tasking
+
+# We don't currently have a common method for installing plugins for development. In Pulp 2, it was
+# "run pulp-dev.py -I", so maybe that's what we'll do for pulp 3 as well. For now, since only the
+# file plugin works with "python setup.py develop", we'll just try that
+# exists, installing plugins to the platform virtualenv
+- name: Install Plugin packages into Platform Virtualenv
+  command: "{{ pulp_venv_dir }}/pulp/bin/python setup.py develop"
+  args:
+    chdir: "{{ pulp_devel_dir }}/{{ item }}"
+  # If we stick with running setup.py develop for all plugins, we'd want to do it for all available
+  # plugins. For now, it only works with pulp_file
+  # with_items: "{{ pulp_available_plugins }}"
+  with_items:
+      - pulp_file
+  when: "{{ [item] | issubset(pulp_available_plugins) }}"
 
 - block:
   - name: Install crane config
