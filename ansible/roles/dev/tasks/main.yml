@@ -175,3 +175,23 @@
 - name: Install pulp-dev library (system-wide)
   command: pip3 install -e {{pulp_devel_dir}}/devel/pulp-dev
   when: "{{ ['devel'] | issubset(pulp_available_repositories) }}"
+
+- name: install systemd files
+  file:
+    src: "{{ pulp_devel_dir }}/pulp/app/usr/lib/systemd/system/{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    state: link
+  with_items:
+    - pulp_celerybeat.service
+    - pulp_resource_manager.service
+    - pulp_worker@.service
+
+- name: Reload systemctl
+  command: systemctl daemon-reload
+
+- name: Create /var/cache/pulp directory
+  file:
+    path: /var/cache/pulp
+    owner: apache
+    group: apache
+    state: directory

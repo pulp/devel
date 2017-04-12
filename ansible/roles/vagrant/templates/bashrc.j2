@@ -22,10 +22,11 @@ source /usr/bin/virtualenvwrapper.sh
 alias phttp="http --verify no --cert {{ unprivileged_homedir }}/.pulp/user-cert.pem"
 
 REPOS=({{ pulp_available_repositories | join(' ') }})
-SERVICES=("goferd" "httpd" "pulp_workers" "pulp_celerybeat" "pulp_resource_manager" "pulp_streamer")
+SERVICES=("pulp_worker@*" "pulp_celerybeat" "pulp_resource_manager")
 
 pstart() {
-    _paction start
+    # start two workers
+    _paction start pulp_worker@1 pulp_worker@2
 }
 _pstart_help="Start all pulp-related services"
 
@@ -98,9 +99,7 @@ ptests() {
 # undocumented alias for backward compatibility
 
 _paction() {
-    echo "Service management is not yet available for Pulp 3."
-    echo "See https://pulp.plan.io/issues/2479 for more information."
-    return 0
+    sudo systemctl $@ ${SERVICES[@]}
 }
 
 psmash() {
