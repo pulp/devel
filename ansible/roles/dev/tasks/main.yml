@@ -115,13 +115,6 @@
         gemfile: "{{ pulp_devel_dir }}/pulpproject.org/Gemfile"
     when: "{{ ['pulpproject.org'] | issubset(pulp_available_repositories) }}"
 
-  - name: Initialize Pulp DB
-    command: "{{ pulp_devel_dir }}/pulp/platform/pulp/app/db-reset.sh"
-    # If the task to create the "pulp" db reported that it made a change, that means the pulp db
-    # didn't exist before running and we're safe to populate it.
-    # If the pulp db already existed, don't destroy it here by running db-reset.
-    when: pulp_postgres_db.changed
-
   - name: Install Pulp Platform packages
     # Platform packages and dependencies get into the pulp virtualenv.
     command: "{{ pulp_venv_dir }}/pulp/bin/python setup.py develop"
@@ -144,6 +137,13 @@
     with_items:
         - pulp_file
     when: "{{ [item] | issubset(pulp_available_plugins) }}"
+
+  - name: Reset and Migrate Pulp DB
+    command: "{{ pulp_devel_dir }}/pulp/platform/pulp/app/db-reset.sh {{ pulp_venv_dir }}/pulp"
+    # If the task to create the "pulp" db reported that it made a change, that means the pulp db
+    # didn't exist before running and we're safe to populate it.
+    # If the pulp db already existed, don't destroy it here by running db-reset.
+    when: pulp_postgres_db is defined and pulp_postgres_db.changed
 
   # This indention is intentional to work with the whole `block`
   become: false
