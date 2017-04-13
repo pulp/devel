@@ -47,6 +47,7 @@
       - python-rpdb
       # Dependencies for building python packages with C components
       - gcc
+      - gcc-c++
       - postgresql-devel
       - python3-devel
       # Dependencies for building pulp RPMs
