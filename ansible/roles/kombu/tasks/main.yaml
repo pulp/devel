@@ -1,11 +1,5 @@
 ---
 
-- name: Remove the python-kombu rpm
-  command: rpm -e --nodeps python-kombu
-  become: true
-  become_method: sudo
-  ignore_errors: True
-
 - name: Check that ~/devel/kombu is a directory
   stat: path=~/devel/kombu/
   register: kombu_stat
@@ -15,6 +9,12 @@
       - kombu_stat.stat.isdir is defined
       - kombu_stat.stat.isdir
     msg: "You have to clone kombu at ~/devel/kombu"
+
+- name: Remove the python-kombu rpm
+  command: rpm -e --nodeps python-kombu
+  become: true
+  become_method: sudo
+  ignore_errors: True
 
 - name: Install kombu with a developer checkout
   command: python setup.py develop
