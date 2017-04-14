@@ -10,6 +10,10 @@
       - kombu_stat.stat.isdir
     msg: "You have to clone kombu at ~/devel/kombu"
 
+- name: Install kombu Qpid dependencies
+  become: true
+  dnf: name=python-qpid-proton state=present
+
 - name: Remove the python-kombu rpm
   command: rpm -e --nodeps python-kombu
   become: true
