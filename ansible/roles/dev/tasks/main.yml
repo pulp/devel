@@ -115,7 +115,7 @@
     when: "{{ ['pulpproject.org'] | issubset(pulp_available_repositories) }}"
 
   - name: Initialize Pulp DB
-    command: "{{ pulp_devel_dir }}/pulp/app/pulp/app/db-reset.sh"
+    command: "{{ pulp_devel_dir }}/pulp/platform/pulp/app/db-reset.sh"
     # If the task to create the "pulp" db reported that it made a change, that means the pulp db
     # didn't exist before running and we're safe to populate it.
     # If the pulp db already existed, don't destroy it here by running db-reset.
@@ -133,11 +133,8 @@
   # all platform setup.pys for each plugin virtualenv. This should be much simpler once
   # we reorganize our setup.pys: https://pulp.plan.io/issues/278
   with_items:
-      - app
+      - platform
       - common
-      - exceptions
-      - plugin
-      - tasking
 
 # We don't currently have a common method for installing plugins for development. In Pulp 2, it was
 # "run pulp-dev.py -I", so maybe that's what we'll do for pulp 3 as well. For now, since only the
@@ -195,7 +192,7 @@
 
 - name: install systemd files
   file:
-    src: "{{ pulp_devel_dir }}/pulp/app/usr/lib/systemd/system/{{ item }}"
+    src: "{{ pulp_devel_dir }}/pulp/platform/usr/lib/systemd/system/{{ item }}"
     dest: "/etc/systemd/system/{{ item }}"
     state: link
   with_items:

@@ -55,7 +55,7 @@ preset() {
 
 pclean() {
     workon pulp
-    app/pulp/app/db-reset.sh
+    platform/pulp/app/db-reset.sh
 }
 _pclean_help="Restore pulp to a clean-installed state"
 # can get away with not resetting terminal settings here since it gets reset in phelp
@@ -89,7 +89,7 @@ ptest() {
     # manage.py test will create and migrate its own database,
     # but we still need to make the migrations for it to be able to do that.
     python manage.py makemigrations pulp_app
-    python manage.py test app common exceptions tasking
+    python manage.py test platform/ common/
 }
 _ptest_help="Run tests for pulp and all installed plugins/services"
 
