@@ -45,6 +45,7 @@
       - python3-setuptools
       - python-virtualenvwrapper
       - python-rpdb
+      - nc
       # Dependencies for building python packages with C components
       - gcc
       - gcc-c++
@@ -90,7 +91,7 @@
     command: "virtualenv --python /usr/bin/python3 --system-site-packages {{ pulp_venv_dir }}/{{ item }}"
     args:
         creates: "{{ pulp_venv_dir }}/{{ item }}"
-    with_items: "{{ pulp_available_repositories | difference(pulp_created_virtualenvs) }}"
+    with_items: "{{ pulp_isolated_venvs | difference(pulp_created_virtualenvs) }}"
 
   - name: Link virtualenv project dirs
     lineinfile:
@@ -98,7 +99,7 @@
         line: "{{ pulp_devel_dir }}/{{ item }}"
         create: true
         regexp: ".*"
-    with_items: "{{ pulp_available_repositories }}"
+    with_items: "{{ pulp_isolated_venvs }}"
 
   - name: Install project requirements
     pip:
@@ -120,36 +121,32 @@
     # didn't exist before running and we're safe to populate it.
     # If the pulp db already existed, don't destroy it here by running db-reset.
     when: pulp_postgres_db.changed
+
+  - name: Install Pulp Platform packages
+    # Platform packages and dependencies get into the pulp virtualenv.
+    command: "{{ pulp_venv_dir }}/pulp/bin/python setup.py develop"
+    args:
+      chdir: "{{ pulp_devel_dir }}/pulp/{{ item }}"
+    with_items:
+        - platform
+        - common
+
+  # We don't currently have a common method for installing plugins for development. In Pulp 2, it was
+  # "run pulp-dev.py -I", so maybe that's what we'll do for pulp 3 as well. For now, we'll just
+  # do a developer install of the plugins into the same python environment as platform.
+  - name: Install Plugin packages into platform Python environment
+    command: "{{ pulp_venv_dir }}/pulp/bin/python setup.py develop"
+    args:
+      chdir: "{{ pulp_devel_dir }}/{{ item }}"
+    # If we stick with running setup.py develop for all plugins, we'd want to do it for all available
+    # plugins. For now, it only works with pulp_file
+    # with_items: "{{ pulp_available_plugins }}"
+    with_items:
+        - pulp_file
+    when: "{{ [item] | issubset(pulp_available_plugins) }}"
+
+  # This indention is intentional to work with the whole `block`
   become: false
-
-- name: Install Pulp Platform packages
-  # Platform packages and dependencies get installed system-wide, for use by all virtualenvs.
-  command: "/usr/bin/python3 setup.py develop"
-  args:
-    chdir: "{{ pulp_devel_dir }}/pulp/{{ item }}"
-  # Pulp 2 setup.py files still exist on 3.0-dev in platform, so we can't just find
-  # every setup.py and run develop on it with the virtualenv interpreter. This is also true
-  # for plugins, in which we'll likely want to install all plugin setup.py as well as
-  # all platform setup.pys for each plugin virtualenv. This should be much simpler once
-  # we reorganize our setup.pys: https://pulp.plan.io/issues/278
-  with_items:
-      - platform
-      - common
-
-# We don't currently have a common method for installing plugins for development. In Pulp 2, it was
-# "run pulp-dev.py -I", so maybe that's what we'll do for pulp 3 as well. For now, since only the
-# file plugin works with "python setup.py develop", we'll just try that
-# exists, installing plugins to the platform virtualenv
-- name: Install Plugin packages into Platform Virtualenv
-  command: "{{ pulp_venv_dir }}/pulp/bin/python setup.py develop"
-  args:
-    chdir: "{{ pulp_devel_dir }}/{{ item }}"
-  # If we stick with running setup.py develop for all plugins, we'd want to do it for all available
-  # plugins. For now, it only works with pulp_file
-  # with_items: "{{ pulp_available_plugins }}"
-  with_items:
-      - pulp_file
-  when: "{{ [item] | issubset(pulp_available_plugins) }}"
 
 - block:
   - name: Install crane config
@@ -190,15 +187,15 @@
   command: pip3 install -e {{pulp_devel_dir}}/devel/pulp-dev
   when: "{{ ['devel'] | issubset(pulp_available_repositories) }}"
 
-- name: install systemd files
-  file:
-    src: "{{ pulp_devel_dir }}/pulp/platform/usr/lib/systemd/system/{{ item }}"
-    dest: "/etc/systemd/system/{{ item }}"
-    state: link
+- name: Install Systemd Unit files
+  # The template allows us to specify the platform python environment.
+  template:
+      src: "templates/{{ item }}.j2"
+      dest: "/etc/systemd/system/{{ item }}.service"
   with_items:
-    - pulp_celerybeat.service
-    - pulp_resource_manager.service
-    - pulp_worker@.service
+    - pulp_celerybeat
+    - pulp_resource_manager
+    - pulp_worker@
 
 - name: Reload systemctl
   command: systemctl daemon-reload
