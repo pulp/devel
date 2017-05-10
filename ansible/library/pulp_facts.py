@@ -192,6 +192,9 @@ def main():
     # filter the plugins list against the available repos to get available plugins
     facts['pulp_available_plugins'] = list(filter(lambda repo: repo in plugins,
                                                   facts['pulp_available_repositories']))
+    # Pulp repositories that are not plugins need thair own virtualenv.
+    facts['pulp_isolated_venvs'] = list(set(facts['pulp_available_repositories']) -
+                                        set(facts['pulp_available_plugins']))
 
     # filter the requirements list against the available repos, removing unavailable repos
     facts['pulp_requirements_files'] = {
