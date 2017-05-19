@@ -1,23 +1,26 @@
+- name: Install crane config
+  template:
+      src: templates/crane-conf.j2
+      dest: "{{ pulp_devel_dir }}/crane/crane.conf"
+  become: false
 
-# - block:
-#   - name: Install crane config
-#     template:
-#         src: templates/crane-conf.j2
-#         dest: "{{ pulp_devel_dir }}/crane/crane.conf"
-#     become: false
+- name: Install setup_crane_links script
+  template:
+      src: templates/setup-crane-links.j2
+      dest: /usr/bin/setup_crane_links
+      mode: 0755
 
-#   - name: Install setup_crane_links script
-#     template:
-#         src: templates/setup-crane-links.j2
-#         dest: /usr/bin/setup_crane_links
-#         mode: 0755
+- name: Add Crane .bashrc
+  lineinfile:
+    line: "{{ lookup('file', 'files/crane.bashrc') }}"
+    path: "{{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}"
+  when: pulp_include_bashrc
 
-#   - name: Setup crane links
-#     command: setup_crane_links
-#     args:
-#         creates: /var/lib/pulp/published/docker/v1
-#     # This command fails when "setfacl" is called on sshfs-provided files, even when run as root
-#     ignore_errors: True
-#   when: "{{ ['crane'] | issubset(pulp_available_repositories) }}"
-
-
+  # I would rather ansible not depend on aliases, though, so I am not
+  # going to figure out how to source bashrc.
+- name: Setup crane links
+  command: setup_crane_links
+  args:
+      creates: /var/lib/pulp/published/docker/v1
+  # This command fails when "setfacl" is called on sshfs-provided files, even when run as root
+  ignore_errors: True

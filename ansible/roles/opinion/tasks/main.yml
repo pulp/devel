@@ -1,36 +1,14 @@
-
-- name: Austin Play Task
-  command: echo "Hello World"
-  register: hello
-
-- debug: msg={{ hello }}
-
-# - name: Install basic packages
-#   package: name={{ item }} state=present
-#   with_items:
-#       - bash-completion
-#       - fedora-easy-karma
-#       - htop
-#       - screen
-#       - tmux
-#       - tree
-#       - vim-enhanced
-
-- name: install bashrc
-  template:
-    src: templates/bashrc.j2
-    dest: "{{ unprivileged_homedir }}/.bashrc"
-
-- name: install vimrc
-  copy:
-    src: vimrc
-    dest: "{{ unprivileged_homedir }}/.vimrc"
-
-- name: Install packages
-  package: name={{ item }} state=present
+- name: Install Optional useful packages
+  package: name={{ item }} state=latest
   with_items:
       # System packages useful for most developers
-      - git
+      - bash-completion
+      - fedora-easy-karma
+      - htop
+      - screen
+      - tmux
+      - tree
+      - vim-enhanced
       - dstat
       - fpaste
       - iotop
@@ -44,45 +22,30 @@
       - python-ipdb
       - python3-setuptools
       - python-rpdb
-      - nc
-      # Dependencies for building python packages with C components
-      - gcc
-      - gcc-c++
-      - postgresql-devel
-      - python3-devel
-      # Dependencies for building pulp RPMs
-      - rpm-build
-      - koji
-      - tito
-      # Dependencies for pulpproject.org & jekyll
-      - ruby-devel
-      - zlib-devel
-      - rubygem-bundler
 
+- name: Add developer aliases to .bashrc
+  lineinfile:
+    line: "{{ lookup('file', 'files/alias.bashrc') }}"
+    path: "{{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}"
+  when: pulp_include_bashrc
 
+- name: Add virtualenv environtment vars to .bashrc
+  lineinfile:
+    line: "{{ lookup('file', 'files/venv.bashrc') }}"
+    path: "{{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}"
+  when: pulp_include_bashrc and (pulp_venv is defined)
 
-  # TODO(asmacdo)
-  - name: Install project requirements
-    pip:
-    args:
-        virtualenv: "{{ pulp_venv_dir }}/{{ item.key }}"
-        state: latest
-        chdir: "{{ pulp_devel_dir }}/{{ item.key }}"
-        requirements: "{{ item.value | join(' -r ') }}"
-    with_dict: "{{ pulp_requirements_files }}"
+- name: Add a basic .vimrc if it is not present
+  lineinfile:
+    line: "{{ lookup('file', 'files/vimrc') }}"
+    path: "{{ unprivileged_homedir }}/.vimrc }}"
+    force: no
 
-  - name: Install pulpproject.org gems
-    bundler:
-        gemfile: "{{ pulp_devel_dir }}/pulpproject.org/Gemfile"
-    when: "{{ ['pulpproject.org'] | issubset(pulp_available_repositories) }}"
-
-
-
-  # - name: Link virtualenv project dirs
-  #   lineinfile:
-  #       dest: "{{ pulp_venv//.project"
-  #       line: "{{ pulp_devel_dir }}/{{ item }}"
-  #       create: true
-  #       regexp: ".*"
-  #   with_items: "{{ pulp_available_repositories | difference(pulp_available_plugins) }}"
+ # - name: Link virtualenv project dirs
+ #   lineinfile:
+ #       dest: "{{ pulp_venv//.project"
+ #       line: "{{ pulp_devel_dir }}/{{ item }}"
+ #       create: true
+ #       regexp: ".*"
+ #   with_items: "{{ pulp_available_repositories | difference(pulp_available_plugins) }}"
 

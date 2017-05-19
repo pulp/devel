@@ -10,10 +10,9 @@
       line: "StrictModes no"
   notify: restart sshd
 
-- name: Install packages
-  package: name={{ item }} state=present
-  with_items:
-    - python-virtualenvwrapper
+- name: Install python-virtualenvwrapper
+  package: name=python-virtualenvwrapper state=latest
+  when: pulp_venv is defined
 
 - name: Install Pulp Platform packages
   # Platform packages and dependencies get into the pulp virtualenv.
@@ -33,20 +32,21 @@
   # If we stick with running setup.py develop for all plugins, we'd want to do it for all available
   # plugins. For now, it only works with pulp_file
   # with_items: "{{ pulp_available_plugins }}"
+  when: "{{ [item] | issubset(pulp_available_plugins) }}"
   with_items:
       - pulp_file
-  when: "{{ [item] | issubset(pulp_available_plugins) }}"
 
 - name: Install pulp-dev library (system-wide)
   command: pip3 install -e {{pulp_devel_dir}}/devel/pulp-dev
   when: "{{ ['devel'] | issubset(pulp_available_repositories) }}"
 
 - name: Reset and Migrate Pulp DB
-  command: "{{ pulp_devel_dir }}/pulp/platform/pulp/app/db-reset.sh {{ pulp_venv | /usr/bin }}"
+  command: "{{ pulp_devel_dir }}/pulp/platform/pulp/app/db-reset.sh {{ pulp_venv | default(omit) }}"
   # If the task to create the "pulp" db reported that it made a change, that means the pulp db
   # didn't exist before running and we're safe to populate it.
   # If the pulp db already existed, don't destroy it here by running db-reset.
   when: pulp_postgres_db is defined and pulp_postgres_db.changed
+  notify: restart tasking services
 
 - name: Create /var/cache/pulp directory
   file:
@@ -67,3 +67,9 @@
   notify: reload systemd units
   notify: restart tasking services
 
+- name: Add django env to .bashrc
+  lineinfile:
+    line: "{{ lookup('file', 'files/django.bashrc') }}"
+    path: "{{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}"
+    owner: "{{ ansible_user }}"
+  when: pulp_include_bashrc

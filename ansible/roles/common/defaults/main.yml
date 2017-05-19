@@ -1,2 +1,3 @@
 # As the first role, the defaults here are overriden anywhere.
-ansible_python_interpreter: '/usr/bin/python3'
+# Move to defaults vars file?
+pulp_bashrc_filename: 'ansible.bashrc'

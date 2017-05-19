@@ -1,15 +1,25 @@
-# - block:
-#   - name: Create pulp-smash config dir
-#     file:
-#         path: "{{ unprivileged_homedir }}/.config/pulp_smash"
-#         state: directory
+- name: Create pulp-smash config dir
+  file:
+      path: "{{ unprivileged_homedir }}/.config/pulp_smash"
+      state: directory
 
-#   - name: Install pulp-smash config
-#     template:
-#         src: templates/smash-settings.j2
-#         dest: "{{ unprivileged_homedir }}/.config/pulp_smash/settings.json"
+- name: Install pulp-smash config
+  template:
+      src: templates/smash-settings.j2
+      dest: "{{ unprivileged_homedir }}/.config/pulp_smash/settings.json"
 
-#   become: false
-#   when: "{{ ['pulp-smash'] | issubset(pulp_available_repositories) }}"
+- name: Install pulp-smash requirements
+  pip:
+    virtualenv: "{{ pulp_smash_venv | default(omit) }}"
+    state: latest
+    requirements: "{{ pulp_devel_dir }}/pulp-smash/{{ item }}"
+    chdir: "{{ pulp_devel_dir }}/pulp-smash"
+  with_items:
+    - requirements.txt
+    - requirements-dev.txt
 
-
+- name: Enable psmash()
+  lineinfile:
+    line: "{{ lookup('file', 'files/smash.bashrc') }}"
+    path: "{{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}"
+  when: pulp_include_bashrc

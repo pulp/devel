@@ -1,4 +1,6 @@
 ---
+# Handlers are executed in the order that they are defined here.
+# If a task notifies reload and restart, reload should run first.
 - name: reload systemd units
   command: systemctl daemon-reload
 

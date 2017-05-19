@@ -1,0 +1,11 @@
+- name: Install packages
+  package: name={{ item }} state=present
+  with_items:
+     # Dependencies for pulpproject.org & jekyll
+      - ruby-devel
+      - zlib-devel
+      - rubygem-bundler
+
+- name: Install pulpproject.org gems
+  bundler:
+      gemfile: "{{ pulp_devel_dir }}/pulpproject.org/Gemfile"

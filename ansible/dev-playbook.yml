@@ -1,0 +1,39 @@
+---
+- hosts: dev
+  become: true
+  become_method: sudo
+  pre_tasks:
+    - name: Check python and ansible versions
+      assert:
+        that:
+          - "ansible_python_version|version_compare('3.5.0', operator='ge')"
+          - "ansible_version.full|version_compare('2.2.0', operator='ge')"
+        msg: "This playbook is intended to be run using python 3.5 or later with ansible 2.2 or later."
+  vars:
+    # Still not happy with where vars are.
+    ansible_python_interpreter: '/usr/bin/python3'
+    pulp_include_bashrc: true
+    # homedir of the unprivileged user; assumes that ssh drops you into the homedir
+    # of the user calling sudo before sudo is called
+    # TODO(asmacdo)is this is a vagrant var??
+    unprivileged_homedir: "{{ ansible_env.PWD }}"
+    # directory where git clones will be expected to exist
+    pulp_devel_dir: "{{ unprivileged_homedir }}/devel"
+    # directory where virtualenv will be created
+    pulp_venv: "{{ unprivileged_homedir }}/.virtualenvs/pulp"
+    pulp_smash_venv: "{{ unprivileged_homedir }}/.virtualenvs/pulp-smash"
+  roles:
+    - common
+    - { role: vagrant, when use_vagrant_role }
+    - db
+    - broker
+    - lazy
+    - dev
+    - pulp_ca
+    - smash
+    # - { role: smash, when pulp-smash' in pulp_available_repositories }
+    - pulpproject
+    - build
+    # - crane
+    - debug
+    - opinion

@@ -22,5 +22,3 @@
       state: present
       groups: systemd-journal
       append: true
-
-

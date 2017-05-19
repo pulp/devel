@@ -1,27 +1,6 @@
-# .bashrc
-
-# Source global definitions
-if [ -f /etc/bashrc ]; then
-    . /etc/bashrc
-fi
-
-# Uncomment the following line if you don't like systemctl's auto-paging feature:
-# export SYSTEMD_PAGER=
-
-# User specific aliases and functions
 # If adding new functions to this file, note that you can add help text to the function
 # by defining a variable with name _<function>_help containing the help text
 
-# Set up virtualenvwrapper
-export WORKON_HOME=$HOME/.virtualenvs
-export PIP_VIRTUALENV_BASE=$WORKON_HOME
-export VIRTUALENV_USE_DISTRIBUTE=true
-export PIP_RESPECT_VIRTUALENV=true
-source /usr/bin/virtualenvwrapper.sh
-
-alias phttp="http --verify no --cert {{ unprivileged_homedir }}/.pulp/user-cert.pem"
-
-REPOS=({{ pulp_available_repositories | join(' ') }})
 SERVICES=("pulp_worker@*" "pulp_celerybeat" "pulp_resource_manager")
 
 pstart() {
@@ -104,31 +83,6 @@ _paction() {
     sudo systemctl $@ ${SERVICES[@]}
 }
 
-psmash() {
-    # We start and end with {push,pop}d because workon changes CWD and we don't want to user's CWD
-    # to be altered when they type pulp-smash. We also want to maintain their active venv.
-    if [ ! -z $VIRTUAL_ENV ]; then
-        _original_venv=`basename $VIRTUAL_ENV`
-    fi
-    pushd {{ unprivileged_homedir}};
-    workon pulp-smash;
-    prestart;
-    _return_code=1
-    if make lint test
-    then
-        py.test {{ pulp_devel_dir }}/pulp-smash/pulp_smash;
-        _return_code=$?
-    fi
-    if [ -z $_original_venv ]; then
-        deactivate;
-    else
-        workon $_original_venv
-    fi
-    popd;
-    return $_return_code
-}
-_psmash_help="Run pulp smash against the currently running pulp installation"
-
 ppopulate() {
 	echo "I don't know how to populate anything yet!"
 }
@@ -186,18 +140,6 @@ phelp() {
 }
 _phelp_help="Print this help"
 
-setup_crane_links() {
-    # If Crane is present, let's set up the publishing symlinks so that the app files can be used
-    if [ -d $HOME/devel/crane ]; then
-        pushd $HOME/devel/crane
-        mkdir -p metadata/v1 metadata/v2
-        setfacl -m u:apache:rwx metadata/*
-        sudo -u apache mkdir -p /var/lib/pulp/published/docker/v1 /var/lib/pulp/published/docker/v2
-        sudo -u apache ln -s $HOME/devel/crane/metadata/v1 /var/lib/pulp/published/docker/v1/app
-        sudo -u apache ln -s $HOME/devel/crane/metadata/v2 /var/lib/pulp/published/docker/v2/app
-        popd
-    fi
-}
+# TODO(asmacdo) this requires templating... rewrite?
+# alias phttp="http --verify no --cert {{ unprivileged_homedir }}/.pulp/user-cert.pem"
 
-export DJANGO_SETTINGS_MODULE=pulp.app.settings
-export CRANE_CONFIG_PATH=$HOME/devel/crane/crane.conf

@@ -1,10 +1,9 @@
-# - name: Upgrade installed packages
-#   package: name=* state=latest
-#   when: not quick_install or something
+# TODO(asmacdo) left out for speed, remove before merge
+- name: Upgrade installed packages
+  package: name=* state=latest
+  # when: not quick_install or something
 
 - name: Install packages requires to gather Pulp facts
-  # TODO(asmacdo)
-  # Is there a reason this isn't latest?
   package: name={{ item }} state=present
   with_items:
       - git
@@ -13,5 +12,22 @@
 - name: Gathering Pulp facts
   pulp_facts:
       devel_dir: "{{ pulp_devel_dir }}"
-      # TODO(asmacdo)
-      # venv: "{{ pulp_venv | default(omit) }}"
+
+- name: Begin Building .bashrc
+  copy: src=files/base.bashrc dest={{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}
+  when: pulp_include_bashrc
+
+- name: Touch .bashrc
+  file:
+    path: "{{ unprivileged_homedir }}/.bashrc"
+    state: touch
+    owner: "{{ ansible_user }}"
+
+- name: Include Custom bashrc
+  lineinfile:
+    line: source {{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}
+    # TODO(asmacdo) Assumes ~/.bashrc
+    path: "{{ unprivileged_homedir }}/.bashrc"
+    owner: "{{ ansible_user }}"
+    insertafter: EOF
+  when: pulp_include_bashrc
