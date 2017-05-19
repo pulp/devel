@@ -36,18 +36,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.hostmanager.manage_host = true
   end
 
-  # provision with ansible
   config.vm.provision "ansible" do |ansible|
-      ansible.playbook = "ansible/dev-playbook.yml"
-      ansible.extra_vars = {
-         # Uncomment this if you want debug tools like gdb, tcpdump, et al. installed
-         # (you probably don't, unless you know you do)
-         # use_debug_role: true,
-         # This role is required when provisioning in vagrant
-         use_vagrant_role: true,
-         # The dev playbook does not work without python3
-         ansible_python_interpreter: '/usr/bin/python3'
-      }
+      # ansible.verbose = "vvv"
+      ansible.playbook = "ansible/example-playbook.yml"
   end
 
   # Create the "dev" box
@@ -58,10 +49,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Use SSHFS instead of NFS. Requires the vagrant-sshfs plugin to be installed.
         # Use SSHFS to share directories. The ``-o nonempty`` option is passed to allow
         # mounts on non-empty directories.
-        # dev.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
+        dev.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
 
         # Comment this out if you use a different filesystem (like sshfs)
-        dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
+        # dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
     end
 
     dev.vm.provider :libvirt do |domain, override|

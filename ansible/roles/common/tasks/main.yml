@@ -1,0 +1,60 @@
+- name: Check python and ansible versions
+  assert:
+    that:
+      - "ansible_python_version|version_compare('3.5.0', operator='ge')"
+      - "ansible_version.full|version_compare('2.2.0', operator='ge')"
+    msg: "This playbook is intended to be run using python 3.5 or later with ansible 2.2 or later."
+
+- name: Upgrade installed packages
+  package: name=* state=latest
+
+- name: Install packages required to gather Pulp facts
+  package: name={{ item }} state=present
+  with_items:
+      - git
+      - rpm-build
+
+- name: Ensure homedir mode suitable for calling processes in its virtualenvs
+  file:
+    dest: "{{ unprivileged_homedir }}"
+    mode: 0755
+  when: pulp_venv is defined
+
+- name: Gathering Pulp facts
+  pulp_facts:
+      devel_dir: "{{ pulp_devel_dir }}"
+
+- name: Ensure that a .bashrc.d/ dir exists
+  file:
+    path: "{{ unprivileged_homedir }}/.bashrc.d/"
+    state: directory
+  when: supplement_bashrc
+  become: false
+
+- name: Include supplemental bashrc files when sourcing
+  blockinfile:
+    path: "{{ unprivileged_homedir }}/.bashrc"
+    block: |
+      if [ -d ~/.bashrc.d ]; then
+        for file in $(/bin/ls ~/.bashrc.d/*.bashrc); do
+          . $file;
+        done
+      fi
+    create: yes
+    marker: "# {mark} Ansible managed block: source bashrc.d/"
+  become: false
+  when: supplement_bashrc
+
+- name: Add developer aliases to .bashrc
+  template:
+    src: templates/alias.bashrc
+    dest: "{{ unprivileged_homedir }}/.bashrc.d/alias.bashrc"
+  become: false
+  when: supplement_bashrc
+
+- name: Add a basic .vimrc if it is not present
+  copy:
+    src: files/vimrc
+    dest: "{{ unprivileged_homedir }}/.vimrc"
+    force: no
+  become: false

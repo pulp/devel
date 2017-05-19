@@ -1,0 +1,15 @@
+# Ensure that a required git repo is checked out. This task can be
+# included by any role after common.
+# Example usage:
+# - name: Assert ____ Git repository is in the pulp_devel_dir
+#   include_role:
+#     name: common
+#     tasks_from: require_repo
+#   vars:
+#     repo: crane
+
+- assert:
+    that: "repo in pulp_available_repositories"
+    msg:
+       The {{ repo }} git repo is not in {{ pulp_devel_dir }}. Either clone
+       the repo or disable the corresponding role in the playbook.

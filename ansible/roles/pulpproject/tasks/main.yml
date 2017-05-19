@@ -1,0 +1,19 @@
+- name: Assert pulpproject Git repository is in the pulp_devel_dir
+  include_role:
+    name: common
+    tasks_from: require_repo
+  vars:
+    repo: pulpproject.org
+
+- name: Install packages
+  package: name={{ item }} state=present
+  with_items:
+      - gcc
+      - ruby-devel
+      - zlib-devel
+      - rubygem-bundler
+
+- name: Install pulpproject.org gems
+  bundler:
+      gemfile: "{{ pulp_devel_dir }}/pulpproject.org/Gemfile"
+  become: false

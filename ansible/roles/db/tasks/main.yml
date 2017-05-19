@@ -3,8 +3,6 @@
   with_items:
       - postgresql
       - postgresql-server
-      # needed to install psycopg2 with python
-      - postgresql-devel
       # needed by postgres-related tasks and other things
       # using python outside of a virtualenv
       - python3-psycopg2
@@ -21,7 +19,6 @@
       owner: postgres
       group: postgres
       mode: 0600
-  notify: restart postgresql
 
 - name: Start and enable postgresql
   service: name=postgresql state=restarted enabled=yes
@@ -35,4 +32,3 @@
   postgresql_db:
       name: pulp
       owner: pulp
-  register: pulp_postgres_db
