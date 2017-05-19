@@ -1,0 +1,8 @@
+# homedir of the unprivileged user; assumes that ssh drops you into the homedir
+# of the user calling sudo before sudo is called
+# TODO(asmacdo) this is a vagrant var.
+unprivileged_homedir: "{{ ansible_env.PWD }}"
+# directory where virtualenv will be created
+pulp_venv: "{{ unprivileged_homedir }}/.virtualenvs/pulp"
+# directory where git clones will be expected to exist
+pulp_devel_dir: "{{ unprivileged_homedir }}/devel"

@@ -10,182 +10,50 @@
       line: "StrictModes no"
   notify: restart sshd
 
-- name: Install Pulp package repository
-  when: ansible_distribution == 'Fedora' and ansible_distribution_version|int < 24
-  get_url:
-      url: https://repos.fedorapeople.org/repos/pulp/pulp/fedora-pulp.repo
-      dest: /etc/yum.repos.d/fedora-pulp.repo
-
-- name: Install dnf config-manager
-  package: name=dnf-command(config-manager) state=present
-
-- name: Enable Pulp Nightly repository
-  command: package config-manager --set-enabled pulp-nightlies
-  when: ansible_distribution == 'Fedora' and ansible_distribution_version|int < 24 and pulp_nightly_repo_enabled == false
-
-  # TODO: It's not clear how this list was created, it would be great
-  #       to know why we install all of these, and (if possible) get them
-  #       captured as requirements in the project itself.
 - name: Install packages
   package: name={{ item }} state=present
   with_items:
-      # System packages useful for most developers
-      - git
-      - dstat
-      - fpaste
-      - iotop
-      - jnettop
-      - httpie
-      - python-django-bash-completion
-      - redhat-lsb-core
-      - telnet
-      - yum-utils
-      # Python packages useful for developers
-      - python-ipdb
-      - python3-setuptools
-      - python-virtualenvwrapper
-      - python-rpdb
-      - nc
-      # Dependencies for building python packages with C components
-      - gcc
-      - gcc-c++
-      - postgresql-devel
-      - python3-devel
-      # Dependencies for building pulp RPMs
-      - rpm-build
-      - koji
-      - tito
-      # Dependencies for pulpproject.org & jekyll
-      - ruby-devel
-      - zlib-devel
-      - rubygem-bundler
+    - python-virtualenvwrapper
 
-- name: Ensure unprivileged user can read the systemd journal
-  user:
-      name: "{{ ansible_user }}"
-      state: present
-      groups: systemd-journal
-      append: true
+- name: Install Pulp Platform packages
+  # Platform packages and dependencies get into the pulp virtualenv.
+  pip:
+    name: "{{ pulp_devel_dir }}/pulp/{{ item }}"
+    extra_args: "-e"
+    virtualenv: "{{ pulp_venv | default(omit) }}"
+  with_items:
+      - platform
+      - common
 
-- name: Ensure unprivileged user can use mock
-  user:
-      name: "{{ ansible_user }}"
-      state: present
-      groups: mock
-      append: true
-
-- name: Install Pulp RPM dependencies
-  package: name={{ item }} state=present
-  with_items: "{{ pulp_rpm_dependencies }}"
-
-- block:
-  # block acts as unprivileged user to set up virtualenvs and install packages
-  - name: Ensure virtualenvs dir exists
-    file:
-        path: "{{ pulp_venv_dir }}"
-        state: directory
-
-  - name: Create virtualenvs
-    # the python3 venv module does not install pip if pip3 is installed in the system and
-    # you specify --system-site-packages, so we have to use virtualenv
-    command: "virtualenv --python /usr/bin/python3 --system-site-packages {{ pulp_venv_dir }}/{{ item }}"
-    args:
-        creates: "{{ pulp_venv_dir }}/{{ item }}"
-    with_items: "{{ pulp_isolated_venvs | difference(pulp_created_virtualenvs) }}"
-
-  - name: Link virtualenv project dirs
-    lineinfile:
-        dest: "{{ pulp_venv_dir }}/{{ item }}/.project"
-        line: "{{ pulp_devel_dir }}/{{ item }}"
-        create: true
-        regexp: ".*"
-    with_items: "{{ pulp_isolated_venvs }}"
-
-  - name: Install project requirements
-    pip:
-    args:
-        virtualenv: "{{ pulp_venv_dir }}/{{ item.key }}"
-        state: latest
-        chdir: "{{ pulp_devel_dir }}/{{ item.key }}"
-        requirements: "{{ item.value | join(' -r ') }}"
-    with_dict: "{{ pulp_requirements_files }}"
-
-  - name: Install pulpproject.org gems
-    bundler:
-        gemfile: "{{ pulp_devel_dir }}/pulpproject.org/Gemfile"
-    when: "{{ ['pulpproject.org'] | issubset(pulp_available_repositories) }}"
-
-  - name: Install Pulp Platform packages
-    # Platform packages and dependencies get into the pulp virtualenv.
-    command: "{{ pulp_venv_dir }}/pulp/bin/python setup.py develop"
-    args:
-      chdir: "{{ pulp_devel_dir }}/pulp/{{ item }}"
-    with_items:
-        - platform
-        - common
-
-  # We don't currently have a common method for installing plugins for development. In Pulp 2, it was
-  # "run pulp-dev.py -I", so maybe that's what we'll do for pulp 3 as well. For now, we'll just
-  # do a developer install of the plugins into the same python environment as platform.
-  - name: Install Plugin packages into platform Python environment
-    command: "{{ pulp_venv_dir }}/pulp/bin/python setup.py develop"
-    args:
-      chdir: "{{ pulp_devel_dir }}/{{ item }}"
-    # If we stick with running setup.py develop for all plugins, we'd want to do it for all available
-    # plugins. For now, it only works with pulp_file
-    # with_items: "{{ pulp_available_plugins }}"
-    with_items:
-        - pulp_file
-    when: "{{ [item] | issubset(pulp_available_plugins) }}"
-
-  - name: Reset and Migrate Pulp DB
-    command: "{{ pulp_devel_dir }}/pulp/platform/pulp/app/db-reset.sh {{ pulp_venv_dir }}/pulp"
-    # If the task to create the "pulp" db reported that it made a change, that means the pulp db
-    # didn't exist before running and we're safe to populate it.
-    # If the pulp db already existed, don't destroy it here by running db-reset.
-    when: pulp_postgres_db is defined and pulp_postgres_db.changed
-
-  # This indention is intentional to work with the whole `block`
-  become: false
-
-- block:
-  - name: Install crane config
-    template:
-        src: templates/crane-conf.j2
-        dest: "{{ pulp_devel_dir }}/crane/crane.conf"
-    become: false
-
-  - name: Install setup_crane_links script
-    template:
-        src: templates/setup-crane-links.j2
-        dest: /usr/bin/setup_crane_links
-        mode: 0755
-
-  - name: Setup crane links
-    command: setup_crane_links
-    args:
-        creates: /var/lib/pulp/published/docker/v1
-    # This command fails when "setfacl" is called on sshfs-provided files, even when run as root
-    ignore_errors: True
-  when: "{{ ['crane'] | issubset(pulp_available_repositories) }}"
-
-- block:
-  - name: Create pulp-smash config dir
-    file:
-        path: "{{ unprivileged_homedir }}/.config/pulp_smash"
-        state: directory
-
-  - name: Install pulp-smash config
-    template:
-        src: templates/smash-settings.j2
-        dest: "{{ unprivileged_homedir }}/.config/pulp_smash/settings.json"
-
-  become: false
-  when: "{{ ['pulp-smash'] | issubset(pulp_available_repositories) }}"
+- name: Install Plugin packages into platform Python environment
+  pip:
+    name: "{{ pulp_devel_dir }}/{{ item }}"
+    extra_args: "-e"
+    virtualenv: "{{ pulp_venv | default(omit) }}"
+  # If we stick with running setup.py develop for all plugins, we'd want to do it for all available
+  # plugins. For now, it only works with pulp_file
+  # with_items: "{{ pulp_available_plugins }}"
+  with_items:
+      - pulp_file
+  when: "{{ [item] | issubset(pulp_available_plugins) }}"
 
 - name: Install pulp-dev library (system-wide)
   command: pip3 install -e {{pulp_devel_dir}}/devel/pulp-dev
   when: "{{ ['devel'] | issubset(pulp_available_repositories) }}"
+
+- name: Reset and Migrate Pulp DB
+  command: "{{ pulp_devel_dir }}/pulp/platform/pulp/app/db-reset.sh {{ pulp_venv | /usr/bin }}"
+  # If the task to create the "pulp" db reported that it made a change, that means the pulp db
+  # didn't exist before running and we're safe to populate it.
+  # If the pulp db already existed, don't destroy it here by running db-reset.
+  when: pulp_postgres_db is defined and pulp_postgres_db.changed
+
+- name: Create /var/cache/pulp directory
+  file:
+    path: /var/cache/pulp
+    owner: apache
+    group: apache
+    state: directory
 
 - name: Install Systemd Unit files
   # The template allows us to specify the platform python environment.
@@ -196,13 +64,6 @@
     - pulp_celerybeat
     - pulp_resource_manager
     - pulp_worker@
+  notify: reload systemd units
+  notify: restart tasking services
 
-- name: Reload systemctl
-  command: systemctl daemon-reload
-
-- name: Create /var/cache/pulp directory
-  file:
-    path: /var/cache/pulp
-    owner: apache
-    group: apache
-    state: directory

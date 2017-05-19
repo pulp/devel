@@ -1,0 +1,17 @@
+# - name: Upgrade installed packages
+#   package: name=* state=latest
+#   when: not quick_install or something
+
+- name: Install packages requires to gather Pulp facts
+  # TODO(asmacdo)
+  # Is there a reason this isn't latest?
+  package: name={{ item }} state=present
+  with_items:
+      - git
+      - rpm-build
+
+- name: Gathering Pulp facts
+  pulp_facts:
+      devel_dir: "{{ pulp_devel_dir }}"
+      # TODO(asmacdo)
+      # venv: "{{ pulp_venv | default(omit) }}"

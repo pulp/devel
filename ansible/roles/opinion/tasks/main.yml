@@ -1,0 +1,88 @@
+
+- name: Austin Play Task
+  command: echo "Hello World"
+  register: hello
+
+- debug: msg={{ hello }}
+
+# - name: Install basic packages
+#   package: name={{ item }} state=present
+#   with_items:
+#       - bash-completion
+#       - fedora-easy-karma
+#       - htop
+#       - screen
+#       - tmux
+#       - tree
+#       - vim-enhanced
+
+- name: install bashrc
+  template:
+    src: templates/bashrc.j2
+    dest: "{{ unprivileged_homedir }}/.bashrc"
+
+- name: install vimrc
+  copy:
+    src: vimrc
+    dest: "{{ unprivileged_homedir }}/.vimrc"
+
+- name: Install packages
+  package: name={{ item }} state=present
+  with_items:
+      # System packages useful for most developers
+      - git
+      - dstat
+      - fpaste
+      - iotop
+      - jnettop
+      - httpie
+      - python-django-bash-completion
+      - redhat-lsb-core
+      - telnet
+      - yum-utils
+      # Python packages useful for developers
+      - python-ipdb
+      - python3-setuptools
+      - python-rpdb
+      - nc
+      # Dependencies for building python packages with C components
+      - gcc
+      - gcc-c++
+      - postgresql-devel
+      - python3-devel
+      # Dependencies for building pulp RPMs
+      - rpm-build
+      - koji
+      - tito
+      # Dependencies for pulpproject.org & jekyll
+      - ruby-devel
+      - zlib-devel
+      - rubygem-bundler
+
+
+
+  # TODO(asmacdo)
+  - name: Install project requirements
+    pip:
+    args:
+        virtualenv: "{{ pulp_venv_dir }}/{{ item.key }}"
+        state: latest
+        chdir: "{{ pulp_devel_dir }}/{{ item.key }}"
+        requirements: "{{ item.value | join(' -r ') }}"
+    with_dict: "{{ pulp_requirements_files }}"
+
+  - name: Install pulpproject.org gems
+    bundler:
+        gemfile: "{{ pulp_devel_dir }}/pulpproject.org/Gemfile"
+    when: "{{ ['pulpproject.org'] | issubset(pulp_available_repositories) }}"
+
+
+
+  # - name: Link virtualenv project dirs
+  #   lineinfile:
+  #       dest: "{{ pulp_venv//.project"
+  #       line: "{{ pulp_devel_dir }}/{{ item }}"
+  #       create: true
+  #       regexp: ".*"
+  #   with_items: "{{ pulp_available_repositories | difference(pulp_available_plugins) }}"
+

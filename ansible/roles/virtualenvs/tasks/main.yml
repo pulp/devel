@@ -1,0 +1,22 @@
+- block:
+  - name: Ensure virtualenvs dir exists
+    file:
+        path: "{{ pulp_venv_dir }}"
+        state: directory
+
+  - name: Create virtualenvs
+    # the python3 venv module does not install pip if pip3 is installed in the system and
+    # you specify --system-site-packages, so we have to use virtualenv
+    command: "virtualenv --python /usr/bin/python3 --system-site-packages {{ pulp_venv_dir }}/{{ venv }}"
+    args:
+        creates: "{{ pulp_venv_dir }}/{{ venv }}"
+
+  - name: Link virtualenv project dirs
+    lineinfile:
+        dest: "{{ pulp_venv_dir }}/{{ venv }}/.project"
+        line: "{{ pulp_devel_dir }}/{{ venv }}"
+        create: true
+        regexp: ".*"
+become: false
+
+

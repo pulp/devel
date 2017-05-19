@@ -1,0 +1,2 @@
+# As the first role, the defaults here are overriden anywhere.
+ansible_python_interpreter: '/usr/bin/python3'
