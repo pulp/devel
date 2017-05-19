@@ -39,7 +39,8 @@
   lineinfile:
     line: "{{ lookup('file', 'files/vimrc') }}"
     path: "{{ unprivileged_homedir }}/.vimrc }}"
-    force: no
+    create: yes
+    state: present
 
  # - name: Link virtualenv project dirs
  #   lineinfile:

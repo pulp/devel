@@ -1,7 +1,5 @@
-# TODO(asmacdo) left out for speed, remove before merge
 - name: Upgrade installed packages
   package: name=* state=latest
-  # when: not quick_install or something
 
 - name: Install packages requires to gather Pulp facts
   package: name={{ item }} state=present
@@ -14,7 +12,10 @@
       devel_dir: "{{ pulp_devel_dir }}"
 
 - name: Begin Building .bashrc
-  copy: src=files/base.bashrc dest={{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}
+  copy:
+    src: files/base.bashrc
+    dest: "{{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}"
+    force: "{{ refresh_bashrc | default(false) }}"
   when: pulp_include_bashrc
 
 - name: Touch .bashrc
@@ -23,10 +24,9 @@
     state: touch
     owner: "{{ ansible_user }}"
 
-- name: Include Custom bashrc
+- name: Start a supplemental bashrc
   lineinfile:
     line: source {{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}
-    # TODO(asmacdo) Assumes ~/.bashrc
     path: "{{ unprivileged_homedir }}/.bashrc"
     owner: "{{ ansible_user }}"
     insertafter: EOF

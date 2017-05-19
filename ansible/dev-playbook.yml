@@ -13,6 +13,7 @@
     # Still not happy with where vars are.
     ansible_python_interpreter: '/usr/bin/python3'
     pulp_include_bashrc: true
+    use_opinion_role: true
     # homedir of the unprivileged user; assumes that ssh drops you into the homedir
     # of the user calling sudo before sudo is called
     # TODO(asmacdo)is this is a vagrant var??
@@ -31,9 +32,8 @@
     - dev
     - pulp_ca
     - smash
-    # - { role: smash, when pulp-smash' in pulp_available_repositories }
     - pulpproject
     - build
     # - crane
     - debug
-    - opinion
+    - { role: opinion, when use_opinion_role }

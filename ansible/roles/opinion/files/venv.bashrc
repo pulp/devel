@@ -4,5 +4,3 @@ export PIP_VIRTUALENV_BASE=$WORKON_HOME
 export VIRTUALENV_USE_DISTRIBUTE=true
 export PIP_RESPECT_VIRTUALENV=true
 source /usr/bin/virtualenvwrapper.sh
-
-

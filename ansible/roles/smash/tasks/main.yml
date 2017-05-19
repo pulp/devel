@@ -22,4 +22,4 @@
   lineinfile:
     line: "{{ lookup('file', 'files/smash.bashrc') }}"
     path: "{{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}"
-  when: pulp_include_bashrc
+  when: pulp_include_bashrc and use_opinion_role
