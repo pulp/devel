@@ -50,11 +50,21 @@ for project in projects:
 # Remove any duplicates
 rpm_dependency_list = list(set(rpm_dependency_list))
 
+pip_dependency_list = list()
+
 # Replace python-lxml with python2-lxml
 # https://www.redhat.com/archives/pulp-dev/2016-December/msg00042.html
 if 'python-lxml' in rpm_dependency_list:
     rpm_dependency_list.remove('python-lxml')
     rpm_dependency_list.append('python2-lxml')
+
+if 'python-debian' in rpm_dependency_list:
+    rpm_dependency_list.remove('python-debian')
+    pip_dependency_list.append('python-debian')
+
+if 'python-debpkgr' in rpm_dependency_list:
+    rpm_dependency_list.remove('python-debpkgr')
+    pip_dependency_list.append('debpkgr')
 
 # Build the facts for Ansible
 facts = {
@@ -62,6 +72,7 @@ facts = {
         'pulp_nightly_repo_enabled': pulp_nightly_repo_enabled,
         'selinux_enabled': selinux_enabled,
         'pulp_rpm_dependencies': rpm_dependency_list,
+        'pulp_pip_dependencies': pip_dependency_list,
     }
 }
 
