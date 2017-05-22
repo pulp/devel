@@ -24,29 +24,15 @@
       - python-rpdb
 
 - name: Add developer aliases to .bashrc
-  lineinfile:
-    line: "{{ lookup('file', 'files/alias.bashrc') }}"
-    path: "{{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}"
+  copy:
+    src: files/alias.bashrc
+    dest: "{{ unprivileged_homedir }}/.bashrc.d/alias.bashrc"
   when: pulp_include_bashrc
 
-- name: Add virtualenv environtment vars to .bashrc
-  lineinfile:
-    line: "{{ lookup('file', 'files/venv.bashrc') }}"
-    path: "{{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}"
-  when: pulp_include_bashrc and (pulp_venv is defined)
-
 - name: Add a basic .vimrc if it is not present
-  lineinfile:
-    line: "{{ lookup('file', 'files/vimrc') }}"
-    path: "{{ unprivileged_homedir }}/.vimrc }}"
-    create: yes
-    state: present
-
- # - name: Link virtualenv project dirs
- #   lineinfile:
- #       dest: "{{ pulp_venv//.project"
- #       line: "{{ pulp_devel_dir }}/{{ item }}"
- #       create: true
- #       regexp: ".*"
- #   with_items: "{{ pulp_available_repositories | difference(pulp_available_plugins) }}"
-
+  copy:
+    src: files/vimrc
+    dest: "{{ unprivileged_homedir }}/.vimrc"
+    force: no
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

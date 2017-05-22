@@ -1,4 +1,0 @@
-# Variables can be defined in so many places, we need to be cautious when using role
-# defaults like this one. Common is an exception because it is expected to run every
-# time, and this particular variable is unlikely to be overridden.
-pulp_bashrc_filename: 'ansible.bashrc'

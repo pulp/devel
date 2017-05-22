@@ -7,11 +7,6 @@
       validate: 'visudo -cf %s'
       mode: 0440
 
-- name: Ensure homedir mode suitable for calling processes in its virtualenvs
-  file:
-    dest: "{{ unprivileged_homedir }}"
-    mode: 0755
-
 - copy:
     src: motd
     dest: /etc/motd

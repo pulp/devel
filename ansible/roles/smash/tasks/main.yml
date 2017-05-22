@@ -18,8 +18,17 @@
     - requirements.txt
     - requirements-dev.txt
 
-- name: Enable psmash()
+- name: Enable autoenv directory Switching for pulp-smash
   lineinfile:
-    line: "{{ lookup('file', 'files/smash.bashrc') }}"
-    path: "{{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}"
+    dest: "{{ pulp_smash_venv }}/.project"
+    line: "{{ pulp_devel_dir }}/pulp-smash"
+    create: true
+    regexp: ".*"
+  when: pulp_smash_venv is defined
+
+- name: Enable psmash alias
+  copy:
+    src: files/smash.bashrc
+    dest: "{{ unprivileged_homedir }}/.bashrc.d/smash.bashrc"
   when: pulp_include_bashrc and use_opinion_role
+  become: false

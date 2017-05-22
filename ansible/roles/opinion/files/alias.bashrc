@@ -1,11 +1,10 @@
 # If adding new functions to this file, note that you can add help text to the function
 # by defining a variable with name _<function>_help containing the help text
 
-SERVICES=("pulp_worker@*" "pulp_celerybeat" "pulp_resource_manager")
+SERVICES=("pulp_worker@1" "pulp_worker@2" "pulp_celerybeat" "pulp_resource_manager")
 
 pstart() {
-    # start two workers
-    _paction start pulp_worker@1 pulp_worker@2
+    _paction start
 }
 _pstart_help="Start all pulp-related services"
 
@@ -142,4 +141,3 @@ _phelp_help="Print this help"
 
 # TODO(asmacdo) this requires templating... rewrite?
 # alias phttp="http --verify no --cert {{ unprivileged_homedir }}/.pulp/user-cert.pem"
-

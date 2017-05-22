@@ -10,14 +10,13 @@
       dest: /usr/bin/setup_crane_links
       mode: 0755
 
-- name: Add Crane .bashrc
-  lineinfile:
-    line: "{{ lookup('file', 'files/crane.bashrc') }}"
-    path: "{{ unprivileged_homedir }}/{{ pulp_bashrc_filename }}"
+- name: Add Crane to bashrc.d
+  copy:
+    src: files/crane.bashrc
+    dest: "{{ unprivileged_homedir }}/bashrc.d/crane.bashrc"
   when: pulp_include_bashrc
 
-  # I would rather ansible not depend on aliases, though, so I am not
-  # going to figure out how to source bashrc.
+  # TODO Ansible shouldn't depend on these aliases
 - name: Setup crane links
   command: setup_crane_links
   args:
