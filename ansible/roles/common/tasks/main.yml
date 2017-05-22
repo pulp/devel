@@ -1,0 +1,40 @@
+# TODO(asmacdo) remove after testing
+- name: Upgrade installed packages
+  package: name=* state=latest
+
+- name: Install packages requires to gather Pulp facts
+  package: name={{ item }} state=present
+  with_items:
+      - git
+      - rpm-build
+
+- name: Ensure homedir mode suitable for calling processes in its virtualenvs
+  file:
+    dest: "{{ unprivileged_homedir }}"
+    mode: 0755
+  when: pulp_venv is defined
+
+- name: Gathering Pulp facts
+  pulp_facts:
+      devel_dir: "{{ pulp_devel_dir }}"
+
+- name: Ensure that a .bashrc.d/ dir exists
+  file:
+    path: "{{ unprivileged_homedir }}/.bashrc.d/"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  when: pulp_include_bashrc
+
+- name: Source supplemental bashrc files
+  blockinfile:
+    path: "{{ unprivileged_homedir }}/.bashrc"
+    block: |
+      if [ -d ~/.bashrc.d ]; then
+        for file in $(/bin/ls ~/.bashrc.d/*.bashrc); do
+          . $file;
+        done
+      fi
+    create: yes
+    marker: "# {mark} Ansible managed block: source bashrc.d/"
+  when: pulp_include_bashrc

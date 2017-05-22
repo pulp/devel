@@ -1,4 +1,6 @@
 ---
+# Handlers are executed in the order that they are defined here.
+# If a task notifies reload and restart, reload should run first.
 - name: reload systemd units
   command: systemctl daemon-reload
 
@@ -12,6 +14,7 @@
       name: "{{ item }}"
       state: restarted
   with_items:
-      - pulp_workers
+      - pulp_worker@1
+      - pulp_worker@2
       - pulp_celerybeat
       - pulp_resource_manager

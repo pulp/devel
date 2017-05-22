@@ -7,21 +7,13 @@
       validate: 'visudo -cf %s'
       mode: 0440
 
-- name: Ensure homedir mode suitable for calling processes in its virtualenvs
-  file:
-    dest: "{{ unprivileged_homedir }}"
-    mode: 0755
-
-- name: install bashrc
-  template:
-    src: templates/bashrc.j2
-    dest: "{{ unprivileged_homedir }}/.bashrc"
-
-- name: install vimrc
-  copy:
-    src: vimrc
-    dest: "{{ unprivileged_homedir }}/.vimrc"
-
 - copy:
     src: motd
     dest: /etc/motd
+
+- name: Ensure unprivileged user can read the systemd journal
+  user:
+      name: "{{ ansible_user }}"
+      state: present
+      groups: systemd-journal
+      append: true

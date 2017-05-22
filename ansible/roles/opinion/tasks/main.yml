@@ -1,0 +1,38 @@
+- name: Install Optional useful packages
+  package: name={{ item }} state=latest
+  with_items:
+      # System packages useful for most developers
+      - bash-completion
+      - fedora-easy-karma
+      - htop
+      - screen
+      - tmux
+      - tree
+      - vim-enhanced
+      - dstat
+      - fpaste
+      - iotop
+      - jnettop
+      - httpie
+      - python-django-bash-completion
+      - redhat-lsb-core
+      - telnet
+      - yum-utils
+      # Python packages useful for developers
+      - python-ipdb
+      - python3-setuptools
+      - python-rpdb
+
+- name: Add developer aliases to .bashrc
+  copy:
+    src: files/alias.bashrc
+    dest: "{{ unprivileged_homedir }}/.bashrc.d/alias.bashrc"
+  when: pulp_include_bashrc
+
+- name: Add a basic .vimrc if it is not present
+  copy:
+    src: files/vimrc
+    dest: "{{ unprivileged_homedir }}/.vimrc"
+    force: no
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
