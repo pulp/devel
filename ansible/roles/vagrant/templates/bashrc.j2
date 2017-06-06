@@ -55,7 +55,7 @@ preset() {
 
 pclean() {
     workon pulp
-    platform/pulp/app/db-reset.sh
+    platform/pulpcore/app/db-reset.sh
 }
 _pclean_help="Restore pulp to a clean-installed state"
 # can get away with not resetting terminal settings here since it gets reset in phelp
@@ -145,9 +145,9 @@ pprocs() {
 
     # override IFS to prevent bash splitting pgrep output on newlines
     IFS=''
-    print_procs "Pulp worker processes" `pgrep -f "pulp.tasking.celery_app -c 1"`
-    print_procs "Pulp Resource Manager processes" `pgrep -f "pulp.tasking.celery_app -n resource_manager"`
-    print_procs "Pulp Celerybeat processes:" `pgrep -f "pulp.tasking.celery_instance.celery"`
+    print_procs "Pulp worker processes" `pgrep -f "pulpcore.tasking.celery_app -c 1"`
+    print_procs "Pulp Resource Manager processes" `pgrep -f "pulpcore.tasking.celery_app -n resource_manager"`
+    print_procs "Pulp Celerybeat processes:" `pgrep -f "pulpcore.tasking.celery_instance.celery"`
     print_procs "Pulp WSGI processes:" `pgrep -f "wsgi:pulp"`
     unset IFS
 }
@@ -199,5 +199,5 @@ setup_crane_links() {
     fi
 }
 
-export DJANGO_SETTINGS_MODULE=pulp.app.settings
+export DJANGO_SETTINGS_MODULE=pulpcore.app.settings
 export CRANE_CONFIG_PATH=$HOME/devel/crane/crane.conf

@@ -121,8 +121,9 @@
     args:
       chdir: "{{ pulp_devel_dir }}/pulp/{{ item }}"
     with_items:
-        - platform
         - common
+        - platform
+        - plugin
 
   # We don't currently have a common method for installing plugins for development. In Pulp 2, it was
   # "run pulp-dev.py -I", so maybe that's what we'll do for pulp 3 as well. For now, we'll just
@@ -139,7 +140,7 @@
     when: "{{ [item] | issubset(pulp_available_plugins) }}"
 
   - name: Reset and Migrate Pulp DB
-    command: "{{ pulp_devel_dir }}/pulp/platform/pulp/app/db-reset.sh {{ pulp_venv_dir }}/pulp"
+    command: "{{ pulp_devel_dir }}/pulp/platform/pulpcore/app/db-reset.sh {{ pulp_venv_dir }}/pulp"
     # If the task to create the "pulp" db reported that it made a change, that means the pulp db
     # didn't exist before running and we're safe to populate it.
     # If the pulp db already existed, don't destroy it here by running db-reset.

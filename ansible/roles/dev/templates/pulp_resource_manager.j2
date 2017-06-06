@@ -8,7 +8,7 @@ EnvironmentFile=-/etc/default/pulp_resource_manager
 User=apache
 WorkingDirectory=/var/run/pulp_resource_manager/
 RuntimeDirectory=pulp_resource_manager
-ExecStart={{ pulp_venv_dir }}/pulp/bin/celery worker -A pulp.tasking.celery_app:celery -n resource_manager@%%h\
+ExecStart={{ pulp_venv_dir }}/pulp/bin/celery worker -A pulpcore.tasking.celery_app:celery -n resource_manager@%%h\
           -Q resource_manager -c 1 --events --umask 18\
           --pidfile=/var/run/pulp_resource_manager/resource_manager.pid
 
