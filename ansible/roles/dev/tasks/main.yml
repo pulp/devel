@@ -207,3 +207,28 @@
     owner: apache
     group: apache
     state: directory
+
+- name: Create /etc/pulp directory
+  file:
+    path: /etc/pulp
+    state: directory
+
+- name: Install server.yaml Config file
+  copy:
+    remote_src: true
+    src: "{{pulp_devel_dir}}/pulp/platform/etc/pulp/server.yaml"
+    dest: "/etc/pulp/server.yaml"
+
+- name: Generate random secret for Django
+  shell: cat /dev/urandom | tr -dc 'a-z0-9!@#$%^&*(-_=+)' | head -c 50
+  register: random_secret
+
+- name: Add development server configuration in server.yaml
+  blockinfile:
+    path: "/etc/pulp/server.yaml"
+    block: |
+      # Pulp Development Configuration
+      DEBUG: True
+      SECRET_KEY: {{ random_secret.stdout }}
+
+
