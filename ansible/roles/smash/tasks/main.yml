@@ -1,0 +1,42 @@
+- name: check for pulp-smash git repo
+  include_role:
+    name: common
+    tasks_from: require_repo
+  vars:
+    repo: pulp-smash
+
+- block:
+  - name: Create pulp-smash config dir
+    file:
+        path: "{{ unprivileged_homedir }}/.config/pulp_smash"
+        state: directory
+
+  - name: Install pulp-smash config
+    template:
+        src: templates/smash-settings.j2
+        dest: "{{ unprivileged_homedir }}/.config/pulp_smash/settings.json"
+
+  - name: Install pulp-smash requirements
+    pip:
+      virtualenv: "{{ pulp_smash_venv | default(omit) }}"
+      state: latest
+      requirements: "{{ pulp_devel_dir }}/pulp-smash/{{ item }}"
+      chdir: "{{ pulp_devel_dir }}/pulp-smash"
+    with_items:
+      - requirements.txt
+      - requirements-dev.txt
+
+  - name: Enable autoenv directory Switching for pulp-smash
+    lineinfile:
+      dest: "{{ pulp_smash_venv }}/.project"
+      line: "{{ pulp_devel_dir }}/pulp-smash"
+      create: true
+      regexp: ".*"
+    when: pulp_smash_venv is defined
+
+  - name: Enable psmash alias
+    copy:
+      src: files/smash.bashrc
+      dest: "{{ unprivileged_homedir }}/.bashrc.d/smash.bashrc"
+    when: supplement_bashrc
+  become: false

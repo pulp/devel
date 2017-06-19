@@ -1,0 +1,23 @@
+---
+- hosts: dev
+  become: true
+  become_method: sudo
+  vars:
+    pip_install_extras: true
+    supplement_bashrc: true
+  roles:
+    - vagrant
+    - common
+    - db
+    - broker
+    - lazy
+    - dev
+    - plugins
+    - reset_db
+    - systemd
+    # - pulp_ca
+    # - smash
+    # - pulpproject
+    - dev_tools
+    # - release
+    # - debug

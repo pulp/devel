@@ -1,0 +1,2 @@
+- name: Reset and Migrate Pulp DB
+  command: "{{ pulp_devel_dir }}/pulp/platform/pulpcore/app/db-reset.sh {{ pulp_venv }}"

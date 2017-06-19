@@ -1,0 +1,19 @@
+- name: Install packages
+  package: name={{ item }} state=present
+  with_items:
+    # Dependencies for building python packages with C components
+    - gcc
+    - gcc-c++
+    - postgresql-devel
+    - python3-devel
+    # Dependencies for building pulp RPMs
+    - rpm-build
+    - koji
+    - tito
+
+- name: Ensure unprivileged user can use mock
+  user:
+      name: "{{ ansible_user }}"
+      state: present
+      groups: mock
+      append: true

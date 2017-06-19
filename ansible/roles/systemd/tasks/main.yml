@@ -1,0 +1,29 @@
+- name: Install Systemd unit files
+  # The template allows us to specify the platform python environment.
+  template:
+      src: "templates/{{ item }}.j2"
+      dest: "/etc/systemd/system/{{ item }}.service"
+  with_items:
+    - pulp_celerybeat
+    - pulp_resource_manager
+    - pulp_worker@
+- name: Create /var/cache/pulp directory
+  file:
+    path: /var/cache/pulp
+    state: directory
+    owner: apache
+    group: apache
+
+- name: reload systemd units
+  command: systemctl daemon-reload
+
+- name: Start or Restart tasking services
+  service:
+      name: "{{ item }}"
+      state: restarted
+      enabled: true
+  with_items:
+      - pulp_worker@1
+      - pulp_worker@2
+      - pulp_celerybeat
+      - pulp_resource_manager

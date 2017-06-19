@@ -1,0 +1,24 @@
+- name: Install optional useful packages
+  package: name={{ item }} state=latest
+  with_items:
+      # System packages useful for most developers
+      - bash-completion
+      - fedora-easy-karma
+      - htop
+      - screen
+      - tmux
+      - tree
+      - vim-enhanced
+      - dstat
+      - fpaste
+      - iotop
+      - jnettop
+      - httpie
+      - python-django-bash-completion
+      - redhat-lsb-core
+      - telnet
+      - yum-utils
+      # Python packages useful for developers
+      - python-ipdb
+      - python3-setuptools
+      - python-rpdb
