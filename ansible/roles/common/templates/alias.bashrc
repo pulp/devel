@@ -140,4 +140,4 @@ phelp() {
 }
 _phelp_help="Print this help"
 
-alias phttp="http --verify no --cert {{ unprivileged_homedir }}/.pulp/user-cert.pem"
+alias phttp="http"
