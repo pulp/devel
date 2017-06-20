@@ -58,3 +58,10 @@
     dest: "{{ unprivileged_homedir }}/.vimrc"
     force: no
   become: false
+
+- name: Add a basic .netrc file if not present
+  copy:
+    src: files/netrc
+    dest: "{{ unprivileged_homedir }}/.netrc"
+    force: no
+  become: false
