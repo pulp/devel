@@ -43,7 +43,7 @@ def check_checkouts(args):
         checkout_path = os.path.expanduser(BASE_DIR_TEMPLATE % repo)
         if os.path.exists(checkout_path):
             try:
-                subprocess.run(["git", "diff", "--exit-code"], check=True, cwd=checkout_path)
+                subprocess.check_call(["git", "diff", "--exit-code"], cwd=checkout_path)
             except subprocess.CalledProcessError:
                 print("\n\nThe repo '%s' has uncommitted changes. Either commit or revert those changes to continue.\n\nNo changes were made." % repo)
                 sys.exit(1)
@@ -53,11 +53,11 @@ def fetch_and_checkout(args, yaml):
     for repo in REPOS:
         checkout_path = os.path.expanduser(BASE_DIR_TEMPLATE % repo)
         if os.path.exists(checkout_path):
-            subprocess.run(["git", "fetch", args.remote], check=True, cwd=checkout_path)
+            subprocess.check_call(["git", "fetch", args.remote], cwd=checkout_path)
             for entry in yaml['repositories']:
                 if entry['name'] == repo:
-                    subprocess.run(["git", "checkout", "%s/%s" % (args.remote, entry['git_branch'])], check=True, cwd=checkout_path)
-            subprocess.run(["find", "./", "-name", "*.py[c0]", "-delete"], cwd=checkout_path)
+                    subprocess.check_call(["git", "checkout", "%s/%s" % (args.remote, entry['git_branch'])], cwd=checkout_path)
+            subprocess.call(["find", "./", "-name", "*.py[c0]", "-delete"], cwd=checkout_path)
 
 
 def main():
