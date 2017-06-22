@@ -63,10 +63,6 @@
     when: pulp_venv is defined and supplement_bashrc
   become: false
 
-- name: Install pulp-dev command line tool (system-wide)
-  command: pip3 install -e {{pulp_devel_dir}}/devel/pulp-dev
-  when: "{{ ['devel'] | issubset(pulp_available_repositories) }}"
-
 - name: Create /etc/pulp directory
   file:
     path: /etc/pulp
