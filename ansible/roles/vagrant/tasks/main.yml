@@ -1,6 +1,7 @@
 # These can go away when https://fedorahosted.org/spin-kickstarts/ticket/59 is fixed
 - name: Grant vagrant all sudo rights
   lineinfile:
+      create: yes
       dest: /etc/sudoers.d/vagrant-nopasswd
       regexp: '^vagrant'
       line: 'vagrant ALL=(ALL) NOPASSWD: ALL'
