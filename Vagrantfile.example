@@ -41,21 +41,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible.playbook = "ansible/example-playbook.yml"
   end
 
-  # Create the "dev" box
-  config.vm.define "dev" do |dev|
-    dev.vm.host_name = "dev.example.com"
+  # Create the "pulp3_dev" box
+  config.vm.define :pulp3_dev do |pulp3_dev|
+    pulp3_dev.vm.host_name = "pulp3.dev"
 
     VAGRANT_SYNCED_FOLDERS.each do |host_path, guest_path|
         # Use SSHFS instead of NFS. Requires the vagrant-sshfs plugin to be installed.
         # Use SSHFS to share directories. The ``-o nonempty`` option is passed to allow
         # mounts on non-empty directories.
-        dev.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
+        pulp3_dev.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
 
         # Comment this out if you use a different filesystem (like sshfs)
         # dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
     end
 
-    dev.vm.provider :libvirt do |domain, override|
+    pulp3_dev.vm.provider :libvirt do |domain, override|
         domain.cpus = 4
         # In some cases, the guest gets stuck at "Waiting for domain to get an IP address..." if
         # the default cpu_mode, 'host-model', is used. Using 'host-passthrough' cpu_mode prevents
@@ -87,7 +87,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # override.vm.provision "shell", path: "scripts/vagrant-resize-disk.sh"
     end
 
-    dev.vm.provider :docker do |d, override|
+    pulp3_dev.vm.provider :docker do |d, override|
         override.vm.box = nil
         # Based on fedora official image, with vagrant's needs met:
         # https://github.com/rohanpm/docker-fedora-vagrant
