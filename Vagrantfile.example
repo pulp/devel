@@ -49,16 +49,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   # Create the "dev" box
-  config.vm.define "dev" do |dev|
-    dev.vm.host_name = "dev.example.com"
+  config.vm.define "pulp2_dev" do |pulp2_dev|
+    pulp2_dev.vm.host_name = "pulp2.dev"
 
     VAGRANT_SYNCED_FOLDERS.each do |host_path, guest_path|
         # By default, Vagrant wants to mount with NFSv3, which will fail. Let's
         # explicitly mount the code using NFSv4.
-        dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
+        pulp2_dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
     end
 
-    dev.vm.provider :libvirt do |domain, override|
+    pulp2_dev.vm.provider :libvirt do |domain, override|
         domain.cpus = 4
         # In some cases, the guest gets stuck at "Waiting for domain to get an IP address..." if
         # the default cpu_mode, 'host-model', is used. Using 'host-passthrough' cpu_mode prevents
@@ -90,7 +90,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # override.vm.provision "shell", path: "scripts/vagrant-resize-disk.sh"
     end
 
-    dev.vm.provider :docker do |d, override|
+    pulp2_dev.vm.provider :docker do |d, override|
         override.vm.box = nil
         # Based on fedora official image, with vagrant's needs met:
         # https://github.com/rohanpm/docker-fedora-vagrant
@@ -144,9 +144,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         end
     end
 
-    dev.vm.provision "shell", inline: "sudo -u vagrant bash /home/vagrant/devel/devel/scripts/vagrant-setup.sh"
+    pulp2_dev.vm.provision "shell", inline: "sudo -u vagrant bash /home/vagrant/devel/devel/scripts/vagrant-setup.sh"
 
-    dev.vm.provision "shell", run: "always" do |s|
+    pulp2_dev.vm.provision "shell", run: "always" do |s|
       # only gofer and httpd strictly need this, but for consistency, we'll just restart them all
       s.inline = "sudo systemctl restart goferd httpd pulp_celerybeat pulp_workers pulp_resource_manager"
     end

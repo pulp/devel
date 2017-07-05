@@ -1,5 +1,5 @@
 ---
-- hosts: dev
+- hosts: pulp2_dev
   vars:
   roles:
     - kombu

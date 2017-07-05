@@ -6,7 +6,7 @@
   roles:
     - core
 
-- hosts: dev
+- hosts: pulp2_dev
   become: true
   become_method: sudo
   vars:
