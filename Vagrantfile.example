@@ -52,7 +52,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         pulp3_dev.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
 
         # Comment this out if you use a different filesystem (like sshfs)
-        # dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
+        # pulp3_dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
     end
 
     pulp3_dev.vm.provider :libvirt do |domain, override|
