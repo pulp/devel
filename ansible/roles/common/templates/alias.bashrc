@@ -72,6 +72,8 @@ ptest() {
     # manage.py test will create and migrate its own database,
     # but we still need to make the migrations for it to be able to do that.
     python manage.py makemigrations pulp_app
+    # We have to be explicit if an app doesn't already have migrations
+    python manage.py makemigrations pulp_file
     # Auth migrations must be run before platform to generates schema that the User model relates to.
     python manage.py migrate auth --noinput
     python manage.py test platform/ common/
