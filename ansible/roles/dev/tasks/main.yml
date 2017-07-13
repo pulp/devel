@@ -71,7 +71,7 @@
 - name: Install server.yaml Config file
   copy:
     remote_src: true
-    src: "{{pulp_devel_dir}}/pulp/platform/etc/pulp/server.yaml"
+    src: "{{pulp_devel_dir}}/pulp/platform/pulpcore/etc/pulp/server.yaml"
     dest: "/etc/pulp/server.yaml"
 
 - name: Generate random secret for Django
