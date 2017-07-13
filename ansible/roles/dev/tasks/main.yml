@@ -84,4 +84,4 @@
     block: |
       # Pulp Development Configuration
       DEBUG: True
-      SECRET_KEY: {{ random_secret.stdout }}
+      SECRET_KEY: {{ random_secret.stdout | to_nice_yaml }}
