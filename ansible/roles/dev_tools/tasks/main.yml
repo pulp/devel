@@ -1,3 +1,13 @@
+# This role could be made more idempotent by requesting that packages be
+# "present," not "latest." The vim packaging issue could be solved with logic
+# that says "if the current platform is Fedora and vim-enhanced isn't installed,
+# let vim-minimal be latest."
+
+# Fedora has a packaging problem where vim-enhanced will fail to install if
+# vim-minimal is out of date.
+- name: Upgrade vim-minimal
+  package: name=vim-minimal state=latest
+
 - name: Install optional useful packages
   package: name={{ item }} state=latest
   with_items:

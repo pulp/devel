@@ -53,13 +53,13 @@
   - name: Add Django supplemental bashrc
     copy:
       src: files/django.bashrc
-      dest: "{{ unprivileged_homedir }}/.bashrc.d/django.bashrc"
+      dest: "{{ pulp_user_home }}/.bashrc.d/django.bashrc"
     when: supplement_bashrc
 
   - name: Add virtualenv supplemental bashrc
     copy:
       src: files/venv.bashrc
-      dest: "{{ unprivileged_homedir }}/.bashrc.d/venv.bashrc"
+      dest: "{{ pulp_user_home }}/.bashrc.d/venv.bashrc"
     when: pulp_venv is defined and supplement_bashrc
   become: false
 

@@ -1,0 +1,124 @@
+- name: Require minimal Python and Ansible versions
+  assert:
+    that:
+      - "ansible_python_version|version_compare('3.5.0', operator='ge')"
+      - "ansible_version.full|version_compare('2.2.0', operator='ge')"
+    msg: >
+      This role and those that depend on it require at least Python 3.5 and
+      Ansible 2.2.
+
+# TODO: Only execute this when a development environment is being created.
+- name: Set the message of the day
+  copy:
+    src: motd
+    dest: /etc/motd
+
+# TODO: Only add user to systemd-journal group if a development environment is
+# being created.
+- name: Create user {{ pulp_user }}
+  user:
+    name: "{{ pulp_user }}"
+    # Let user read the system journal.
+    groups: systemd-journal
+    append: true
+
+- name: Get user's home directory
+  shell: 'getent passwd "{{ pulp_user }}" | cut -d: -f6'
+  check_mode: false
+  changed_when: false
+  register: result
+
+- name: Set variable referencing user's home directory
+  set_fact:
+    pulp_user_home: "{{ result.stdout }}"
+
+- name: Make user's home directory world-readable
+  file:
+    path: "{{ pulp_user_home }}"
+    state: directory
+    mode: 0755
+
+# NOTE: This has horrible security implications. The `remote_user` that Ansible
+# connects as needs sudo priviliges. This user doesn't!
+- name: Give user passwordless sudo privileges
+  template:
+    src: pulp-user-nopasswd.j2
+    dest: /etc/sudoers.d/pulp-user-nopasswd
+    validate: 'visudo -cf %s'
+    mode: 0440
+
+# TODO: Make variable names more canonical.
+# NOTE: "These variables will be available to subsequent plays during an
+# ansible-playbook run, but will not be saved across executions even if you use
+# a fact cache." See:
+# http://docs.ansible.com/ansible/latest/set_fact_module.html
+- name: Set variable stating where source code should exist
+  set_fact:
+    pulp_devel_dir: "{{ pulp_user_home }}/devel"
+
+- name: Set variable stating where virtualenvs should exist
+  set_fact:
+    venv_dir: "{{ pulp_user_home }}/.virtualenvs"
+
+- name: Set variable stating where Pulp's source code should exist
+  set_fact:
+    pulp_venv: "{{ venv_dir }}/pulp"
+
+- name: Set variable stating where Pulp Smash's source code should exist
+  set_fact:
+    pulp_smash_venv: "{{ venv_dir }}/pulp-smash"
+
+- name: Install packages required to gather Pulp facts
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - git
+    - rpm-build
+
+- name: Gather Pulp facts
+  pulp_facts:
+    devel_dir: "{{ pulp_devel_dir }}"
+
+- block:
+
+  - name: Create ~/.bashrc.d/
+    file:
+      path: "{{ pulp_user_home }}/.bashrc.d/"
+      state: directory
+    become_user: "{{ pulp_user }}"
+
+  - name: Define developer aliases in ~/.bashrc.d/
+    template:
+      src: templates/alias.bashrc
+      dest: "{{ pulp_user_home }}/.bashrc.d/alias.bashrc"
+    become_user: "{{ pulp_user }}"
+
+  - name: Source developer aliases in ~/.bashrc.d/
+    blockinfile:
+      path: "{{ pulp_user_home }}/.bashrc"
+      block: |
+        if [ -d ~/.bashrc.d ]; then
+          for file in ~/.bashrc.d/*; do
+            . "$file"
+          done
+        fi
+      marker: "# {mark} Ansible managed block: source bashrc.d/"
+      create: yes
+    become_user: "{{ pulp_user }}"
+
+  when: supplement_bashrc
+
+- name: Create ~/.vimrc if not already present
+  copy:
+    src: files/vimrc
+    dest: "{{ pulp_user_home }}/.vimrc"
+    force: no
+  become_user: "{{ pulp_user }}"
+
+- name: Create ~/.netrc if not already present
+  copy:
+    src: files/netrc
+    dest: "{{ pulp_user_home }}/.netrc"
+    force: no
+  become_user: "{{ pulp_user }}"
