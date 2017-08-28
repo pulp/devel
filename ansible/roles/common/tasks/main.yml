@@ -36,8 +36,8 @@
     path: "{{ unprivileged_homedir }}/.bashrc"
     block: |
       if [ -d ~/.bashrc.d ]; then
-        for file in $(/bin/ls ~/.bashrc.d/*.bashrc); do
-          . $file;
+        for file in ~/.bashrc.d/*.bashrc; do
+          . "$file"
         done
       fi
     create: yes
