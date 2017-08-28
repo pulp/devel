@@ -30,7 +30,7 @@
       - test_requirements.txt
       - dev_requirements.txt
       - docs/requirements.txt
-    when: pip_install_extras is defined and pip_install_extras
+    when: pip_install_extras
 
   - name: Install Pulp Platform packages
     pip:

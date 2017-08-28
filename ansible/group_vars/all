@@ -12,8 +12,6 @@ pulp_venv: "{{ venv_dir }}/pulp"
 # This is only required if you enable the smash role
 pulp_smash_venv: "{{ venv_dir }}/pulp-smash"
 
-# non-essential requirements files listed in pulp_facts.py will be pip installed
-pip_install_extras: false
 # If enabled, `phelp` and other useful aliases are sourced by your bashrc.
 # In adition, some roles will add other relevant bashrc supplements
 supplement_bashrc: false
