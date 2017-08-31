@@ -3,7 +3,6 @@
   become: true
   become_method: sudo
   vars:
-    pip_install_extras: true
     supplement_bashrc: true
   roles:
     - vagrant
