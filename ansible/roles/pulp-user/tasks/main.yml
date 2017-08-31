@@ -7,20 +7,32 @@
       This role and those that depend on it require at least Python 3.5 and
       Ansible 2.2.
 
-# TODO: Only execute this when a development environment is being created.
+- name: Verify the value of the pulp_install_strategy variable
+  assert:
+    that: "pulp_install_strategy in ['pypi', 'development']"
+
 - name: Set the message of the day
   copy:
     src: motd
     dest: /etc/motd
+  when: pulp_install_strategy == 'development'
 
-# TODO: Only add user to systemd-journal group if a development environment is
-# being created.
+# We could initialize a pulp_user_groups variable as an empty list, append to it
+# depending on factors such as the pulp_install_strategy, and then write a
+# single task to create the pulp_user. But that introduces a new variable, and
+# the logic here is simple enough that that this seems like an OK approach.
+- name: Create user {{ pulp_user }} with development permissions
+  user:
+    name: "{{ pulp_user }}"
+    # Let the user read the system journal.
+    groups: systemd-journal
+    append: true
+  when: pulp_install_strategy == 'development'
+
 - name: Create user {{ pulp_user }}
   user:
     name: "{{ pulp_user }}"
-    # Let user read the system journal.
-    groups: systemd-journal
-    append: true
+  when: pulp_install_strategy != 'development'
 
 - name: Get user's home directory
   getent:
@@ -38,14 +50,15 @@
     state: directory
     mode: 0755
 
-# NOTE: This has horrible security implications. The `remote_user` that Ansible
-# connects as needs sudo priviliges. This user doesn't!
+# This has horrible security implications. It should *only* be done for
+# development installs.
 - name: Give user passwordless sudo privileges
   template:
     src: pulp-user-nopasswd.j2
     dest: /etc/sudoers.d/pulp-user-nopasswd
     validate: 'visudo -cf %s'
     mode: 0440
+  when: pulp_install_strategy == 'development'
 
 # TODO: Make variable names more canonical.
 # NOTE: "These variables will be available to subsequent plays during an
@@ -107,7 +120,7 @@
       create: yes
     become_user: "{{ pulp_user }}"
 
-  when: supplement_bashrc
+  when: pulp_install_strategy == 'development'
 
 - name: Create ~/.vimrc if not already present
   copy:

@@ -30,7 +30,7 @@
       - test_requirements.txt
       - dev_requirements.txt
       - docs/requirements.txt
-    when: pip_install_extras
+    when: pulp_install_strategy == 'development'
 
   - name: Install Pulp Platform packages
     pip:
@@ -54,13 +54,15 @@
     copy:
       src: files/django.bashrc
       dest: "{{ pulp_user_home }}/.bashrc.d/django.bashrc"
-    when: supplement_bashrc
+    when: pulp_install_strategy == 'development'
 
   - name: Add virtualenv supplemental bashrc
     copy:
       src: files/venv.bashrc
       dest: "{{ pulp_user_home }}/.bashrc.d/venv.bashrc"
-    when: pulp_venv is defined and supplement_bashrc
+    when:
+      - pulp_venv is defined
+      - pulp_install_strategy == 'development'
   become: false
 
 - name: Create /etc/pulp directory

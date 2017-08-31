@@ -26,6 +26,13 @@ The variables that this role uses, along with their default values, are listed
 below:
 
 ```yaml
+# The strategy to use when creating and configuring this user, and when
+# installing Pulp and its plugins. If "pypi," perform the minimum tasks needed
+# to create a functional Pulp installation. If "development," install code from
+# source in editable mode, install extra dependencies, install Bash aliases,
+# etc. If some other value, raise an error.
+pulp_install_strategy: pypi
+
 # The user that will host Pulp virtualenvs. This should be a dedicated user due
 # to security concerns. This user's home directory is made world-readable, among
 # other things.

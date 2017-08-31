@@ -1,4 +1,1 @@
 ansible_python_interpreter: '/usr/bin/python3'
-# If enabled, `phelp` and other useful aliases are sourced by your bashrc.
-# In adition, some roles will add other relevant bashrc supplements
-supplement_bashrc: true
