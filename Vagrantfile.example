@@ -38,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "ansible" do |ansible|
       # ansible.verbose = "vvv"
-      ansible.playbook = "ansible/example-playbook.yml"
+      ansible.playbook = "ansible/pulp-from-source.yml"
   end
 
   # Create the "pulp3_dev" box
