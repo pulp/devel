@@ -50,27 +50,27 @@ def selinux_enforcing():
 
 
 def available_repositories(module):
-    # determine which of the platform and plugin are available,
-    # failing if platform is not available
-    available_repositories = []
+    """Find the source code for the Pulp platform and its plugins.
 
+    Raise an exception if the source code for the platform is absent.
+    """
+    _available_repositories = []
     try:
         repos = os.listdir(module.params['devel_dir'])
     except FileNotFoundError:
         repos = []
-
-    for dirname in repos:
-        if os.path.isdir(os.path.join(module.params['devel_dir'], dirname)):
-            if dirname in repositories:
-                available_repositories.append(dirname)
-
-        # if the dirname is pulp, and it doesn't pass the isdir check, there's no
-        # platform repository in the expected location. Time to explode.
-        elif dirname == 'pulp':
-            msg = ('pulp repo not found in {} on remote machine, '
-                   'unable to proceed'.format(module.params['devel_dir']))
-            module.fail_json(name='pulp', msg=msg)
-    return available_repositories
+    for repo in repos:
+        if (os.path.isdir(os.path.join(module.params['devel_dir'], repo)) and
+                repo in repositories):
+            _available_repositories.append(repo)
+    if 'pulp' not in repos:
+        msg = (
+            'The source code for the Pulp platform must be present. However, '
+            '{} is either absent or is not a directory. Aborting.'
+            .format(os.path.join(module.params['devel_dir'], 'pulp'))
+        )
+        module.fail_json(name='pulp', msg=msg)
+    return _available_repositories
 
 
 def main():
