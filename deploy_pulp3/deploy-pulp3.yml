@@ -1,0 +1,20 @@
+---
+- hosts: all
+  become: true
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+  pre_tasks:
+    - name: Require minimal Python and Ansible versions
+      assert:
+        that:
+          - "ansible_python_version|version_compare('3.5.0', operator='ge')"
+          - "ansible_version.full|version_compare('2.2.0', operator='ge')"
+        msg: >
+          This role and those that depend on it require at least Python 3.5 and
+          Ansible 2.2.
+  roles:
+    - pulp3
+    - pulp3_db
+    - pulp3_systemd
+    - { role: rabbitmq, when: pulp3_broker == "rabbitmq"}
+    - { role: qpid_cpp_server, when: pulp3_broker == "qpidd"}
