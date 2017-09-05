@@ -20,7 +20,7 @@
 - name: Add Crane to bashrc.d
   copy:
     src: files/crane.bashrc
-    dest: "{{ unprivileged_homedir }}/bashrc.d/crane.bashrc"
+    dest: "{{ pulp_user_home }}/bashrc.d/crane.bashrc"
   when: pulp_include_bashrc
 
 - name: Setup crane links

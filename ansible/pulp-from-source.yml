@@ -8,10 +8,15 @@
   become: true
   become_method: sudo
   vars:
-    supplement_bashrc: true
+    pulp_user: vagrant
+  pre_tasks:
+    # Developers want to know if Pulp works with the latest packages.
+    - name: Upgrade all currently installed packages
+      package:
+        name: '*'
+        state: latest
   roles:
-    - vagrant
-    - common
+    - pulp-user
     - db
     - broker
     - lazy

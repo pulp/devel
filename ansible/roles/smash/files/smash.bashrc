@@ -4,7 +4,7 @@ psmash() {
     if [ ! -z $VIRTUAL_ENV ]; then
         _original_venv=`basename $VIRTUAL_ENV`
     fi
-    pushd {{ unprivileged_homedir}};
+    pushd {{ pulp_user_home}};
     workon pulp-smash;
     prestart;
     _return_code=1
