@@ -50,10 +50,7 @@ def selinux_enforcing():
 
 
 def available_repositories(module):
-    """Find the source code for the Pulp platform and its plugins.
-
-    Raise an exception if the source code for the platform is absent.
-    """
+    """Find the source code for the Pulp platform and its plugins."""
     _available_repositories = []
     try:
         repos = os.listdir(module.params['devel_dir'])
@@ -63,13 +60,6 @@ def available_repositories(module):
         if (os.path.isdir(os.path.join(module.params['devel_dir'], repo)) and
                 repo in repositories):
             _available_repositories.append(repo)
-    if 'pulp' not in repos:
-        msg = (
-            'The source code for the Pulp platform must be present. However, '
-            '{} is either absent or is not a directory. Aborting.'
-            .format(os.path.join(module.params['devel_dir'], 'pulp'))
-        )
-        module.fail_json(name='pulp', msg=msg)
     return _available_repositories
 
 
