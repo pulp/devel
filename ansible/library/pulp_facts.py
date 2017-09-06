@@ -3,9 +3,6 @@
 This module gathers Pulp specific Ansible facts about the remote machine.
 """
 import os
-import platform
-import subprocess
-import tempfile
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -41,14 +38,6 @@ requirements_files = {
 }
 
 
-def selinux_enforcing():
-    # Determine if selinux is Enforcing or not
-    pipe = subprocess.Popen('/usr/sbin/getenforce', stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, shell=True)
-    stdout, stderr = pipe.communicate()
-    return 'Enforcing' in stdout.decode('utf8')
-
-
 def available_repositories(module):
     """Find the source code for the Pulp platform and its plugins."""
     _available_repositories = []
@@ -78,10 +67,7 @@ def main():
 
     # All returned facts should be prepended with 'pulp_' for namespacing purposes,
     # and to make it clear that those facts were provided by this module.
-    facts = {
-        'pulp_selinux_enforcing': selinux_enforcing(),
-        'pulp_available_repositories': available_repositories(module),
-    }
+    facts = {'pulp_available_repositories': available_repositories(module)}
 
     # filter the plugins list against the available repos to get available plugins
     facts['pulp_available_plugins'] = list(filter(lambda repo: repo in plugins,
