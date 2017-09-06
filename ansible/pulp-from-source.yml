@@ -6,7 +6,6 @@
 # install Bash aliases.
 - hosts: pulp3_dev
   become: true
-  become_method: sudo
   vars:
     pulp_user: vagrant
   pre_tasks:
