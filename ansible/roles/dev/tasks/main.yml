@@ -26,6 +26,7 @@
     pip:
       requirements: "{{ pulp_devel_dir }}/pulp/{{ item }}"
       virtualenv: "{{ pulp_venv }}"
+      virtualenv_command: /usr/bin/python3 -m venv
     with_items:
       - test_requirements.txt
       - dev_requirements.txt
@@ -37,6 +38,7 @@
       name: "{{ pulp_devel_dir }}/pulp/{{ item }}"
       extra_args: "-e"
       virtualenv: "{{ pulp_venv }}"
+      virtualenv_command: /usr/bin/python3 -m venv
     with_items:
         - common
         - platform

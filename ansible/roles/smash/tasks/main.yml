@@ -19,6 +19,7 @@
   - name: Install pulp-smash requirements
     pip:
       virtualenv: "{{ pulp_smash_venv | default(omit) }}"
+      virtualenv_command: /usr/bin/python3 -m venv
       state: latest
       requirements: "{{ pulp_devel_dir }}/pulp-smash/{{ item }}"
       chdir: "{{ pulp_devel_dir }}/pulp-smash"
