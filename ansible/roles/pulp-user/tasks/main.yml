@@ -23,14 +23,14 @@
     append: true
 
 - name: Get user's home directory
-  shell: 'getent passwd "{{ pulp_user }}" | cut -d: -f6'
-  check_mode: false
-  changed_when: false
-  register: result
+  getent:
+    database: passwd
+    key: '{{ pulp_user }}'
+    split: ':'
 
 - name: Set variable referencing user's home directory
   set_fact:
-    pulp_user_home: "{{ result.stdout }}"
+    pulp_user_home: "{{ getent_passwd[pulp_user][4] }}"
 
 - name: Make user's home directory world-readable
   file:
