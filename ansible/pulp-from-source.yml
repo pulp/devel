@@ -7,6 +7,7 @@
 - hosts: pulp3_dev
   become: true
   vars:
+    pulp_install_strategy: development
     pulp_user: vagrant
   pre_tasks:
     # Developers want to know if Pulp works with the latest packages.

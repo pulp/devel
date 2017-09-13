@@ -1,2 +1,0 @@
-# non-essential requirements files listed in pulp_facts.py will be pip installed
-pip_install_extras: true

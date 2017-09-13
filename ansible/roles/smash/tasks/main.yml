@@ -38,5 +38,5 @@
     copy:
       src: files/smash.bashrc
       dest: "{{ pulp_user_home }}/.bashrc.d/smash.bashrc"
-    when: supplement_bashrc
+    when: pulp_install_strategy == 'development'
   become: false
