@@ -1,2 +1,13 @@
-- name: Reset and Migrate Pulp DB
-  command: "{{ pulp_devel_dir }}/pulp/platform/pulpcore/app/db-reset.sh {{ pulp_venv }}"
+- name: Find db-reset.sh
+  find:
+    paths: "{{ pulp_venv }}"
+    recurse: true
+    patterns: 'db-reset.sh'
+  register: result
+
+- name: Assert one db-reset.sh file has been found
+  assert:
+    that: 'result["matched"] == 1'
+
+- name: Execute db-reset.sh
+  command: '{{ result["files"][0]["path"] }} {{ pulp_venv }}'
