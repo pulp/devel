@@ -3,6 +3,7 @@
     name: "{{ pulp_devel_dir }}/{{ item }}"
     extra_args: "-e"
     virtualenv: "{{ pulp_venv }}"
+    virtualenv_command: /usr/bin/python3 -m venv
   # If we stick with running setup.py develop for all plugins, we'd want to do it for all available
   # plugins. For now, it only works with pulp_file
   # with_items: "{{ pulp_available_plugins }}"
