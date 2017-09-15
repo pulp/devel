@@ -1,0 +1,10 @@
+- name: Install Plugin packages into core Pulp Python environment
+  pip:
+    name: "{{ pulp_devel_dir }}/{{ plugin_name }}"
+    extra_args: "-e"
+    virtualenv: "{{ pulp_venv }}"
+  become: false
+
+# variables plugin_name and app_label are passed implicitly
+- include: roles/django_db/tasks/makemigrations.yml
+- include: roles/django_db/tasks/reset.yml

@@ -102,3 +102,6 @@
     owner: apache
     group: apache
     mode: 0755
+
+- include: roles/django_db/tasks/makemigrations.yml app_label=pulp_app
+- include: roles/django_db/tasks/reset.yml

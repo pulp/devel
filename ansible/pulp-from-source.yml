@@ -20,8 +20,8 @@
     - broker
     - lazy
     - dev
-    - plugins
-    - reset_db
+    - {role: plugin, plugin_name: 'pulp_file', app_label: 'pulp_file'}
+    # - {role: plugin, plugin_name: 'pulp_example', app_label: 'pulp_example'}
     - systemd
     # - pulp_ca
     # - smash
