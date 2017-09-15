@@ -1,0 +1,13 @@
+# Install roles from the Ansible Galaxy
+- src: ipanova.pulp3
+  name: pulp3
+- src: ipanova.pulp3_db
+  name: pulp3_db
+- src: ipanova.pulp3_systemd
+  name: pulp3_systemd
+- src: jtyr.config_encoder_filters
+  name: config_encoder_filters
+- src: jtyr.rabbitmq
+  name: rabbitmq
+- src: jtyr.qpid_cpp_server
+  name: qpid_cpp_server

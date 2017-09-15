@@ -1,0 +1,68 @@
+- name: Install postgres packages
+  package: name={{ item }} state=present
+  with_items:
+      - postgresql
+      - postgresql-server
+      # needed by postgres-related tasks and other things
+      # using python outside of a virtualenv
+      - python3-psycopg2
+
+- name: Set up postgres data dir
+  command: postgresql-setup --initdb
+  args:
+      creates: /var/lib/pgsql/data/base
+
+- name: Set up postgress access rules
+  copy:
+      src: pg_hba.conf
+      dest: /var/lib/pgsql/data/pg_hba.conf
+      owner: postgres
+      group: postgres
+      mode: 0600
+
+- name: Start and enable postgresql
+  service: name=postgresql state=started enabled=yes
+
+- name: Set up pulp DB user
+  postgresql_user:
+      name: "{{ pulp_user }}"
+      role_attr_flags: SUPERUSER,LOGIN
+  become: true
+  become_user: postgres
+
+- name: Create pulp database
+  postgresql_db:
+      name: "{{ pulp_user }}"
+      owner: "{{ pulp_user }}"
+  become: true
+  become_user: postgres
+
+- name : Find manage.py
+  find:
+    paths: "{{ pulp_venv }}"
+    patterns: 'manage.py'
+    recurse: true
+  register: result
+
+- name: Ensure the manage.py was found
+  assert:
+    that: 'result["matched"] == 1'
+
+- name: Changing perm of manage.py, adding "+x"
+  file: dest={{ result["files"][0]["path"] }} mode=a+x
+
+- name: Run Django migrations
+  django_manage:
+    command: "{{ item }}"
+    app_path: '{{ result["files"][0]["path"]| dirname}}'
+    virtualenv: "{{ pulp_user_home }}/pulpvenv"
+  with_items:
+    - 'makemigrations pulp_app'
+    - 'migrate --noinput auth'
+    - 'migrate --noinput'
+    - 'reset-admin-password --password admin'
+  become: true
+  become_user: "{{ pulp_user }}"
+
+- name: Changing perm of manage.py, adding "-x"
+  file: dest={{ result["files"][0]["path"] }} mode=a-x

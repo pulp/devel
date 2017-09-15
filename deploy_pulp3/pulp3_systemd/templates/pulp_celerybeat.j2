@@ -1,0 +1,14 @@
+[Unit]
+Description=Pulp's Celerybeat
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+EnvironmentFile=-/etc/default/pulp_celerybeat
+User={{ pulp_user }}
+WorkingDirectory=/var/run/pulp_celerybeat/
+RuntimeDirectory=pulp_celerybeat
+ExecStart={{ pulp_venv }}/bin/celery beat --app=pulpcore.tasking.celery_app:celery --scheduler=pulpcore.tasking.services.scheduler.Scheduler
+
+[Install]
+WantedBy=multi-user.target
