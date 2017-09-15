@@ -7,7 +7,6 @@
 
 - name: Disable selinux
   selinux: state=disabled
-  when: pulp_selinux_enforcing
 
 - name: Disable sshd strict modes
   lineinfile:
