@@ -4,6 +4,10 @@
   become: true
   vars:
     ansible_python_interpreter: "/usr/bin/python3"
+    rabbitmq_config:
+      - rabbit:
+        - tcp_listeners:
+          - '"localhost"': 5672
   pre_tasks:
     - name: Require minimal Python and Ansible versions
       assert:
@@ -17,5 +21,4 @@
     - pulp3
     - pulp3_db
     - pulp3_systemd
-    - { role: rabbitmq, when: pulp3_broker == "rabbitmq"}
-    - { role: qpid_cpp_server, when: pulp3_broker == "qpidd"}
+    - rabbitmq

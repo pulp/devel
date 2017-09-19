@@ -9,5 +9,3 @@
   name: config_encoder_filters
 - src: jtyr.rabbitmq
   name: rabbitmq
-- src: jtyr.qpid_cpp_server
-  name: qpid_cpp_server
