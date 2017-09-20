@@ -20,5 +20,5 @@
   roles:
     - pulp3
     - pulp3_db
-    - pulp3_systemd
     - rabbitmq
+    - pulp3_systemd
