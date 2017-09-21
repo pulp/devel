@@ -86,3 +86,19 @@
       # Pulp Development Configuration
       DEBUG: True
       SECRET_KEY: {{ random_secret.stdout | to_nice_yaml }}
+
+- name: Create /var/lib/pulp directory
+  file:
+    path: /var/lib/pulp
+    state: directory
+    owner: apache
+    group: apache
+    mode: 0755
+
+- name: Create /var/lib/pulp/tmp directory
+  file:
+    path: /var/lib/pulp/tmp
+    state: directory
+    owner: apache
+    group: apache
+    mode: 0755
