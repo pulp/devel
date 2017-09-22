@@ -1,0 +1,3 @@
+- name: makemigrations
+  command: "{{pulp_venv}}/bin/pulp-manager makemigrations {{app_label}}"
+  become: false

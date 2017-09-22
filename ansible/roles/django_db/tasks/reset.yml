@@ -1,0 +1,7 @@
+- name: migrate
+  command: "{{pulp_venv}}/bin/pulp-manager {{item}}"
+  with_items:
+    - "reset_db --noinput"
+    - "migrate auth --noinput"
+    - "migrate --noinput"
+  become: false

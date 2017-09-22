@@ -69,10 +69,6 @@ def main():
     # and to make it clear that those facts were provided by this module.
     facts = {'pulp_available_repositories': available_repositories(module)}
 
-    # filter the plugins list against the available repos to get available plugins
-    facts['pulp_available_plugins'] = list(filter(lambda repo: repo in plugins,
-                                                  facts['pulp_available_repositories']))
-
     # filter the requirements list against the available repos, removing unavailable repos
     facts['pulp_requirements_files'] = {
         k: v for k, v in requirements_files.items() if k in facts['pulp_available_repositories']

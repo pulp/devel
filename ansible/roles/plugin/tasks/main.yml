@@ -1,0 +1,20 @@
+- stat:
+    path: "{{ pulp_devel_dir }}/{{ plugin_name }}"
+  register: repo_path
+
+- debug:
+    msg: "{{ pulp_devel_dir }}/{{ plugin_name }} does not exist, skipping!"
+  when: repo_path.stat.isdir is not defined or not repo_path.stat.isdir
+
+- block:
+  - name: Install Plugin packages into core Pulp Python environment
+    pip:
+      name: "{{ pulp_devel_dir }}/{{ plugin_name }}"
+      extra_args: "-e"
+      virtualenv: "{{ pulp_venv }}"
+    become: false
+
+  # variables plugin_name and app_label are passed implicitly
+  - include: roles/django_db/tasks/makemigrations.yml
+  - include: roles/django_db/tasks/reset.yml
+  when: repo_path.stat.isdir is defined and repo_path.stat.isdir
