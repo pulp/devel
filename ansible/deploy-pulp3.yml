@@ -13,10 +13,11 @@
       assert:
         that:
           - "ansible_python_version|version_compare('3.5.0', operator='ge')"
-          - "ansible_version.full|version_compare('2.2.0', operator='ge')"
+          - "ansible_version.full|version_compare('2.3.2', operator='ge')"
         msg: >
-          This role and those that depend on it require at least Python 3.5 and
-          Ansible 2.2.
+          This playbook requires Python 3.5+ and Ansible 2.3.2+. If your package
+          manager ships an older version of Ansible, consider creating a
+          virtualenv and installing Ansible with pip.
   roles:
     - pulp3
     - pulp3_db
