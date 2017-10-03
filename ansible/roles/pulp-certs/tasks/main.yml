@@ -1,4 +1,12 @@
 ---
+# Necessary because of some changes made in the F26 version of openssl
+# https://bugzilla.redhat.com/show_bug.cgi?id=1498197
+- name: Install openssl
+  dnf: name={{ item }} state=present
+  with_items:
+      - openssl
+      - openssl-perl
+
 - name: Create CA to sign all certificates
   command: >
     /usr/bin/openssl req -x509 -newkey rsa:2048 -keyout private/cakey.pem -nodes -days 3650
