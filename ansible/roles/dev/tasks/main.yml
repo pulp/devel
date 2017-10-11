@@ -21,17 +21,6 @@
   when: pulp_venv is defined
 
 - block:
-  - name: Install developer extra-requirements
-    pip:
-      requirements: "{{ pulp_devel_dir }}/pulp/{{ item }}"
-      virtualenv: "{{ pulp_venv }}"
-      virtualenv_command: /usr/bin/python3 -m venv
-    with_items:
-      - test_requirements.txt
-      - dev_requirements.txt
-      - docs/requirements.txt
-    when: pip_install_extras
-
   - name: Install Pulp Platform packages
     pip:
       name: "{{ pulp_devel_dir }}/pulp/{{ item }}"
@@ -42,6 +31,17 @@
         - common
         - platform
         - plugin
+
+  - name: Install developer extra-requirements
+    pip:
+      requirements: "{{ pulp_devel_dir }}/pulp/{{ item }}"
+      virtualenv: "{{ pulp_venv }}"
+      virtualenv_command: /usr/bin/python3 -m venv
+    with_items:
+      - test_requirements.txt
+      - dev_requirements.txt
+      - docs/requirements.txt
+
 
   - name: Enable autoenv Directory Switching for pulp
     lineinfile:
