@@ -1,9 +1,9 @@
 # Install roles from the Ansible Galaxy
-- src: pulp.pulp3
+- src: https://github.com/pulp/ansible-pulp3.git
   name: pulp3
-- src: pulp.pulp3_db
+- src: https://github.com/pulp/ansible-pulp3_db.git
   name: pulp3_db
-- src: pulp.pulp3_systemd
+- src: https://github.com/pulp/ansible-pulp3_systemd.git
   name: pulp3_systemd
 - src: jtyr.config_encoder_filters
   name: config_encoder_filters
