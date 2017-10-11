@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 EnvironmentFile=-/etc/default/pulp_resource_manager
-User=apache
+User={{ pulp_user }}
 WorkingDirectory=/var/run/pulp_resource_manager/
 RuntimeDirectory=pulp_resource_manager
 ExecStart={{ pulp_venv }}/bin/celery worker -A pulpcore.tasking.celery_app:celery -n resource_manager@%%h\
