@@ -11,8 +11,8 @@
   file:
     path: /var/cache/pulp
     state: directory
-    owner: apache
-    group: apache
+    owner: "{{ pulp_user }}"
+    group: "{{ pulp_user }}"
 
 - name: reload systemd units
   command: systemctl daemon-reload

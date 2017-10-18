@@ -91,16 +91,16 @@
   file:
     path: /var/lib/pulp
     state: directory
-    owner: apache
-    group: apache
+    owner: "{{ pulp_user }}"
+    group: "{{ pulp_user }}"
     mode: 0755
 
 - name: Create /var/lib/pulp/tmp directory
   file:
     path: /var/lib/pulp/tmp
     state: directory
-    owner: apache
-    group: apache
+    owner: "{{ pulp_user }}"
+    group: "{{ pulp_user }}"
     mode: 0755
 
 - include: roles/django_db/tasks/makemigrations.yml app_label=pulp_app

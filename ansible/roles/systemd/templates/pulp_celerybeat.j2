@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 EnvironmentFile=-/etc/default/pulp_celerybeat
-User=apache
+User={{ pulp_user }}
 WorkingDirectory=/var/run/pulp_celerybeat/
 RuntimeDirectory=pulp_celerybeat
 ExecStart={{ pulp_venv }}/bin/celery beat --app=pulpcore.tasking.celery_app:celery --scheduler=pulpcore.tasking.services.scheduler.Scheduler
