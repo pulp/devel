@@ -29,7 +29,7 @@ def get_args():
 
 
 def get_yaml(args):
-    url = "https://raw.githubusercontent.com/pulp/pulp_packaging/master/ci/config/releases/%s.yaml" % args.version
+    url = "https://raw.githubusercontent.com/pulp/pulp-ci/master/ci/config/releases/%s.yaml" % args.version
     r = requests.get(url)
     if r.status_code == 404:
         raise ValueError("Release config not found.")
