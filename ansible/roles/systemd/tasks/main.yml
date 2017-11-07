@@ -4,7 +4,6 @@
       src: "templates/{{ item }}.j2"
       dest: "/etc/systemd/system/{{ item }}.service"
   with_items:
-    - pulp_celerybeat
     - pulp_resource_manager
     - pulp_worker@
 - name: Create /var/cache/pulp directory
@@ -25,5 +24,4 @@
   with_items:
       - pulp_worker@1
       - pulp_worker@2
-      - pulp_celerybeat
       - pulp_resource_manager
