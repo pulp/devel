@@ -29,7 +29,7 @@
       virtualenv_command: /usr/bin/python3 -m venv
     with_items:
         - common
-        - platform
+        - pulpcore
         - plugin
 
   - name: Install developer extra-requirements
@@ -72,7 +72,7 @@
 - name: Install server.yaml Config file
   copy:
     remote_src: true
-    src: "{{pulp_devel_dir}}/pulp/platform/pulpcore/etc/pulp/server.yaml"
+    src: "{{pulp_devel_dir}}/pulp/pulpcore/pulpcore/etc/pulp/server.yaml"
     dest: "/etc/pulp/server.yaml"
 
 - name: Generate random secret for Django
