@@ -24,6 +24,7 @@
       - iotop
       - jnettop
       - httpie
+      - jq
       - python-django-bash-completion
       - redhat-lsb-core
       - telnet
