@@ -5,6 +5,13 @@
   vars:
     repo: pulp
 
+- name: Install python SELinux bindings for the Ansible SELinux module
+  package:
+    name: "{{ item }}"
+  with_items:
+    - libselinux-python3
+    - selinux-policy
+
 - name: Disable selinux
   selinux: state=disabled
 
@@ -17,7 +24,15 @@
   notify: restart sshd
 
 - name: Install python-virtualenvwrapper
-  package: name=python-virtualenvwrapper state=latest
+  package:
+    name: "{{ item }}"
+  with_items:
+    # workaround a dependency bug of python3-virtualenvwrapper
+    - which
+    - python3-virtualenvwrapper
+    # the python2 version is required for mkvenv as mkvenv
+    # doesn't seem to respect the VIRTUALENVWRAPPER_PYTHON variable
+    - python2-virtualenvwrapper
   when: pulp_venv is defined
 
 - block:
@@ -28,9 +43,9 @@
       virtualenv: "{{ pulp_venv }}"
       virtualenv_command: /usr/bin/python3 -m venv
     with_items:
-        - common
-        - pulpcore
-        - plugin
+      - common
+      - pulpcore
+      - plugin
 
   - name: Install developer extra-requirements
     pip:
