@@ -94,3 +94,6 @@ Vagrantfile*
 .vagrant
 .dnf-cache
 ansible/*.retry
+
+# PyCharm
+.idea/

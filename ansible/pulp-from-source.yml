@@ -8,6 +8,7 @@
   become: true
   vars:
     pulp_user: vagrant
+    use_rabbitmq: False
   pre_tasks:
     # Developers want to know if Pulp works with the latest packages.
     - name: Upgrade all currently installed packages
