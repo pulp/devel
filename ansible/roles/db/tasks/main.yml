@@ -8,7 +8,8 @@
       - python3-psycopg2
 
 - name: Set up postgres data dir
-  command: postgresql-setup --initdb
+  # avoid https://code.djangoproject.com/ticket/18710
+  shell: PGSETUP_INITDB_OPTIONS='--encoding UTF-8' postgresql-setup --initdb
   args:
       creates: /var/lib/pgsql/data/base
 

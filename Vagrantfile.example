@@ -91,7 +91,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         override.vm.box = nil
         # Based on fedora official image, with vagrant's needs met:
         # https://github.com/rohanpm/docker-fedora-vagrant
-        d.image = 'rohanpm/fedora-vagrant:25'
+        d.image = 'rohanpm/fedora-vagrant:26'
 
         # use ssh for the sake of ansible
         d.has_ssh = true
