@@ -1,0 +1,38 @@
+- name: "Uninstall the Kombu we received from PyPI"
+  pip:
+    state: absent
+    name: kombu
+    virtualenv: "{{ pulp_venv }}"
+    virtualenv_command: /usr/bin/python3 -m venv
+
+- name: "Install kombu from source"
+  pip:
+    name: "git+https://github.com/bmbouter/kombu.git@624-convert-qpid-to-amqp-1.0#egg=kombu"
+    extra_args: "-e"
+    virtualenv: "{{ pulp_venv }}"
+    virtualenv_command: /usr/bin/python3 -m venv
+
+- name: "Install system packages proton needs"
+  package: name={{ item }} state=present
+  with_items:
+    - qpid-tools  # on system to provide 'qpid-stat' command
+    - python-qpid-proton  # a required dependency of kombu
+    - python3-devel  # allows for compilation during pip installs
+    - gcc  # allows for compilation during pip installs
+
+- name: "clone the patched qpid-tools"
+  git:
+    repo: 'https://github.com/bmbouter/qpid-cpp'
+    dest: /tmp/qpid-cpp
+    version: qpid-for-pulp
+
+- name: "Install qpid-tools from source"
+  command: "{{ pulp_venv }}/bin/python3 setup.py install"
+  args:
+    chdir: "/tmp/qpid-cpp/management/python"
+
+- name: "Install python-qpid-proton from PyPI"
+  pip:
+    name: "python-qpid-proton"
+    virtualenv: "{{ pulp_venv }}"
+    virtualenv_command: /usr/bin/python3 -m venv

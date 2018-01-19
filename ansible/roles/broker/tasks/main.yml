@@ -1,9 +1,23 @@
-- name: Install packages
+- name: Install Qpid packages
+  package: name={{ item }} state=present
+  with_items:
+    - qpid-cpp-server
+  when: use_rabbitmq == False
+
+- name: Start and enable Qpid services
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - qpidd
+  when: use_rabbitmq == False
+
+- name: Install rabbitmq packages
   package: name={{ item }} state=present
   with_items:
     - rabbitmq-server
+  when: use_rabbitmq == True
 
-- name: Start and enable services
+- name: Start and enable rabbitmq services
   service: name={{ item }} state=started enabled=yes
   with_items:
     - rabbitmq-server
+  when: use_rabbitmq == True
