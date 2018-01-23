@@ -27,7 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # to browse that repository a bit to find the latest successful Vagrant image. For example, at the
   # time of this writing, I could set this setting like this for the latest F24 image:
   # config.vm.box = "https://kojipkgs.fedoraproject.org/compose/rawhide/latest-Fedora-Rawhide/compose/CloudImages/x86_64/images/<imagename>.vagrant-libvirt.box"
-  config.vm.box = "fedora/25-cloud-base"
+  config.vm.box = "fedora/27-cloud-base"
 
   # Comment out if you don't want Vagrant to add and remove entries from /etc/hosts for each VM.
   # requires the vagrant-hostmanager plugin to be installed
@@ -53,6 +53,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     pulp2_dev.vm.host_name = "pulp2.dev"
 
     VAGRANT_SYNCED_FOLDERS.each do |host_path, guest_path|
+        # Use SSHFS instead of NFS. Requires the vagrant-sshfs plugin to be installed.
+        # Use SSHFS to share directories. The ``-o nonempty`` option is passed to allow
+        # mounts on non-empty directories.
+        # pulp2_dev.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
+
         # By default, Vagrant wants to mount with NFSv3, which will fail. Let's
         # explicitly mount the code using NFSv4.
         pulp2_dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
@@ -94,7 +99,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         override.vm.box = nil
         # Based on fedora official image, with vagrant's needs met:
         # https://github.com/rohanpm/docker-fedora-vagrant
-        d.image = 'rohanpm/fedora-vagrant:25'
+        d.image = 'rohanpm/fedora-vagrant:27'
 
         # use ssh for the sake of ansible
         d.has_ssh = true
