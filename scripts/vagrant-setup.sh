@@ -59,12 +59,33 @@ if [ -d pulp-smash ]; then
     mkdir -p $HOME/.config/pulp_smash/
     cat << EOF > $HOME/.config/pulp_smash/settings.json
 {
-    "pulp": {
-        "base_url": "https://$(hostname)",
-        "auth": ["admin", "admin"],
-        "cli_transport": "local",
-        "verify": false
+  "pulp": {
+    "auth": ["admin", "admin"],
+    "version": "2.15"
+  },
+  "systems": [
+    {
+      "hostname": "https://$(hostname)",
+      "roles": {
+        "amqp broker": {
+          "service": "qpidd"
+        },
+        "api": {
+          "scheme": "https",
+          "verify": false
+        },
+        "mongod": {},
+        "pulp celerybeat": {},
+        "pulp cli": {},
+        "pulp resource manager": {},
+        "pulp workers": {},
+        "shell": {
+          "transport": "local"
+        },
+        "squid": {}
+      }
     }
+  ]
 }
 EOF
     deactivate
