@@ -56,6 +56,7 @@
       - httpie
       - mock
       - plantuml
+      - policycoreutils-python-utils
       - python-django-bash-completion
       - python-gofer-qpid
       - python-ipdb
@@ -68,6 +69,7 @@
       - redhat-lsb-core
       - rpm-build
       - ruby-devel
+      - selinux-policy-devel
       - telnet
       - tito
       - yum-utils
