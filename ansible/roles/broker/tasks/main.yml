@@ -15,9 +15,25 @@
   with_items:
     - rabbitmq-server
   when: use_rabbitmq == True
+  register: rabbitmq_installed
+
+- name: Patch epmd.service LimitNPROC
+  # FIXME BZ#1545840
+  lineinfile:
+    path: /usr/lib/systemd/system/epmd.service
+    state: absent
+    regexp: 'LimitNPROC=1'
+  when: rabbitmq_installed.changed == True
+  register: epmd_patched
+
+- name: Reload systemd unit files
+  systemd: daemon_reload=yes
+  when: epmd_patched.changed == True
 
 - name: Start and enable rabbitmq services
   service: name={{ item }} state=started enabled=yes
   with_items:
+    # FIXME service dependency
+    - epmd.service
     - rabbitmq-server
   when: use_rabbitmq == True
