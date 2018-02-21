@@ -33,11 +33,6 @@
     - lazy
     - dev
     - {role: plugin, plugin_name: 'pulp_file', app_label: 'pulp_file'}
-    # - {role: plugin, plugin_name: 'pulp_example', app_label: 'pulp_example'}
+    # - {role: plugin, plugin_name: 'pulp_python', app_label: 'pulp_python'}
     - systemd
-    # - pulp_ca
-    # - smash
-    # - pulpproject
     - dev_tools
-    # - release
-    # - debug
