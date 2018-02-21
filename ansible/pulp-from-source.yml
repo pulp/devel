@@ -4,7 +4,7 @@
 # The resultant installation is designed to be useful for developers. It does
 # things like install code in editable mode, install extra dependencies and
 # install Bash aliases.
-- hosts: pulp3_dev
+- hosts: all
   become: true
   vars:
     pulp_user: vagrant
