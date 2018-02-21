@@ -1,9 +1,10 @@
-- name: Assert pulpproject Git repository is in the pulp_devel_dir
-  include_role:
-    name: common
-    tasks_from: require_repo
-  vars:
-    repo: pulpproject.org
+- name: Clone pulpproject.org into {{ pulp_devel_dir }}
+  git:
+    dest: '{{ pulp_devel_dir }}/pulpproject.org'
+    repo: https://github.com/pulp/pulpproject.org.git
+    version: '3.0-dev'
+    update: false
+  become_user: '{{ pulp_user }}'
 
 - name: Install packages
   package: name={{ item }} state=present

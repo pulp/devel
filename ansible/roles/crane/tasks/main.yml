@@ -1,9 +1,10 @@
-- name: Assert Crane Git repository is in the pulp_devel_dir
-  include_role:
-    name: common
-    tasks_from: require_repo
-  vars:
-    repo: crane
+- name: Clone crane into {{ pulp_devel_dir }}
+  git:
+    dest: '{{ pulp_devel_dir }}/crane'
+    repo: https://github.com/pulp/crane.git
+    version: '3.0-dev'
+    update: false
+  become_user: '{{ pulp_user }}'
 
 - name: Install crane config
   template:

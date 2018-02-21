@@ -1,9 +1,9 @@
-- name: check for pulp-smash git repo
-  include_role:
-    name: common
-    tasks_from: require_repo
-  vars:
-    repo: pulp-smash
+- name: Clone pulp-smash into {{ pulp_devel_dir }}
+  git:
+    dest: '{{ pulp_devel_dir }}/pulp-smash'
+    repo: https://github.com/PulpQE/pulp-smash.git
+    update: false
+  become_user: '{{ pulp_user }}'
 
 - block:
   - name: Create pulp-smash config dir
