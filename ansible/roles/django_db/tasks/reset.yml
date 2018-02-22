@@ -1,8 +1,9 @@
 - name: migrate
-  command: "{{pulp_venv}}/bin/pulp-manager {{item}}"
+  command: '{{pulp_venv}}/bin/pulp-manager {{item}}'
   with_items:
-    - "reset_db --noinput"
-    - "migrate auth --noinput"
-    - "migrate --noinput"
-    - "reset-admin-password --password admin"
-  become: false
+    - reset_db --noinput
+    - migrate auth --noinput
+    - migrate --noinput
+    - reset-admin-password --password admin
+  become: true
+  become_user: '{{ pulp_user }}'

@@ -5,31 +5,36 @@
 
 # Fedora has a packaging problem where vim-enhanced will fail to install if
 # vim-minimal is out of date.
-- name: Upgrade vim-minimal
-  package: name=vim-minimal state=latest
+- block:
 
-- name: Install optional useful packages
-  package: name={{ item }} state=latest
-  with_items:
-      # System packages useful for most developers
-      - bash-completion
-      - fedora-easy-karma
-      - htop
-      - screen
-      - tmux
-      - tree
-      - vim-enhanced
-      - dstat
-      - fpaste
-      - iotop
-      - jnettop
-      - httpie
-      - jq
-      - python-django-bash-completion
-      - redhat-lsb-core
-      - telnet
-      - yum-utils
-      # Python packages useful for developers
-      - python-ipdb
-      - python3-setuptools
-      - python-rpdb
+  - name: Install latest version of vim-minimal
+    package:
+      name: vim-minimal
+      state: latest
+
+  - name: Install latest version of several useful packages
+    package:
+      name:
+        - bash-completion
+        - dstat
+        - fedora-easy-karma
+        - fpaste
+        - htop
+        - httpie
+        - iotop
+        - jnettop
+        - jq
+        - python-django-bash-completion
+        - python-ipdb
+        - python-rpdb
+        - python3-setuptools
+        - redhat-lsb-core
+        - screen
+        - telnet
+        - tmux
+        - tree
+        - vim-enhanced
+        - yum-utils
+      state: latest
+
+  become: true
