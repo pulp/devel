@@ -15,6 +15,11 @@
     become: false
 
   # variables plugin_name and app_label are passed implicitly
-  - include: roles/django_db/tasks/makemigrations.yml
-  - include: roles/django_db/tasks/reset.yml
+  - include_role:
+      name: django_db
+      tasks_from: makemigrations
+
+  - include_role:
+      name: django_db
+      tasks_from: reset
   when: repo_path.stat.isdir is defined and repo_path.stat.isdir

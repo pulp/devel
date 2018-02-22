@@ -128,8 +128,15 @@
     group: "{{ pulp_user }}"
     mode: 0755
 
-- include: roles/django_db/tasks/makemigrations.yml app_label=pulp_app
-- include: roles/django_db/tasks/reset.yml
+- include_role:
+    name: django_db
+    tasks_from: makemigrations
+  vars:
+    app_label: pulp_app
+
+- include_role:
+    name: django_db
+    tasks_from: reset
 
 - include_role:
     name: kombu_fixup
