@@ -1,4 +1,5 @@
-- stat:
+- name: Get information about {{ pulp_devel_dir }}/{{ plugin_name }}
+  stat:
     path: '{{ pulp_devel_dir }}/{{ plugin_name }}'
   register: repo_path
   become: true
