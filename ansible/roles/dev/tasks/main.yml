@@ -1,9 +1,10 @@
-- name: check for pulp git repo
-  include_role:
-    name: common
-    tasks_from: require_repo
-  vars:
-    repo: pulp
+- name: Clone pulp into {{ pulp_devel_dir }}
+  git:
+    dest: '{{ pulp_devel_dir }}/pulp'
+    repo: https://github.com/pulp/pulp.git
+    version: '3.0-dev'
+    update: false
+  become_user: '{{ pulp_user }}'
 
 - name: Install python SELinux bindings for the Ansible SELinux module
   package:
