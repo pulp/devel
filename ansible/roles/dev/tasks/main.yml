@@ -4,44 +4,51 @@
     repo: https://github.com/pulp/pulp.git
     version: '3.0-dev'
     update: false
+  become: true
   become_user: '{{ pulp_user }}'
 
-- name: Install python SELinux bindings for the Ansible SELinux module
-  package:
-    name: "{{ item }}"
-  with_items:
-    - libselinux-python3
-    - selinux-policy
+- block:
 
-- name: Disable selinux
-  selinux: state=disabled
+  - name: Install python SELinux bindings for the Ansible SELinux module
+    package:
+      name:
+        - libselinux-python3
+        - selinux-policy
+      state: present
 
-- name: Disable sshd strict modes
-  lineinfile:
+  - name: Disable selinux
+    selinux:
+      state: disabled
+
+  - name: Disable sshd strict modes
+    lineinfile:
       backrefs: yes
       dest: /etc/ssh/sshd_config
-      regexp: "^#StrictModes yes"
-      line: "StrictModes no"
-  notify: restart sshd
+      regexp: '^#StrictModes yes'
+      line: 'StrictModes no'
+    notify: restart sshd
 
-- name: Install python-virtualenvwrapper
-  package:
-    name: "{{ item }}"
-  with_items:
-    # workaround a dependency bug of python3-virtualenvwrapper
-    - which
-    - python3-virtualenvwrapper
-    # the python2 version is required for mkvenv as mkvenv
-    # doesn't seem to respect the VIRTUALENVWRAPPER_PYTHON variable
-    - python2-virtualenvwrapper
-  when: pulp_venv is defined
+  - name: Install python-virtualenvwrapper
+    package:
+      name:
+        # workaround a dependency bug of python3-virtualenvwrapper
+        - which
+        - python3-virtualenvwrapper
+        # the python2 version is required for mkvenv as mkvenv
+        # doesn't seem to respect the VIRTUALENVWRAPPER_PYTHON variable
+        - python2-virtualenvwrapper
+      state: present
+    when: pulp_venv is defined
+
+  become: true
 
 - block:
+
   - name: Install Pulp Platform packages
     pip:
-      name: "{{ pulp_devel_dir }}/pulp/{{ item }}"
-      extra_args: "-e"
-      virtualenv: "{{ pulp_venv }}"
+      name: '{{ pulp_devel_dir }}/pulp/{{ item }}'
+      extra_args: '-e'
+      virtualenv: '{{ pulp_venv }}'
       virtualenv_command: /usr/bin/python3 -m venv
     with_items:
       - common
@@ -50,8 +57,8 @@
 
   - name: Install developer extra-requirements
     pip:
-      requirements: "{{ pulp_devel_dir }}/pulp/{{ item }}"
-      virtualenv: "{{ pulp_venv }}"
+      requirements: '{{ pulp_devel_dir }}/pulp/{{ item }}'
+      virtualenv: '{{ pulp_venv }}'
       virtualenv_command: /usr/bin/python3 -m venv
     with_items:
       - test_requirements.txt
@@ -59,75 +66,82 @@
       - docs/requirements.txt
       - pulpcore/doc_requirements.txt
 
-
   - name: Enable autoenv Directory Switching for pulp
     lineinfile:
-      dest: "{{ pulp_venv }}/.project"
-      line: "{{ pulp_devel_dir }}/pulp"
+      dest: '{{ pulp_venv }}/.project'
+      line: '{{ pulp_devel_dir }}/pulp'
       create: true
-      regexp: ".*"
+      regexp: '.*'
     when: pulp_venv is defined
 
   - name: Add Django supplemental bashrc
     copy:
       src: files/django.bashrc
-      dest: "{{ pulp_user_home }}/.bashrc.d/django.bashrc"
+      dest: '{{ pulp_user_home }}/.bashrc.d/django.bashrc'
     when: supplement_bashrc
 
   - name: Add virtualenv supplemental bashrc
     copy:
       src: files/venv.bashrc
-      dest: "{{ pulp_user_home }}/.bashrc.d/venv.bashrc"
+      dest: '{{ pulp_user_home }}/.bashrc.d/venv.bashrc'
     when: pulp_venv is defined and supplement_bashrc
-  become: false
 
-- name: Create /etc/pulp directory
-  file:
-    path: /etc/pulp
-    state: directory
-
-- name: Install server.yaml Config file
-  copy:
-    remote_src: true
-    src: "{{pulp_devel_dir}}/pulp/pulpcore/pulpcore/etc/pulp/server.yaml"
-    dest: "/etc/pulp/server.yaml"
+  become: true
+  become_user: '{{ pulp_user }}'
 
 - name: Generate random secret for Django
   shell: cat /dev/urandom | tr -dc 'a-z0-9!@#$%^&*(\-_=+)' | head -c 50
   register: random_secret
+  tags:
+    - skip_ansible_lint
 
-- name: Add development server configuration in server.yaml
-  blockinfile:
-    path: "/etc/pulp/server.yaml"
-    block: |
-      # Pulp Development Configuration
-      DEBUG: True
-      SECRET_KEY: "{{ random_secret.stdout }}"
+- block:
 
-- name: Add Qpid broker settings override in server.yaml
-  blockinfile:
-    path: "/etc/pulp/server.yaml"
-    marker: "# {mark} QPID SETTINGS OVERRIDE BLOCK"
-    block: |
-      broker:
-        url: qpid://localhost/
-  when: use_rabbitmq == False
+  - name: Create /etc/pulp directory
+    file:
+      path: /etc/pulp
+      state: directory
 
-- name: Create /var/lib/pulp directory
-  file:
-    path: /var/lib/pulp
-    state: directory
-    owner: "{{ pulp_user }}"
-    group: "{{ pulp_user }}"
-    mode: 0755
+  - name: Install server.yaml Config file
+    copy:
+      remote_src: true
+      src: '{{pulp_devel_dir}}/pulp/pulpcore/pulpcore/etc/pulp/server.yaml'
+      dest: '/etc/pulp/server.yaml'
 
-- name: Create /var/lib/pulp/tmp directory
-  file:
-    path: /var/lib/pulp/tmp
-    state: directory
-    owner: "{{ pulp_user }}"
-    group: "{{ pulp_user }}"
-    mode: 0755
+  - name: Add development server configuration in server.yaml
+    blockinfile:
+      path: '/etc/pulp/server.yaml'
+      block: |
+        # Pulp Development Configuration
+        DEBUG: True
+        SECRET_KEY: '{{ random_secret.stdout }}'
+
+  - name: Add Qpid broker settings override in server.yaml
+    blockinfile:
+      path: '/etc/pulp/server.yaml'
+      marker: '# {mark} QPID SETTINGS OVERRIDE BLOCK'
+      block: |
+        broker:
+          url: qpid://localhost/
+    when: use_rabbitmq == False
+
+  - name: Create /var/lib/pulp directory
+    file:
+      path: /var/lib/pulp
+      state: directory
+      owner: '{{ pulp_user }}'
+      group: '{{ pulp_user }}'
+      mode: 0755
+
+  - name: Create /var/lib/pulp/tmp directory
+    file:
+      path: /var/lib/pulp/tmp
+      state: directory
+      owner: '{{ pulp_user }}'
+      group: '{{ pulp_user }}'
+      mode: 0755
+
+  become: true
 
 - include_role:
     name: django_db

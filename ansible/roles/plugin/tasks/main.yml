@@ -1,18 +1,22 @@
 - stat:
-    path: "{{ pulp_devel_dir }}/{{ plugin_name }}"
+    path: '{{ pulp_devel_dir }}/{{ plugin_name }}'
   register: repo_path
+  become: true
+  become_user: '{{ pulp_user }}'
 
 - debug:
-    msg: "{{ pulp_devel_dir }}/{{ plugin_name }} does not exist, skipping!"
+    msg: '{{ pulp_devel_dir }}/{{ plugin_name }} does not exist, skipping!'
   when: repo_path.stat.isdir is not defined or not repo_path.stat.isdir
 
 - block:
-  - name: Install Plugin packages into core Pulp Python environment
+
+  - name: Install plugin packages into core Pulp Python environment
     pip:
-      name: "{{ pulp_devel_dir }}/{{ plugin_name }}"
-      extra_args: "-e"
-      virtualenv: "{{ pulp_venv }}"
-    become: false
+      name: '{{ pulp_devel_dir }}/{{ plugin_name }}'
+      extra_args: '-e'
+      virtualenv: '{{ pulp_venv }}'
+    become: true
+    become_user: '{{ pulp_user }}'
 
   # variables plugin_name and app_label are passed implicitly
   - include_role:
@@ -22,4 +26,5 @@
   - include_role:
       name: django_db
       tasks_from: reset
+
   when: repo_path.stat.isdir is defined and repo_path.stat.isdir

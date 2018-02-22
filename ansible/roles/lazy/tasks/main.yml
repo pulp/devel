@@ -1,13 +1,29 @@
-- name: Install lazy packages
-  package: name={{ item }} state=present
-  with_items:
-      - squid
-      - httpd
+- block:
 
-- name: Install Squid proxy configuration
-  copy: src=squid.conf dest=/etc/squid/squid.conf
+  - name: Install lazy packages
+    package:
+      name:
+        - httpd
+        - squid
+      state: present
 
-- file: path=/var/spool/squid state=directory owner=squid group=squid mode=750
+  - name: Install Squid proxy configuration
+    copy:
+      src: squid.conf
+      dest: /etc/squid/squid.conf
 
-- name: Start and enable Squid service
-  service: name=squid state=started enabled=yes
+  - name: Create /var/spool/squid/
+    file:
+      path: /var/spool/squid
+      state: directory
+      owner: squid
+      group: squid
+      mode: 0750
+
+  - name: Start and enable Squid
+    systemd:
+      name: squid
+      state: started
+      enabled: yes
+
+  become: true

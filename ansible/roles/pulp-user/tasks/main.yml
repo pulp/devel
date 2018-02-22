@@ -12,6 +12,7 @@
   copy:
     src: motd
     dest: /etc/motd
+  become: true
 
 # TODO: Only add user to systemd-journal group if a development environment is
 # being created.
@@ -21,6 +22,7 @@
     # Let user read the system journal.
     groups: systemd-journal
     append: true
+  become: true
 
 - name: Get user's home directory
   getent:
@@ -37,15 +39,17 @@
     path: "{{ pulp_user_home }}"
     state: directory
     mode: 0755
+  become: true
 
 # NOTE: This has horrible security implications. The `remote_user` that Ansible
 # connects as needs sudo priviliges. This user doesn't!
-- name: Give user passwordless sudo privileges
+- name: Give {{ pulp_user }} passwordless sudo privileges
   template:
     src: pulp-user-nopasswd.j2
     dest: /etc/sudoers.d/pulp-user-nopasswd
     validate: 'visudo -cf %s'
     mode: 0440
+  become: true
 
 # TODO: Make variable names more canonical.
 # NOTE: "These variables will be available to subsequent plays during an
@@ -75,6 +79,7 @@
   with_items:
     - git
     - rpm-build
+  become: true
 
 - block:
 
@@ -82,13 +87,11 @@
     file:
       path: "{{ pulp_user_home }}/.bashrc.d/"
       state: directory
-    become_user: "{{ pulp_user }}"
 
   - name: Define developer aliases in ~/.bashrc.d/
     template:
       src: templates/alias.bashrc
       dest: "{{ pulp_user_home }}/.bashrc.d/alias.bashrc"
-    become_user: "{{ pulp_user }}"
 
   - name: Source developer aliases in ~/.bashrc.d/
     blockinfile:
@@ -101,20 +104,24 @@
         fi
       marker: "# {mark} Ansible managed block: source bashrc.d/"
       create: yes
-    become_user: "{{ pulp_user }}"
 
+  become: true
+  become_user: "{{ pulp_user }}"
   when: supplement_bashrc
 
-- name: Create ~/.vimrc if not already present
-  copy:
-    src: files/vimrc
-    dest: "{{ pulp_user_home }}/.vimrc"
-    force: no
-  become_user: "{{ pulp_user }}"
+- block:
 
-- name: Create ~/.netrc if not already present
-  copy:
-    src: files/netrc
-    dest: "{{ pulp_user_home }}/.netrc"
-    force: no
+  - name: Create ~/.vimrc if not already present
+    copy:
+      src: files/vimrc
+      dest: "{{ pulp_user_home }}/.vimrc"
+      force: no
+
+  - name: Create ~/.netrc if not already present
+    copy:
+      src: files/netrc
+      dest: "{{ pulp_user_home }}/.netrc"
+      force: no
+
+  become: true
   become_user: "{{ pulp_user }}"
