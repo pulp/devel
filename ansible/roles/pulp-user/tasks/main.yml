@@ -76,10 +76,6 @@
     - git
     - rpm-build
 
-- name: Gather Pulp facts
-  pulp_facts:
-    devel_dir: "{{ pulp_devel_dir }}"
-
 - block:
 
   - name: Create ~/.bashrc.d/
