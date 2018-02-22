@@ -143,15 +143,11 @@
 
   become: true
 
-- include_role:
+- name: Create and run migrations for {{ pulp_app }}
+  include_role:
     name: django_db
-    tasks_from: makemigrations
   vars:
     app_label: pulp_app
-
-- include_role:
-    name: django_db
-    tasks_from: reset
 
 - include_role:
     name: kombu_fixup

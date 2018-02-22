@@ -18,13 +18,10 @@
     become: true
     become_user: '{{ pulp_user }}'
 
-  # variables plugin_name and app_label are passed implicitly
-  - include_role:
+  # Variables in the current context are inherited by included roles. Thus, this
+  # role implicitly gets the app_label variable that it needs.
+  - name: Run migrations for {{ app_label }}
+    include_role:
       name: django_db
-      tasks_from: makemigrations
-
-  - include_role:
-      name: django_db
-      tasks_from: reset
 
   when: repo_path.stat.isdir is defined and repo_path.stat.isdir
