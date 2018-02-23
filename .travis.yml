@@ -1,0 +1,10 @@
+sudo: false
+language: python
+python:
+  - 3.5
+  - 3.6
+install:
+  - pip install ansible-lint
+script:
+  - ansible-lint ansible/pulp-from-source.yml
+cache: pip
