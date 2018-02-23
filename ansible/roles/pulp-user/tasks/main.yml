@@ -1,12 +1,3 @@
-- name: Require minimal Python and Ansible versions
-  assert:
-    that:
-      - "ansible_python_version|version_compare('3.5.0', operator='ge')"
-      - "ansible_version.full|version_compare('2.3.2', operator='ge')"
-    msg: >
-      This role and those that depend on it require at least Python 3.5 and
-      Ansible 2.2.
-
 # TODO: Only execute this when a development environment is being created.
 - name: Set the message of the day
   copy:

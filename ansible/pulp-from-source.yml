@@ -9,6 +9,15 @@
     pulp_user: vagrant
     use_rabbitmq: False
   pre_tasks:
+    - name: Require minimal Python and Ansible versions
+      assert:
+        that:
+          - "ansible_python_version|version_compare('3.5.0', operator='ge')"
+          - "ansible_version.full|version_compare('2.4', operator='ge')"
+        msg: >
+          This playbook requires Python 3.5+ and Ansible 2.4+. If your package
+          manager ships an older version of Ansible, consider creating a
+          virtualenv and installing Ansible with pip.
     # Developers want to know if Pulp works with the latest packages.
     - name: Upgrade all currently installed packages
       package:
