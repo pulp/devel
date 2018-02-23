@@ -1,0 +1,15 @@
+- block:
+
+  - name: Make migrations for {{ app_label }}
+    command: '{{ pulp_venv }}/bin/pulp-manager makemigrations {{ app_label }}'
+
+  - name: Run all migrations
+    command: '{{ pulp_venv }}/bin/pulp-manager {{ item }}'
+    with_items:
+      - reset_db --noinput
+      - migrate auth --noinput
+      - migrate --noinput
+      - reset-admin-password --password admin
+
+  become: true
+  become_user: '{{ pulp_user }}'
