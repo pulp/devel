@@ -40,6 +40,12 @@
       state: present
     when: pulp_venv is defined
 
+  - name: Install sqlite
+    package:
+      name:
+        - sqlite
+      state: present
+
   become: true
 
 - block:
