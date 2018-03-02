@@ -130,7 +130,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         override.vm.provision 'reset-user', :type => 'shell' do |shell|
           uid = Process.euid
           gid = Process.egid
-          reset_cmd = "/vagrant/scripts/reset-vagrant-user.sh #{uid} #{gid}"
+          reset_cmd = "/vagrant/scripts/vagrant-reset-user.sh #{uid} #{gid}"
 
           shell.inline = <<-END_SCRIPT.gsub(/\s+/, ' ').strip
             nohup sudo /bin/sh -c '
