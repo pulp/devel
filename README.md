@@ -6,7 +6,7 @@ This repository contains various tools that are useful for developing Pulp.
 Complete documentation for using the repository can be found in
 [the contributing guide](https://docs.pulpproject.org/en/3.0/nightly/contributing/dev-setup.html)
 
-Ansible
+ansible
 -------
 
 A collection of Ansible roles and playbooks that deploy Pulp and its
@@ -17,13 +17,6 @@ Vagrantfile
 -----------
 
 Uses a pre-made image and our ansible playbook to deploy a pulp development environment.
-
-
-rel-eng
--------
-
-Release engineering tools and configuration. This includes tools to interact
-with the packaging files in https://github.com/pulp/packaging.
 
 
 scripts
