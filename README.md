@@ -3,16 +3,10 @@ Pulp Development Repository
 This repository contains various tools that are useful for developing Pulp.
 
 
-Ansible
+ansible
 -------
 A collection of Ansible roles and playbooks that deploy Pulp and its
 dependencies.
-
-
-rel-eng
--------
-Release engineering tools and configuration. This includes tools to interact
-with the packaging files in https://github.com/pulp/packaging.
 
 scripts
 -------
