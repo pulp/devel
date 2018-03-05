@@ -11,6 +11,8 @@
     package:
       name: vim-minimal
       state: latest
+    tags:
+      - skip_ansible_lint
 
   - name: Install latest version of several useful packages
     package:
@@ -36,5 +38,7 @@
         - vim-enhanced
         - yum-utils
       state: latest
+    tags:
+      - skip_ansible_lint
 
   become: true

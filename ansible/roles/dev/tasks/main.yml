@@ -155,6 +155,7 @@
   vars:
     app_label: pulp_app
 
-- include_role:
+- name: Install a custom version of Kombu
+  include_role:
     name: kombu_fixup
   when: use_rabbitmq == False
