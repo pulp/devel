@@ -63,13 +63,10 @@
   set_fact:
     pulp_smash_venv: "{{ venv_dir }}/pulp-smash"
 
-- name: Install packages required to gather Pulp facts
+- name: Install git
   package:
-    name: "{{ item }}"
+    name: git
     state: present
-  with_items:
-    - git
-    - rpm-build
   become: true
 
 - block:
