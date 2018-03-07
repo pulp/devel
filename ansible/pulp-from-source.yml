@@ -18,14 +18,6 @@
           This playbook requires Python 3.5+ and Ansible 2.4+. If your package
           manager ships an older version of Ansible, consider creating a
           virtualenv and installing Ansible with pip.
-    # Developers want to know if Pulp works with the latest packages.
-    - name: Upgrade all currently installed packages
-      package:
-        name: '*'
-        state: latest
-      become: true
-      tags:
-        - skip_ansible_lint
   roles:
     - pulp-user
     - db
