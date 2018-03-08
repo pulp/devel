@@ -9,12 +9,13 @@
 
 - block:
 
-  - name: Install python SELinux bindings for the Ansible SELinux module
+  - name: Install bindings required by the Ansible SELinux module (Fedora)
     package:
       name:
-        - libselinux-python3
+        - libselinux-python{% if ansible_distribution == "Fedora" %}3{% endif %}
         - selinux-policy
       state: present
+    when: ansible_distribution == 'Fedora'
 
   - name: Disable selinux
     selinux:
@@ -28,34 +29,59 @@
       line: 'StrictModes no'
     notify: restart sshd
 
+  # The python2 version is required for mkvenv as mkvenv doesn't seem to respect
+  # the VIRTUALENVWRAPPER_PYTHON variable.
   - name: Install python-virtualenvwrapper
     package:
+      name: python-virtualenvwrapper
+    when: pulp_venv is defined
+
+  # Ther is or was a dependency bug with the python3-virtualenvwrapper package,
+  # and installing which works around it.
+  - name: Install python3-virtualenvwrapper (Fedora)
+    package:
       name:
-        # workaround a dependency bug of python3-virtualenvwrapper
         - which
         - python3-virtualenvwrapper
-        # the python2 version is required for mkvenv as mkvenv
-        # doesn't seem to respect the VIRTUALENVWRAPPER_PYTHON variable
-        - python2-virtualenvwrapper
-      state: present
-    when: pulp_venv is defined
+    when:
+      - pulp_venv is defined
+      - ansible_distribution == 'Fedora'
 
   - name: Install sqlite
     package:
-      name:
-        - sqlite
+      name: sqlite
       state: present
+
+  - name: Install tools for compiling a PostgreSQL database adapter
+    package:
+      name:
+        - gcc
+        - postgresql-devel
 
   become: true
 
 - block:
 
+  - name: Create pulp virtualenv
+    command: '{{ pulp_python_interpreter }} -m venv {{ pulp_venv }}'
+    args:
+      creates: '{{ pulp_venv }}'
+    register: result
+
+  - name: Update pip in virtualenv
+    pip:
+      name: pip
+      state: latest
+      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
+    when: result|changed
+    tags:
+      - skip_ansible_lint
+
   - name: Install Pulp Platform packages
     pip:
       name: '{{ pulp_devel_dir }}/pulp/{{ item }}'
       extra_args: '-e'
-      virtualenv: '{{ pulp_venv }}'
-      virtualenv_command: /usr/bin/python3 -m venv
+      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
     with_items:
       - common
       - pulpcore
@@ -64,8 +90,7 @@
   - name: Install developer extra-requirements
     pip:
       requirements: '{{ pulp_devel_dir }}/pulp/{{ item }}'
-      virtualenv: '{{ pulp_venv }}'
-      virtualenv_command: /usr/bin/python3 -m venv
+      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
     with_items:
       - test_requirements.txt
       - dev_requirements.txt

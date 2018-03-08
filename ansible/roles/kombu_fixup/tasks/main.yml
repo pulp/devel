@@ -2,17 +2,15 @@
 
   - name: Uninstall the Kombu we received from PyPI
     pip:
-      state: absent
       name: kombu
-      virtualenv: '{{ pulp_venv }}'
-      virtualenv_command: /usr/bin/python3 -m venv
+      state: absent
+      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
 
   - name: Install kombu from source
     pip:
       name: git+https://github.com/bmbouter/kombu.git@624-convert-qpid-to-amqp-1.0#egg=kombu
       extra_args: '-e'
-      virtualenv: '{{ pulp_venv }}'
-      virtualenv_command: /usr/bin/python3 -m venv
+      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
 
   become: true
   become_user: '{{ pulp_user }}'
@@ -24,7 +22,7 @@
   with_items:
     - qpid-tools  # on system to provide 'qpid-stat' command
     - python-qpid-proton  # a required dependency of kombu
-    - python3-devel  # allows for compilation during pip installs
+    - '{% if ansible_distribution == "RedHat" %}rh-python36-python-devel{% else %}python3-devel{% endif %}'  # allows for compilation during pip installs
     - gcc  # allows for compilation during pip installs
     - redhat-rpm-config  # dep for python-qpid-proton on Fedora cloud
   become: true
@@ -36,7 +34,7 @@
     version: qpid-for-pulp
 
 - name: Install qpid-tools from source
-  command: '{{ pulp_venv }}/bin/python3 setup.py install'
+  command: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/python3 setup.py install'
   args:
     chdir: /tmp/qpid-cpp/management/python
   become: true
@@ -44,7 +42,6 @@
 - name: Install python-qpid-proton from PyPI
   pip:
     name: python-qpid-proton
-    virtualenv: '{{ pulp_venv }}'
-    virtualenv_command: /usr/bin/python3 -m venv
+    executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
   become: true
   become_user: '{{ pulp_user }}'
