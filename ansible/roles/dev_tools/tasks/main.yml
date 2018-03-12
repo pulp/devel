@@ -1,20 +1,22 @@
-# This role could be made more idempotent by requesting that packages be
-# "present," not "latest." The vim packaging issue could be solved with logic
-# that says "if the current platform is Fedora and vim-enhanced isn't installed,
-# let vim-minimal be latest."
-
-# Fedora has a packaging problem where vim-enhanced will fail to install if
-# vim-minimal is out of date.
 - block:
 
-  - name: Install latest version of vim-minimal
+  # Fedora 26 docker has a packaging problem where vim-enhanced will fail to
+  # install if vim-minimal is out of date.
+  - name: Try to install vim-enhanced
+    package:
+      name: vim-enhanced
+      state: present
+    register: result
+
+  - name: Upgrade vim-minimal if installing vim-enhanced failed
     package:
       name: vim-minimal
       state: latest
+    when: result.failed
     tags:
       - skip_ansible_lint
 
-  - name: Install latest version of several useful packages
+  - name: Install several useful packages
     package:
       name:
         - bash-completion
@@ -37,8 +39,6 @@
         - tree
         - vim-enhanced
         - yum-utils
-      state: latest
-    tags:
-      - skip_ansible_lint
+      state: present
 
   become: true
