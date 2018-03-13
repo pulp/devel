@@ -9,13 +9,6 @@
       - pulp_resource_manager
       - pulp_worker@
 
-  - name: Create /var/cache/pulp directory
-    file:
-      path: /var/cache/pulp
-      state: directory
-      owner: '{{ pulp_user }}'
-      group: '{{ pulp_user }}'
-
   - name: Start or Restart tasking services
     systemd:
       daemon_reload: true
