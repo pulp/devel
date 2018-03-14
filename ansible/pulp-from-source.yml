@@ -22,7 +22,6 @@
     - pulp-user
     - db
     - broker
-    - lazy
     - dev
     - {role: plugin, plugin_name: 'pulp_file', app_label: 'pulp_file'}
     # - {role: plugin, plugin_name: 'pulp_python', app_label: 'pulp_python'}
