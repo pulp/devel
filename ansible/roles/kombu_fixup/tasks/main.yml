@@ -26,6 +26,7 @@
     - python-qpid-proton  # a required dependency of kombu
     - python3-devel  # allows for compilation during pip installs
     - gcc  # allows for compilation during pip installs
+    - redhat-rpm-config  # dep for python-qpid-proton on Fedora cloud
   become: true
 
 - name: Clone the patched qpid-tools
