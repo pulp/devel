@@ -1,0 +1,67 @@
+---
+# `yum makecache` is called several times. This is done because yum isn't always
+# smart enough to know when it should update its cache, and the yum module's
+# `update_cache` option seems to have no effect.
+
+- name: Assert the target host runs Red Hat
+  assert:
+    that: ansible_distribution == 'RedHat'
+
+- name: Register and subscribe to {{ rhn_pool }}
+  redhat_subscription:
+    username: '{{ rhn_username }}'
+    password: '{{ rhn_password }}'
+    pool: '{{ rhn_pool }}'
+    state: present
+  when:
+    - rhn_pool is defined
+    - rhn_username is defined
+    - rhn_password is defined
+  become: true
+  register: result
+
+- block:
+
+  # Many repositories provide more up-to-date packages than the ones listed
+  # below. This can cause dependency resolution issues.
+  - name: Disable all repositories
+    command: subscription-manager repos --disable *
+
+  # rhel-server-rhscl-7-rpms provides Python 3 SCL. The others are frequently
+  # useful; they've been cargo-culted.
+  - name: Enable several official repositories
+    command: >
+      subscription-manager repos
+      --enable rhel-7-server-rpms
+      --enable rhel-7-server-extras-rpms
+      --enable rhel-7-server-optional-rpms
+      --enable rhel-server-rhscl-7-rpms
+
+  - name: Update yum's cache
+    command: yum -y makecache
+    tags:
+      - skip_ansible_lint
+
+  when: result|changed
+  become: true
+
+- name: Install Python 3.5 SCL
+  yum:
+    name: rh-python36
+    state: present
+  become: true
+
+# EPEL provides AMQP brokers. (RabbitMQ and Qpid.)
+- name: Enable EPEL repository
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: present
+  become: true
+  register: result
+
+- name: Update yum's cache
+  command: yum -y makecache
+  when: result|changed
+  become: true
+  tags:
+    - skip_ansible_lint

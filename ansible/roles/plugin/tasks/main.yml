@@ -15,7 +15,7 @@
     pip:
       name: '{{ pulp_devel_dir }}/{{ plugin_name }}'
       extra_args: '-e'
-      virtualenv: '{{ pulp_venv }}'
+      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
     become: true
     become_user: '{{ pulp_user }}'
 
