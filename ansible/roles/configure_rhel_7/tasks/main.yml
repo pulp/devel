@@ -45,7 +45,7 @@
   when: result|changed
   become: true
 
-- name: Install Python 3.5 SCL
+- name: Install Python 3.6 SCL
   yum:
     name: rh-python36
     state: present
