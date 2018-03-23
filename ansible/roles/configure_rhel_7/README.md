@@ -7,7 +7,7 @@ Specifically, do the following:
 
 * Register and subscribe the host with subscription-manager. If registration
   information has changed, configure which repositories are enabled.
-* Install the Python 3.5 SCL.
+* Install the Python 3.6 SCL.
 
 The following variables may be specified:
 
