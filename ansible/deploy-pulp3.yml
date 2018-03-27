@@ -19,6 +19,3 @@
           virtualenv and installing Ansible with pip.
   roles:
     - pulp3
-    - pulp3_db
-    - rabbitmq
-    - pulp3_systemd
