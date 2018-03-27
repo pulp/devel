@@ -110,6 +110,7 @@
       src: files/netrc
       dest: "{{ pulp_user_home }}/.netrc"
       force: no
+      mode: 0600
 
   become: true
   become_user: "{{ pulp_user }}"
