@@ -81,6 +81,11 @@
     tags:
       - skip_ansible_lint
 
+  - name: Install custom RQ
+    pip:
+      name: 'git+https://github.com/rq/rq.git@3133d94b58e59cb86e8f4677492d48b2addcf5f8'
+      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
+
   - name: Install Pulp Platform packages
     pip:
       name: '{{ pulp_devel_dir }}/pulp/{{ item }}'
@@ -150,15 +155,6 @@
         DEBUG: True
         SECRET_KEY: '{{ random_secret.stdout }}'
 
-  - name: Add Qpid broker settings override in server.yaml
-    blockinfile:
-      path: '/etc/pulp/server.yaml'
-      marker: '# {mark} QPID SETTINGS OVERRIDE BLOCK'
-      block: |
-        broker:
-          url: qpid://localhost/
-    when: use_rabbitmq == False
-
   - name: Create /var/lib/pulp directory
     file:
       path: /var/lib/pulp
@@ -182,8 +178,3 @@
     name: django_db
   vars:
     app_label: pulp_app
-
-- name: Install a custom version of Kombu
-  include_role:
-    name: kombu_fixup
-  when: use_rabbitmq == False
