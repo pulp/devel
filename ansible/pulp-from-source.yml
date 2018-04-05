@@ -7,7 +7,7 @@
 - hosts: all
   vars:
     pulp_user: vagrant
-    use_rabbitmq: False
+    use_rabbitmq: True
   pre_tasks:
     - name: Require Ansible 2.4+
       assert:
