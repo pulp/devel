@@ -94,7 +94,6 @@
     with_items:
       - test_requirements.txt
       - dev_requirements.txt
-      - docs/requirements.txt
       - pulpcore/doc_requirements.txt
 
   - name: Enable autoenv Directory Switching for pulp
