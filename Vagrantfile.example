@@ -45,7 +45,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Create the "pulp3_dev" box
   config.vm.define :pulp3_dev do |pulp3_dev|
-    pulp3_dev.vm.host_name = "pulp3.dev"
+    pulp3_dev.vm.host_name = "dev.pulp3"
 
     VAGRANT_SYNCED_FOLDERS.each do |host_path, guest_path|
         # Use SSHFS instead of NFS. Requires the vagrant-sshfs plugin to be installed.
