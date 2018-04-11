@@ -2,11 +2,6 @@
 # Install Pulp 3 from PyPi by using galaxy roles from requirements.yml
 - hosts: all
   become: true
-  vars:
-    rabbitmq_config:
-      - rabbit:
-        - tcp_listeners:
-          - '"localhost"': 5672
   pre_tasks:
     - name: Require minimal Python and Ansible versions
       assert:
