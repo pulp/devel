@@ -13,5 +13,33 @@
       line: "nojournal = true"
   notify: restart mongod
 
+- name: Discover whether IPv6 is enabled
+  # sysctl is not installed in our dev environment
+  command: cat /proc/sys/net/ipv6/conf/lo/disable_ipv6
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: result
+
+- block:
+
+  - name: Disable IPv6 in mongod
+    lineinfile:
+        backrefs: yes
+        dest: /etc/mongod.conf
+        regexp: "(.+)ipv6: true"
+        line: "\\1ipv6: false"
+    notify: restart mongod
+
+  - name: Remove IPv6 localhost address from mongod
+    lineinfile:
+        backrefs: yes
+        dest: /etc/mongod.conf
+        regexp: "(.+)bindIp: 127.0.0.1,::1"
+        line: "\\1bindIp: 127.0.0.1"
+    notify: restart mongod
+
+  when: result.stdout == '1'
+
 - name: Start and enable services
   service: name=mongod state=started enabled=yes
