@@ -1,11 +1,3 @@
 # Install roles from the Ansible Galaxy
 - src: pulp.pulp3
   name: pulp3
-- src: pulp.pulp3_db
-  name: pulp3_db
-- src: pulp.pulp3_systemd
-  name: pulp3_systemd
-- src: jtyr.config_encoder_filters
-  name: config_encoder_filters
-- src: jtyr.rabbitmq
-  name: rabbitmq
