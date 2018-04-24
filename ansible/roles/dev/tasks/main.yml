@@ -77,6 +77,15 @@
     tags:
       - skip_ansible_lint
 
+  - name: Update setuptools in virtualenv
+    pip:
+      name: setuptools
+      state: latest
+      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
+    when: result|changed
+    tags:
+      - skip_ansible_lint
+
   - name: Install Pulp Platform packages
     pip:
       name: '{{ pulp_devel_dir }}/pulp/{{ item }}'
