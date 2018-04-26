@@ -47,11 +47,6 @@
       - pulp_venv is defined
       - ansible_distribution == 'Fedora'
 
-  - name: Install sqlite
-    package:
-      name: sqlite
-      state: present
-
   - name: Install tools for compiling a PostgreSQL database adapter
     package:
       name:
