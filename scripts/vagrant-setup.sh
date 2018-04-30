@@ -48,6 +48,7 @@ fi
 # If pulp-smash is present, set it up
 if [ -d pulp-smash ]; then
     echo "installing pulp-smash and its dependencies"
+    sudo yum install -y attr
     pushd pulp-smash
     ! mkvirtualenv pulp-smash --python=python3
     workon pulp-smash
@@ -55,17 +56,18 @@ if [ -d pulp-smash ]; then
     # Install dependencies
     pip install -r requirements.txt -r requirements-dev.txt
     pip install pytest
-    python3 setup.py develop
+    pip install --editable .[dev]
     mkdir -p $HOME/.config/pulp_smash/
     cat << EOF > $HOME/.config/pulp_smash/settings.json
 {
   "pulp": {
     "auth": ["admin", "admin"],
-    "version": "2.15"
+    "version": "2.15",
+    "selinux_enable": true
   },
   "systems": [
     {
-      "hostname": "https://$(hostname)",
+      "hostname": "$(hostname)",
       "roles": {
         "amqp broker": {
           "service": "qpidd"
