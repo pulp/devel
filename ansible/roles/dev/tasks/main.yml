@@ -77,7 +77,7 @@
       name: setuptools
       state: latest
       executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
-    when: result|changed
+    when: result is changed
     tags:
       - skip_ansible_lint
 

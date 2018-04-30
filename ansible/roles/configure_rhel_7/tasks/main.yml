@@ -42,7 +42,7 @@
     tags:
       - skip_ansible_lint
 
-  when: result|changed
+  when: result is changed
   become: true
 
 - name: Install Python 3.6 SCL
@@ -61,7 +61,7 @@
 
 - name: Update yum's cache
   command: yum -y makecache
-  when: result|changed
+  when: result is changed
   become: true
   tags:
     - skip_ansible_lint
