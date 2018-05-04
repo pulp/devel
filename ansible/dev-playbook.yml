@@ -4,6 +4,7 @@
   become_method: sudo
   vars:
   roles:
+    - fips
     - core
     - db
     - qpidd

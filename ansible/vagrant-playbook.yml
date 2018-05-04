@@ -11,6 +11,7 @@
   become_method: sudo
   vars:
   roles:
+    - fips
     - db
     - qpidd
     - dev
