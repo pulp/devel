@@ -62,7 +62,7 @@ if [ -d pulp-smash ]; then
 {
   "pulp": {
     "auth": ["admin", "admin"],
-    "version": "2.19",
+    "version": "2.21",
     "selinux enable": true
   },
   "systems": [

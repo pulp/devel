@@ -2,7 +2,7 @@
 # Necessary because of some changes made in the F26 version of openssl
 # https://bugzilla.redhat.com/show_bug.cgi?id=1498197
 - name: Install openssl
-  dnf:
+  yum:
       state: present
       name:
           - openssl
@@ -35,7 +35,7 @@
 - name: Configure openssl subjectAltName
   lineinfile: dest=/etc/pki/tls/openssl.cnf
               insertafter="^\[ usr_cert \]"
-              line="subjectAltName=DNS:{{ ansible_fqdn }},DNS:{{ ansible_nodename }},DNS:{{ ansible_hostname }}"
+              line="subjectAltName=DNS:{{ansible_hostname}},DNS:{{ansible_fqdn}}"
 
 - name: Create Apache certificate request
   command: >

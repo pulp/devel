@@ -1,6 +1,6 @@
 ---
 - name: Install basic packages
-  dnf:
+  yum:
       state: present
       name:
           - bash-completion
@@ -12,7 +12,7 @@
           - vim-enhanced
 
 - name: Install packages requires to gather Pulp facts
-  dnf:
+  yum:
       state: present
       name:
           - rpm-build

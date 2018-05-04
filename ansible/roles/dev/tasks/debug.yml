@@ -2,7 +2,7 @@
 ---
 # Tools handy for debugging that aren't generally useful in normal development
 - name: Install debugging tools
-  dnf:
+  yum:
     state: present
     name:
       - gdb
@@ -14,7 +14,7 @@
 # To generate it, first get all the debuginfo packages that gdb demands installed
 # Then, "rpm -qa --qf "    - %{NAME}\n" | grep debuginfo | sort"
 - name: Install debuginfo packages for gdb
-  dnf:
+  yum:
     state: present
     enablerepo: fedora-debuginfo, updates-debuginfo
     name:
