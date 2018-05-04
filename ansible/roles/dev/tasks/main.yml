@@ -11,21 +11,24 @@
       line: "StrictModes no"
   notify: restart sshd
 
-- name: Install Pulp dnf repository
+- name: Install Pulp yum repository
   when: ansible_distribution == 'Fedora'
   get_url:
       url: https://repos.fedorapeople.org/repos/pulp/pulp/fedora-pulp.repo
       dest: /etc/yum.repos.d/fedora-pulp.repo
 
-- name: Install dnf config-manager
-  dnf: name=dnf-command(config-manager) state=present
+- name: Install Pulp yum repository
+  when: ansible_distribution == 'CentOS'
+  get_url:
+      url: https://repos.fedorapeople.org/repos/pulp/pulp/rhel-pulp.repo
+      dest: /etc/yum.repos.d/rhel-pulp.repo
 
 - name: Enable Pulp Nightly repository
-  command: dnf config-manager --set-enabled pulp-nightlies
+  command: yum config-manager --set-enabled pulp-nightlies
   when: ansible_distribution == 'Fedora' and pulp_nightly_repo_enabled == false
 
 - name: Disable Pulp Stable repository
-  command: dnf config-manager --set-disabled pulp-2-stable
+  command: yum config-manager --set-disabled pulp-2-stable
   when: ansible_distribution == 'Fedora'
 
 # These can go away when https://fedorahosted.org/spin-kickstarts/ticket/59 is fixed
@@ -43,7 +46,7 @@
   name: Rejigger vagrant sudoers file
 
 - name: Install packages
-  dnf: name={{ item }} state=present
+  yum: name={{ item }} state=present
   with_items:
       - git
       - dstat
@@ -55,11 +58,8 @@
       - koji
       - httpie
       - mock
-      - plantuml
-      - policycoreutils-python-utils
       - python-django-bash-completion
       - python-gofer-qpid
-      - python-ipdb
       - python-qpid
       - python-qpid-qmf
       - python-setuptools
@@ -76,7 +76,7 @@
       - zlib-devel
 
 - name: Install gofer
-  dnf: name={{ item }} state=present
+  yum: name={{ item }} state=present
   with_items:
       - gofer
 
@@ -95,7 +95,7 @@
       append: true
 
 - name: Install Pulp RPM dependencies
-  dnf: name={{ item }} state=present
+  yum: name={{ item }} state=present
   with_items: "{{ pulp_rpm_dependencies }}"
 
 - name: Ensure homedir mode suitable for ssh keys

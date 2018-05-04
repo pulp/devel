@@ -2,7 +2,7 @@
 # Necessary because of some changes made in the F26 version of openssl
 # https://bugzilla.redhat.com/show_bug.cgi?id=1498197
 - name: Install openssl
-  dnf: name={{ item }} state=present
+  yum: name={{ item }} state=present
   with_items:
       - openssl
       - openssl-perl

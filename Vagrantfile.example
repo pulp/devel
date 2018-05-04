@@ -27,7 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # to browse that repository a bit to find the latest successful Vagrant image. For example, at the
   # time of this writing, I could set this setting like this for the latest F24 image:
   # config.vm.box = "https://kojipkgs.fedoraproject.org/compose/rawhide/latest-Fedora-Rawhide/compose/CloudImages/x86_64/images/<imagename>.vagrant-libvirt.box"
-  config.vm.box = "fedora/26-cloud-base"
+  config.vm.box = "/home/dalley/Downloads/centos-fips-libvirt.box"
 
   # Comment out if you don't want Vagrant to add and remove entries from /etc/hosts for each VM.
   # requires the vagrant-hostmanager plugin to be installed
@@ -36,8 +36,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.hostmanager.manage_host = true
   end
 
+  config.vm.provision "shell", inline: "sudo systemctl stop NetworkManager; sudo systemctl disable NetworkManager"
+  config.vm.provision "shell", inline: "sudo yum install epel-release"
+
   # Comment this line if you would like to disable the automatic update during provisioning
-  config.vm.provision "shell", inline: "sudo dnf upgrade -y"
+  config.vm.provision "shell", inline: "sudo yum upgrade -y"
 
   # bootstrap and run with ansible
   config.vm.provision "shell", path: "scripts/bootstrap-ansible.sh"
@@ -56,11 +59,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Use SSHFS instead of NFS. Requires the vagrant-sshfs plugin to be installed.
         # Use SSHFS to share directories. The ``-o nonempty`` option is passed to allow
         # mounts on non-empty directories.
-        # pulp2_dev.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
+        pulp2_dev.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
 
         # By default, Vagrant wants to mount with NFSv3, which will fail. Let's
         # explicitly mount the code using NFSv4.
-        pulp2_dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
+        #pulp2_dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
     end
 
     pulp2_dev.vm.provider :libvirt do |domain, override|
@@ -93,60 +96,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # only needed it you changed machine_virtual_size above.
         # For other boxen, use at your own risk
         # override.vm.provision "shell", path: "scripts/vagrant-resize-disk.sh"
-    end
-
-    pulp2_dev.vm.provider :docker do |d, override|
-        override.vm.box = nil
-        # Based on fedora official image, with vagrant's needs met:
-        # https://github.com/rohanpm/docker-fedora-vagrant
-        d.image = 'rohanpm/fedora-vagrant:26'
-
-        # use ssh for the sake of ansible
-        d.has_ssh = true
-
-        # Necessary for systemd to work
-        d.privileged = true
-
-        # Expose any ports other containers may want to connect to
-        d.expose = [80, 443, 5672, 27017]
-
-        VAGRANT_SYNCED_FOLDERS.each do |host_path, guest_path|
-            # Let the synced folders use docker's native mechanism
-            # (bind mounts) instead of NFS
-            override.vm.synced_folder host_path, guest_path, type: nil
-        end
-
-        # Reset the UID and GID of the vagrant user in the container equal to the
-        # UID/GID on the host.  This makes it much easier to deal with the
-        # permissions on shared directories.
-        #
-        # This is only needed for docker, so it's declared here in the docker
-        # provider.
-        #
-        # This is a shell provisioner because it's impractical to apply it using
-        # ansible due to peculiar requirements: you cannot 'usermod' a user if that
-        # user has any processes currently running - including the ssh session that
-        # vagrant itself uses to connect to the container.
-        override.vm.provision 'reset-user', :type => 'shell' do |shell|
-          uid = Process.euid
-          gid = Process.egid
-          reset_cmd = "/vagrant/scripts/vagrant-reset-user.sh #{uid} #{gid}"
-
-          shell.inline = <<-END_SCRIPT.gsub(/\s+/, ' ').strip
-            nohup sudo /bin/sh -c '
-              if ! #{reset_cmd}; then
-                wall "About to kill all vagrant processes for UID reassign!";
-                sleep 2;
-                pkill -TERM -u vagrant;
-                sleep 1;
-                pkill -KILL -u vagrant;
-                #{reset_cmd};
-              fi
-            ' >/tmp/reset-user.log 2>&1 &
-          END_SCRIPT
-
-          shell.privileged = false
-        end
     end
 
     pulp2_dev.vm.provision "shell", inline: "sudo -u vagrant bash /home/vagrant/devel/devel/scripts/vagrant-setup.sh"
