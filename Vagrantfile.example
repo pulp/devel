@@ -87,13 +87,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # only needed it you changed machine_virtual_size above.
         # For other boxen, use at your own risk
         # override.vm.provision "shell", path: "scripts/vagrant-resize-disk.sh"
-    end
 
     pulp3_dev.vm.provider :docker do |d, override|
         override.vm.box = nil
         # Based on fedora official image, with vagrant's needs met:
         # https://github.com/rohanpm/docker-fedora-vagrant
-        d.image = 'rohanpm/fedora-vagrant:26'
+        d.image = 'rohanpm/fedora-vagrant:latest'
 
         # use ssh for the sake of ansible
         d.has_ssh = true
@@ -102,7 +101,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         d.privileged = true
 
         # Expose any ports other containers may want to connect to
-        d.expose = [80, 443, 5672, 27017]
+        # http, https, rabbitmq, postgres, redis
+        d.expose = [80, 443, 5672, 5432, 6379]
 
         VAGRANT_SYNCED_FOLDERS.each do |host_path, guest_path|
             # Let the synced folders use docker's native mechanism
@@ -124,7 +124,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         override.vm.provision 'reset-user', :type => 'shell' do |shell|
           uid = Process.euid
           gid = Process.egid
-          reset_cmd = "/vagrant/scripts/reset-vagrant-user.sh #{uid} #{gid}"
+          reset_cmd = "/vagrant/scripts/vagrant-reset-user.sh #{uid} #{gid}"
 
           shell.inline = <<-END_SCRIPT.gsub(/\s+/, ' ').strip
             nohup sudo /bin/sh -c '
@@ -142,5 +142,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           shell.privileged = false
         end
     end
- end
+  end
 end
