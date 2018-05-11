@@ -87,6 +87,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # only needed it you changed machine_virtual_size above.
         # For other boxen, use at your own risk
         # override.vm.provision "shell", path: "scripts/vagrant-resize-disk.sh"
+    end
 
     pulp3_dev.vm.provider :docker do |d, override|
         override.vm.box = nil
