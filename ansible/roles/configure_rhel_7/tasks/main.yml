@@ -51,7 +51,7 @@
     state: present
   become: true
 
-# EPEL provides AMQP brokers. (RabbitMQ and Qpid.)
+# EPEL provides Redis
 - name: Enable EPEL repository
   yum:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm

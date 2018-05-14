@@ -7,7 +7,6 @@
 - hosts: all
   vars:
     pulp_user: vagrant
-    use_rabbitmq: True
   pre_tasks:
     - name: Require Ansible 2.4+
       assert:
@@ -19,7 +18,7 @@
   roles:
     - pulp-user
     - db
-    - broker
+    - redis
     - dev
     - {role: plugin, plugin_name: 'pulp_file', app_label: 'pulp_file'}
     # - {role: plugin, plugin_name: 'pulp_python', app_label: 'pulp_python'}
