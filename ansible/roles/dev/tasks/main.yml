@@ -2,7 +2,7 @@
   git:
     dest: '{{ pulp_devel_dir }}/pulp'
     repo: https://github.com/pulp/pulp.git
-    version: '3.0-dev'
+    version: 'master'
     update: false
   become: true
   become_user: '{{ pulp_user }}'
