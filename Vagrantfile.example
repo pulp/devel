@@ -56,11 +56,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Use SSHFS instead of NFS. Requires the vagrant-sshfs plugin to be installed.
         # Use SSHFS to share directories. The ``-o nonempty`` option is passed to allow
         # mounts on non-empty directories.
-        # pulp2_dev.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
+        pulp2_dev.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
 
         # By default, Vagrant wants to mount with NFSv3, which will fail. Let's
         # explicitly mount the code using NFSv4.
-        pulp2_dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
+        # pulp2_dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
     end
 
     pulp2_dev.vm.provider :libvirt do |domain, override|
@@ -72,7 +72,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # issue and our use case, the default cpu_mode is overridden.
         domain.cpu_mode = "host-passthrough"
         domain.graphics_type = "spice"
-        domain.memory = 2048
+        domain.memory = 3076
         domain.video_type = "qxl"
 
         # Uncomment this to expand the disk to the given size, in GB (default is usually 40)
