@@ -5,7 +5,7 @@
 
 - name: Assert the target host runs Red Hat
   assert:
-    that: ansible_distribution == 'RedHat'
+    that: ansible_distribution == 'RedHat' or ansible_distribution == 'CentOS'
 
 - name: Register and subscribe to {{ rhn_pool }}
   redhat_subscription:
@@ -14,6 +14,7 @@
     pool: '{{ rhn_pool }}'
     state: present
   when:
+    - ansible_distribution == 'RedHat'
     - rhn_pool is defined
     - rhn_username is defined
     - rhn_password is defined
@@ -42,7 +43,26 @@
     tags:
       - skip_ansible_lint
 
-  when: result is changed
+  when:
+    - ansible_distribution == 'RedHat'
+    - result is changed
+  become: true
+
+- block:
+
+  - name: Install repositories
+    yum: name=centos-release-scl state=present
+
+  - name: Enable scl repos
+    command: yum-config-manager --enable centos-sclo-rh-testing
+
+  - name: Update yum's cache
+    command: yum -y makecache
+    tags:
+      - skip_ansible_lint
+
+  when:
+    - ansible_distribution == 'CentOS'
   become: true
 
 - name: Install Python 3.6 SCL

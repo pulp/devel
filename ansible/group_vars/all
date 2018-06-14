@@ -1,6 +1,6 @@
 ansible_python_interpreter: '/usr/bin/python3'
-pulp_scl_enable_python3: '{% if ansible_distribution == "RedHat" %}/usr/bin/scl enable rh-python36 -- {% endif %}'
-pulp_python_interpreter: '{% if ansible_distribution == "RedHat" %}{{ pulp_scl_enable_python3 }} python3{% else %}/usr/bin/python3{% endif %}'
+pulp_scl_enable_python3: '{% if ansible_distribution == "RedHat" or ansible_distribution == "CentOS" %}/usr/bin/scl enable rh-python36 -- {% endif %}'
+pulp_python_interpreter: '{% if ansible_distribution == "RedHat" or ansible_distribution == "CentOS" %}{{ pulp_scl_enable_python3 }} python3{% else %}/usr/bin/python3{% endif %}'
 # If enabled, `phelp` and other useful aliases are sourced by your bashrc.
 # In adition, some roles will add other relevant bashrc supplements
 supplement_bashrc: true

@@ -16,6 +16,8 @@
           This playbook requires Ansible 2.4+. Consider creating a virtualenv
           and installing Ansible with pip.
   roles:
+    - role: configure_rhel_7
+      when: ansible_distribution == "RedHat" or ansible_distribution == "CentOS"
     - pulp-user
     - db
     - redis
