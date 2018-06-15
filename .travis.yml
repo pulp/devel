@@ -6,5 +6,6 @@ python:
 install:
   - pip install ansible-lint
 script:
+  - ansible-playbook ansible/pulp-from-source.yml --syntax-check
   - ansible-lint ansible/pulp-from-source.yml
 cache: pip
