@@ -24,9 +24,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # It is possible to use URLs to nightly images produced by the Fedora project here. You can find
   # the nightly composes here: https://kojipkgs.fedoraproject.org/compose/
   # Sometimes, a nightly compose is incomplete and does not contain a Vagrant image, so you may need
-  # to browse that repository a bit to find the latest successful Vagrant image. For example, at the
-  # time of this writing, I could set this setting like this for the latest F24 image:
-  # config.vm.box = "https://kojipkgs.fedoraproject.org/compose/rawhide/latest-Fedora-Rawhide/compose/CloudImages/x86_64/images/<imagename>.vagrant-libvirt.box"
+  # to browse that repository a bit to find the latest successful Vagrant image. The name of the image
+  # should end with "vagrant-libvirt.box". To configure for CentOS, use the box "centos/7", and change
+  # the value for 'ansible_python_interpreter' in 'group_vars/all' to '/usr/bin/python2'
   config.vm.box = "fedora/28-cloud-base"
 
   # Comment out if you don't want Vagrant to add and remove entries from /etc/hosts for each VM.
