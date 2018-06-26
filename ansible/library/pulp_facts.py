@@ -25,13 +25,13 @@ rpm_dependency_list = list(['nss-tools', 'pygobject3', 'deltarpm', 'kobo', 'pupp
                             'python-isodate', 'python-nectar', 'libselinux-python',
                             'python-blinker', 'python-iniparse', 'python-flask', 'mod_wsgi',
                             'repoview', 'python-mongoengine', 'python-setuptools',
-                            'python2-django1.11', 'python', 'python-deltarpm',
+                            'python2-django', 'python', 'python-deltarpm',
                             'rsync', 'pyliblzma', 'python-httplib2', 'm2crypto', 'genisoimage',
                             'createrepo', 'python-twisted', 'python-qpid', 'mod_xsendfile',
                             'python-twine', 'selinux-policy', 'python-pymongo', 'python-gnupg',
                             'gofer', 'ostree', 'python-semantic_version', 'openssl', 'acl',
                             'createrepo_c', 'yum', 'python-okaara', 'gnupg', 'python-gofer',
-                            'python-celery'])
+                            'python-celery', 'python-debian', 'python2-debpkgr', 'python2-gnupg'])
 
 # Build the facts for Ansible
 facts = {
