@@ -1,3 +1,17 @@
+- name: Stop Pulp services
+  systemd:
+    name: '{{ item }}'
+    state: stopped
+  with_items:
+    - pulp_resource_manager
+    - pulp_worker@1
+    - pulp_worker@2
+  become: true
+  # the services might not have been installed yet
+  register: result
+  failed_when: "result is failed and 'Could not find the requested service' not in result.msg"
+
+
 - block:
 
   - name: Make migrations for {{ app_label }}
@@ -15,5 +29,19 @@
       - migrate --noinput
       - reset-admin-password --password admin
 
+    become: true
+    become_user: '{{ pulp_user }}'
+
+
+- name: Start Pulp services
+  systemd:
+    name: '{{ item }}'
+    state: started
+  with_items:
+    - pulp_resource_manager
+    - pulp_worker@1
+    - pulp_worker@2
   become: true
-  become_user: '{{ pulp_user }}'
+  # the services might not have been installed yet
+  register: result
+  failed_when: "result is failed and 'Could not find the requested service' not in result.msg"
