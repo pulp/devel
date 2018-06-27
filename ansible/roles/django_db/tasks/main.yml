@@ -11,26 +11,17 @@
   register: result
   failed_when: "result is failed and 'Could not find the requested service' not in result.msg"
 
-
-- block:
-
-  - name: Make migrations for {{ app_label }}
-    command: >
-      {{ pulp_scl_enable_python3 }}
-      {{ pulp_venv }}/bin/pulp-manager makemigrations {{ app_label }}
-
-  - name: Run all migrations
-    command: >
-      {{ pulp_scl_enable_python3 }}
-      {{ pulp_venv }}/bin/pulp-manager {{ item }}
-    with_items:
-      - reset_db --noinput
-      - migrate auth --noinput
-      - migrate --noinput
-      - reset-admin-password --password admin
-
-    become: true
-    become_user: '{{ pulp_user }}'
+- name: Run all migrations
+  command: >
+    {{ pulp_scl_enable_python3 }}
+    {{ pulp_venv }}/bin/pulp-manager {{ item }}
+  with_items:
+    - reset_db --noinput
+    - migrate auth --noinput
+    - migrate --noinput
+    - reset-admin-password --password admin
+  become: true
+  become_user: '{{ pulp_user }}'
 
 
 - name: Start Pulp services

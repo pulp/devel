@@ -24,6 +24,7 @@
     - dev
     - {role: plugin, plugin_name: 'pulp_file', app_label: 'pulp_file'}
     # - {role: plugin, plugin_name: 'pulp_python', app_label: 'pulp_python'}
+    - django_db
     - systemd
     - role: dev_tools
       when: ansible_distribution == 'Fedora'
