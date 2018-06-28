@@ -173,8 +173,7 @@
 
   become: true
 
-- name: Create and run migrations for {{ pulp_app }}
-  include_role:
-    name: django_db
-  vars:
-    app_label: pulp_app
+- name: Create migrations for pulp_app
+  command: >
+    {{ pulp_scl_enable_python3 }}
+    {{ pulp_venv }}/bin/pulp-manager makemigrations pulp_app

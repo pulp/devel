@@ -19,10 +19,9 @@
     become: true
     become_user: '{{ pulp_user }}'
 
-  # Variables in the current context are inherited by included roles. Thus, this
-  # role implicitly gets the app_label variable that it needs.
-  - name: Run migrations for {{ app_label }}
-    include_role:
-      name: django_db
+  - name: Make migrations for {{ app_label }}
+    command: >
+      {{ pulp_scl_enable_python3 }}
+      {{ pulp_venv }}/bin/pulp-manager makemigrations {{ app_label }}
 
   when: repo_path.stat.isdir is defined and repo_path.stat.isdir
