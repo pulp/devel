@@ -7,6 +7,7 @@
       name: vim-enhanced
       state: present
     register: result
+    ignore_errors: yes
 
   - name: Upgrade vim-minimal if installing vim-enhanced failed
     package:
