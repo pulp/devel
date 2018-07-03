@@ -1,0 +1,27 @@
+- name: Get information about {{ pulp_devel_dir }}/{{ plugin_name }}
+  stat:
+    path: '{{ pulp_devel_dir }}/{{ plugin_name }}'
+  register: repo_path
+  become: true
+  become_user: '{{ pulp_user }}'
+
+- debug:
+    msg: '{{ pulp_devel_dir }}/{{ plugin_name }} does not exist, skipping!'
+  when: repo_path.stat.isdir is not defined or not repo_path.stat.isdir
+
+- block:
+
+  - name: Install plugin packages into core Pulp Python environment
+    pip:
+      name: '{{ pulp_devel_dir }}/{{ plugin_name }}'
+      extra_args: '-e'
+      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
+    become: true
+    become_user: '{{ pulp_user }}'
+
+  - name: Make migrations for {{ app_label }}
+    command: >
+      {{ pulp_scl_enable_python3 }}
+      {{ pulp_venv }}/bin/pulp-manager makemigrations {{ app_label }}
+
+  when: repo_path.stat.isdir is defined and repo_path.stat.isdir
