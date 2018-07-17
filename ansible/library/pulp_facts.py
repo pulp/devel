@@ -19,20 +19,21 @@ pipe = subprocess.Popen('/usr/sbin/getenforce', stdout=subprocess.PIPE,
 stdout, stderr = pipe.communicate()
 selinux_enabled = 'Enforcing' in stdout
 
-rpm_dependency_list = list(['nss-tools', 'pygobject3', 'deltarpm', 'kobo', 'puppet',
-                            'python2-lxml', 'python-ldap', 'crontabs', 'httpd', 'systemd', 'git',
-                            'mod_ssl', 'python-pycurl', 'python-oauth2', 'policycoreutils-python',
-                            'python-isodate', 'python-nectar', 'libselinux-python',
-                            'python-blinker', 'python-iniparse', 'python-flask', 'mod_wsgi',
-                            'repoview', 'python-mongoengine', 'python-setuptools',
-                            'python2-django', 'python', 'python-deltarpm',
-                            'rsync', 'pyliblzma', 'python-httplib2', 'm2crypto', 'genisoimage',
-                            'createrepo', 'python-twisted', 'python-qpid', 'mod_xsendfile',
-                            'python-twine', 'selinux-policy', 'python-pymongo', 'python-gnupg',
-                            'gofer', 'ostree', 'python-semantic_version', 'openssl', 'acl',
-                            'createrepo_c', 'yum', 'python-okaara', 'gnupg', 'python-gofer',
-                            'python-celery', 'python-debian', 'python2-debpkgr', 'python2-gnupg',
-                            'libmodulemd'])
+rpm_dependency_list = list(['acl', 'createrepo', 'createrepo_c', 'crontabs',
+                            'deltarpm', 'genisoimage', 'git', 'gnupg', 'gofer',
+                            'httpd', 'kobo', 'libmodulemd', 'libselinux-python',
+                            'm2crypto', 'mod_ssl', 'mod_wsgi', 'mod_xsendfile',
+                            'nss-tools', 'openssl', 'ostree', 'policycoreutils-python',
+                            'puppet', 'pygobject3', 'pyliblzma', 'python', 'python-blinker',
+                            'python-celery', 'python-debian', 'python-deltarpm', 'python-flask',
+                            'python-gnupg', 'python-gofer', 'python-httplib2', 'python-iniparse',
+                            'python-isodate', 'python-ldap', 'python-mongoengine',
+                            'python-nectar', 'python-oauth2', 'python-okaara', 'python-pycurl',
+                            'python-pymongo', 'python-qpid', 'python-semantic_version',
+                            'python-setuptools', 'python-twine', 'python-twisted',
+                            'python2-debpkgr', 'python2-django', 'python2-gnupg', 'python2-lxml',
+                            'python2-solv', 'repoview', 'rsync', 'selinux-policy', 'systemd',
+                            'yum'])
 
 # Build the facts for Ansible
 facts = {
