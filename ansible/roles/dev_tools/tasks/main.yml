@@ -21,9 +21,11 @@
     package:
       name:
         - bash-completion
+        - dnf-utils
         - dstat
         - fedora-easy-karma
         - fpaste
+        - fzf
         - htop
         - httpie
         - iotop
@@ -34,12 +36,12 @@
         - python-rpdb
         - python3-setuptools
         - redhat-lsb-core
+        - ripgrep
         - screen
         - telnet
         - tmux
         - tree
         - vim-enhanced
-        - yum-utils
       state: present
 
   become: true
