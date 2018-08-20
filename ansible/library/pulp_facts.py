@@ -31,7 +31,7 @@ rpm_dependency_list = list(['acl', 'createrepo', 'createrepo_c', 'crontabs',
                             'python-nectar', 'python-oauth2', 'python-okaara', 'python-pycurl',
                             'python-pymongo', 'python-qpid', 'python-semantic_version',
                             'python-setuptools', 'python-twine', 'python-twisted',
-                            'python2-debpkgr', 'python2-django', 'python2-gnupg', 'python2-lxml',
+                            'python2-debpkgr', 'python2-django1.11', 'python2-gnupg', 'python2-lxml',
                             'python2-solv', 'repoview', 'rsync', 'selinux-policy', 'systemd',
                             'yum'])
 
