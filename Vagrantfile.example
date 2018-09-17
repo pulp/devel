@@ -91,6 +91,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     pulp3_dev.vm.provider :docker do |d, override|
 
+        require 'rbconfig'
+        os = RbConfig::CONFIG['host_os'].downcase
+
         uid = Process.euid
         gid = Process.egid
 
@@ -99,8 +102,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # https://github.com/rohanpm/docker-fedora-vagrant
         # plugins/providers/docker/action/login.rb
         d.build_dir = 'docker/'
-        d.build_args = ["--build-arg=USER_EUID=#{uid}", "--build-arg=USER_EGID=#{gid}"]
-          
+        d.build_args = ["--build-arg=USER_EUID=#{uid}"]
+        unless os.include? "darwin" then
+            d.build_args.push("--build-arg=USER_EGID=#{gid}")
+        end
 
         # use ssh for the sake of ansible
         d.has_ssh = true
