@@ -2,7 +2,6 @@ Welcome to the Pulp dev environment!
 
 Here are some tips:
 
-* The 3.0-dev branch is experimental, and my be broken.
 * Your code is all checked out inside of ``~/devel/``.
 * Several bash aliases have been installed. ``phelp`` will list them and what
   they do.
