@@ -22,6 +22,8 @@
     - reset-admin-password --password admin
   become: true
   become_user: '{{ pulp_user }}'
+  tags:
+    - skip_ansible_lint
 
 
 - name: Start Pulp services
