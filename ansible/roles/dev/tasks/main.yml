@@ -87,7 +87,6 @@
       extra_args: '-e'
       executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
     with_items:
-      - common
       - pulpcore
       - plugin
 
