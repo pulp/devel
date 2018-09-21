@@ -79,7 +79,7 @@ ptest() {
     python manage.py makemigrations pulp_file
     # Auth migrations must be run before pulpcore to generate schema that the User model relates to.
     python manage.py migrate auth --noinput
-    python manage.py test pulpcore/ common/
+    python manage.py test pulpcore/
 }
 _ptest_help="Run tests for pulp and all installed plugins/services"
 
