@@ -24,6 +24,9 @@
     - dev
     - {role: plugin, plugin_name: 'pulp_file', app_label: 'pulp_file'}
     # - {role: plugin, plugin_name: 'pulp_python', app_label: 'pulp_python'}
+    # - {role: plugin, plugin_name: 'pulp_ansible', app_label: 'pulp_ansible'}
+    # - {role: plugin, plugin_name: 'pulp_docker', app_label: 'pulp_docker'}
+    # - {role: plugin, plugin_name: 'pulp_rpm', app_label: 'pulp_rpm'}
     - django_db
     - systemd
     - role: dev_tools
