@@ -41,6 +41,7 @@
         - telnet
         - tmux
         - tree
+        - wget
         - vim-enhanced
       state: present
 
