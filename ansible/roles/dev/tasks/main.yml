@@ -135,19 +135,19 @@
       path: /etc/pulp
       state: directory
 
-  - name: Install server.yaml Config file
+  - name: Install settings.py file
     copy:
       remote_src: true
-      src: '{{pulp_devel_dir}}/pulp/pulpcore/pulpcore/etc/pulp/server.yaml'
-      dest: '/etc/pulp/server.yaml'
+      src: '{{pulp_devel_dir}}/pulp/pulpcore/pulpcore/etc/pulp/settings.py'
+      dest: '/etc/pulp/settings.py'
 
-  - name: Add development server configuration in server.yaml
+  - name: Add development server configuration in settings.py
     blockinfile:
-      path: '/etc/pulp/server.yaml'
+      path: '/etc/pulp/settings.py'
       block: |
         # Pulp Development Configuration
-        DEBUG: True
-        SECRET_KEY: '{{ random_secret.stdout }}'
+        DEBUG = True
+        SECRET_KEY = '{{ random_secret.stdout }}'
 
   - name: Create /var/lib/pulp directory
     file:
