@@ -1,5 +1,5 @@
 [Unit]
-Description=Pulp Celery Worker
+Description=Pulp Worker
 After=network-online.target
 Wants=network-online.target
 
@@ -13,6 +13,7 @@ RuntimeDirectory=pulp_worker_%i
 ExecStart={{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/rq worker \
           -w pulpcore.tasking.worker.PulpWorker \
           -n reserved_resource_worker_%i@%%h \
+          -c 'pulpcore.rqconfig'
           --pid=/var/run/pulp_worker_%i/reserved_resource_worker_%i.pid
 
 [Install]

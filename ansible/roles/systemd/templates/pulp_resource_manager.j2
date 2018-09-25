@@ -10,6 +10,7 @@ WorkingDirectory=/var/run/pulp_resource_manager/
 RuntimeDirectory=pulp_resource_manager
 ExecStart={{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/rq worker \
           -w pulpcore.tasking.worker.PulpWorker -n resource_manager@%%h \
+          -c 'pulpcore.rqconfig' \
           --pid=/var/run/pulp_resource_manager/resource_manager.pid
 
 [Install]
