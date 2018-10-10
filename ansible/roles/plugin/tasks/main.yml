@@ -1,27 +1,27 @@
-- name: Get information about {{ pulp_devel_dir }}/{{ plugin_name }}
-  stat:
-    path: '{{ pulp_devel_dir }}/{{ plugin_name }}'
-  register: repo_path
-  become: true
-  become_user: '{{ pulp_user }}'
+---
+- name: Look for plugin directories
+  local_action:
+    module: find
+    paths: "{{ playbook_dir }}/../../"
+    file_type: directory
+    patterns: "pulp_*"
+  register: plugin_dirs
+- name: Look for setup.py in plugin directories
+  local_action:
+    module: find
+    paths: "{{ item }}"
+    file_type: file
+    patterns: "setup.py"
+  with_items: "{{ plugin_dirs.files | map(attribute='path') | list }}"
+  register: plugin_setups
+- name: Set plugins fact
+  set_fact:
+    plugins: "{{ plugin_setups.results | map(attribute='files') | flatten | map(attribute='path') | map('dirname') | map('basename') | list }}"
 
-- debug:
-    msg: '{{ pulp_devel_dir }}/{{ plugin_name }} does not exist, skipping!'
-  when: repo_path.stat.isdir is not defined or not repo_path.stat.isdir
-
-- block:
-
-  - name: Install plugin packages into core Pulp Python environment
-    pip:
-      name: '{{ pulp_devel_dir }}/{{ plugin_name }}'
-      extra_args: '-e'
-      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
-    become: true
-    become_user: '{{ pulp_user }}'
-
-  - name: Make migrations for {{ app_label }}
-    command: >
-      {{ pulp_scl_enable_python3 }}
-      {{ pulp_venv }}/bin/pulp-manager makemigrations {{ app_label }}
-
-  when: repo_path.stat.isdir is defined and repo_path.stat.isdir
+- name: Install plugins
+  include_tasks: install_plugin.yml
+  vars:
+    plugin_name: '{{ item }}'
+    app_label: '{{ item }}'
+  with_items: '{{ plugins }}'
+...
