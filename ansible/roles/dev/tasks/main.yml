@@ -43,42 +43,44 @@
   name: Rejigger vagrant sudoers file
 
 - name: Install packages
-  dnf: name={{ item }} state=present
-  with_items:
-      - git
-      - dstat
-      - fpaste
-      - graphviz
-      - gcc
-      - iotop
-      - jnettop
-      - koji
-      - httpie
-      - mock
-      - plantuml
-      - policycoreutils-python-utils
-      - python-django-bash-completion
-      - python-gofer-qpid
-      - python-ipdb
-      - python-qpid
-      - python-qpid-qmf
-      - python-setuptools
-      - python-sphinx
-      - python-virtualenvwrapper
-      - python2-rpdb
-      - redhat-lsb-core
-      - rpm-build
-      - ruby-devel
-      - selinux-policy-devel
-      - telnet
-      - tito
-      - yum-utils
-      - zlib-devel
+  dnf:
+      state: present
+      name:
+          - git
+          - dstat
+          - fpaste
+          - graphviz
+          - gcc
+          - iotop
+          - jnettop
+          - koji
+          - httpie
+          - mock
+          - plantuml
+          - policycoreutils-python-utils
+          - python-django-bash-completion
+          - python-gofer-qpid
+          - python-ipdb
+          - python-qpid
+          - python-qpid-qmf
+          - python-setuptools
+          - python-sphinx
+          - python-virtualenvwrapper
+          - python2-rpdb
+          - redhat-lsb-core
+          - rpm-build
+          - ruby-devel
+          - selinux-policy-devel
+          - telnet
+          - tito
+          - yum-utils
+          - zlib-devel
 
 - name: Install gofer
-  dnf: name={{ item }} state=present
-  with_items:
-      - gofer
+  dnf:
+      state: present
+      name:
+          - gofer
 
 - name: allow vagrant user to read the systemd journal
   user:
@@ -95,8 +97,9 @@
       append: true
 
 - name: Install Pulp RPM dependencies
-  dnf: name={{ item }} state=present
-  with_items: "{{ pulp_rpm_dependencies }}"
+  dnf:
+      state: present
+      name: "{{ pulp_rpm_dependencies }}"
 
 - name: Ensure homedir mode suitable for ssh keys
   file: dest=/home/{{ ansible_env.SUDO_USER }} mode=0750
