@@ -23,6 +23,7 @@
         - bash-completion
         - dnf-utils
         - dstat
+        - fd-find
         - fedora-easy-karma
         - fpaste
         - fzf
@@ -31,6 +32,7 @@
         - iotop
         - jnettop
         - jq
+        - ncdu
         - python-django-bash-completion
         - python-ipdb
         - python-rpdb
