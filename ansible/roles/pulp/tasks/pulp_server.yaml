@@ -1,9 +1,10 @@
 ---
 - name: Install MongoDB server
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state=latest"
-  with_items:
-    - mongodb-server
-    - mongodb
+  package:
+    state: latest
+    name:
+      - mongodb-server
+      - mongodb
 
 - name: Start and enable MongoDB server service
   service: name=mongod state=started enabled=yes
@@ -13,10 +14,11 @@
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 6
 
 - name: Install qpid-cpp server
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state=latest"
-  with_items:
-    - qpid-cpp-server
-    - qpid-cpp-server-linearstore
+  package:
+    state: latest
+    name:
+      - qpid-cpp-server
+      - qpid-cpp-server-linearstore
 
 - name: Start and enable qpid-cpp server service
   service: name=qpidd state=started enabled=yes
@@ -45,7 +47,8 @@
   when: pulp_build == "beta" or pulp_build == "stable"
 
 - name: Install Pulp Server
-  action: "{{ ansible_pkg_mgr }} name=@pulp-server-qpid"
+  package:
+    name: @pulp-server-qpid
   notify:
     - Restart Apache service
     - Restart Pulp workers service
@@ -53,21 +56,24 @@
     - Restart Pulp resource manager service
 
 - name: Install Pulp Admin (RPM, Puppet, Docker)
-  action: "{{ ansible_pkg_mgr }} name=@pulp-admin"
+  package:
+    name: @pulp-admin
 
 - name: Install OSTree
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state=latest"
-  with_items:
-    - pulp-ostree-plugins
-    - pulp-ostree-admin-extensions
+  package:
+    state: latest
+    name:
+      - pulp-ostree-plugins
+      - pulp-ostree-admin-extensions
   when: (ansible_distribution == "RedHat" and ansible_distribution_major_version|int >= 7) or
         (ansible_distribution == "Fedora" and ansible_distribution_major_version|int >= 23)
 
 - name: Install Pulp Python plugin
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state=latest"
-  with_items:
-    - pulp-python-plugins
-    - pulp-python-admin-extensions
+  package:
+    state: latest
+    name:
+      - pulp-python-plugins
+      - pulp-python-admin-extensions
   notify:
     - Restart Apache service
 

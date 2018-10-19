@@ -23,7 +23,9 @@
     depth: 1
 
 - name: Install pip package
-  action: "{{ ansible_pkg_mgr }} name=python-pip state=latest"
+  package:
+    state: latest
+    name: python-pip
 
 - name: Install coverage package
   command: pip install -U coverage
