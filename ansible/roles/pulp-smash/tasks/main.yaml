@@ -7,12 +7,13 @@
   git: repo=https://github.com/PulpQE/pulp-smash.git depth=1 dest=pulp-smash
 
 - name: Install required OS packages
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
-  with_items:
-    - attr
-    - python
-    - python-pip
-    - python-virtualenv
+  package:
+    state: present
+    name:
+      - attr
+      - python
+      - python-pip
+      - python-virtualenv
 
 - name: Create Pulp Smash virtual environment
   shell: virtualenv venv chdir=pulp-smash
