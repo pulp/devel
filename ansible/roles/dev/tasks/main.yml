@@ -83,12 +83,15 @@
 
   - name: Install Pulp Platform packages
     pip:
-      name: '{{ pulp_devel_dir }}/pulp/{{ item }}'
-      extra_args: '-e'
-      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
-    with_items:
-      - pulpcore
-      - plugin
+      name: '{{ pulp_devel_dir }}/pulp/pulpcore'
+      editable: yes
+      virtualenv: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}'
+
+  - name: Install Pulp Platform packages
+    pip:
+      name: '{{ pulp_devel_dir }}/pulp/plugin'
+      editable: yes
+      virtualenv: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}'
 
   - name: Install developer extra-requirements
     pip:
