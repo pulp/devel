@@ -41,6 +41,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # ansible.verbose = "vvv"
       # ansible.start_at_task = "ansible task name here"
       # ansible.extra_vars = { use_rabbitmq: false }
+      ansible.extra_vars = { development: true }
   end
 
   # Create the "pulp3_dev" box
