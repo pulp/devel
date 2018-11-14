@@ -4,7 +4,7 @@ Pulp Development Repository
 This repository contains various tools that are useful for developing Pulp.
 
 Complete documentation for using the repository can be found in
-[the contributing guide](https://docs.pulpproject.org/en/3.0/nightly/contributing/dev-setup.html)
+[the contributing guide](https://docs.pulpproject.org/en/3.0/nightly/contributing/dev-setup/index.html)
 
 ansible
 -------
