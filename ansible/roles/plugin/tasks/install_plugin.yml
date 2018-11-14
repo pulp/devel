@@ -11,6 +11,14 @@
 
 - block:
 
+  - name: 'Install test requirements for plugin ({{ plugin_name }})'
+    pip:
+      requirements: '{{ pulp_devel_dir }}/{{ plugin_name }}/test_requirements.txt'
+      executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
+    become: true
+    become_user: '{{ pulp_user }}'
+    when: development
+
   - name: Install plugin packages into core Pulp Python environment
     pip:
       name: '{{ pulp_devel_dir }}/{{ plugin_name }}'
