@@ -21,6 +21,7 @@
     - pulp-user
     - db
     - redis
+    - createrepo_c
     - dev
     - plugin
     - django_db

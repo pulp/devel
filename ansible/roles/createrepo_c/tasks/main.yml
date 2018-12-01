@@ -1,0 +1,20 @@
+- name: Install createrepo_c build dependencies
+  become: true
+  package:
+    name:
+      - gcc
+      - make
+      - cmake
+      - bzip2-devel
+      - expat-devel
+      - file-devel
+      - glib2-devel
+      - libcurl-devel
+      - libxml2-devel
+      - python3-devel
+      - rpm-devel
+      - openssl-devel
+      - sqlite-devel
+      - xz-devel
+      - zlib-devel
+    state: present
