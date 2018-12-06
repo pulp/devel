@@ -81,15 +81,15 @@
     tags:
       - skip_ansible_lint
 
-  - name: Install Pulp Platform packages
+  - name: Install Pulp Platform package
     pip:
       name: '{{ pulp_devel_dir }}/pulp/pulpcore'
       editable: yes
       virtualenv: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}'
 
-  - name: Install Pulp Platform packages
+  - name: Install Pulp Plugin package
     pip:
-      name: '{{ pulp_devel_dir }}/pulp/plugin'
+      name: '{{ pulp_devel_dir }}/pulpcore-plugin'
       editable: yes
       virtualenv: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}'
 
