@@ -83,7 +83,7 @@
 
   - name: Install Pulp Platform package
     pip:
-      name: '{{ pulp_devel_dir }}/pulp/pulpcore'
+      name: '{{ pulp_devel_dir }}/pulp'
       editable: yes
       virtualenv: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}'
 
@@ -141,7 +141,7 @@
   - name: Install settings.py file
     copy:
       remote_src: true
-      src: '{{pulp_devel_dir}}/pulp/pulpcore/pulpcore/etc/pulp/settings.py'
+      src: '{{pulp_devel_dir}}/pulp/pulpcore/etc/pulp/settings.py'
       dest: '/etc/pulp/settings.py'
 
   - name: Add development server configuration in settings.py
