@@ -6,6 +6,7 @@
       src: 'templates/{{ item }}.j2'
       dest: '/etc/systemd/system/{{ item }}.service'
     with_items:
+      - pulp_content_app
       - pulp_resource_manager
       - pulp_worker@
 
@@ -16,6 +17,7 @@
       name: '{{ item }}'
       state: restarted
     with_items:
+      - pulp_content_app
       - pulp_resource_manager
       - pulp_worker@1
       - pulp_worker@2

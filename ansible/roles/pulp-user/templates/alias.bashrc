@@ -1,7 +1,7 @@
 # If adding new functions to this file, note that you can add help text to the function
 # by defining a variable with name _<function>_help containing the help text
 
-SERVICES=("pulp_worker@1 pulp_worker@2 pulp_resource_manager")
+SERVICES=("pulp_content_app pulp_worker@1 pulp_worker@2 pulp_resource_manager")
 
 _paction() {
     echo systemctl $@ ${SERVICES}

@@ -151,6 +151,8 @@
         # Pulp Development Configuration
         DEBUG = True
         SECRET_KEY = '{{ random_secret.stdout }}'
+        CONTENT_HOST = 'localhost:8080'
+        CONTENT_PATH_PREFIX = '/pulp/content/'
 
   - name: Create /var/lib/pulp directory
     file:
