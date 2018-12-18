@@ -4,3 +4,4 @@ pulp_python_interpreter: '{% if ansible_distribution == "RedHat" or ansible_dist
 # If enabled, `phelp` and other useful aliases are sourced by your bashrc.
 # In adition, some roles will add other relevant bashrc supplements
 supplement_bashrc: true
+package_retries: 5

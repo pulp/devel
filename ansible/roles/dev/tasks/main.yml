@@ -16,6 +16,9 @@
         - selinux-policy
       state: present
     when: ansible_distribution == 'Fedora'
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   - name: Disable selinux
     selinux:
@@ -35,6 +38,9 @@
     package:
       name: python-virtualenvwrapper
     when: pulp_venv is defined
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   # Ther is or was a dependency bug with the python3-virtualenvwrapper package,
   # and installing which works around it.
@@ -46,12 +52,18 @@
     when:
       - pulp_venv is defined
       - ansible_distribution == 'Fedora'
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   - name: Install tools for compiling a PostgreSQL database adapter
     package:
       name:
         - gcc
         - postgresql-devel
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   become: true
 
@@ -71,6 +83,9 @@
     when: result is changed
     tags:
       - skip_ansible_lint
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   - name: Update setuptools in virtualenv
     pip:
@@ -80,18 +95,27 @@
     when: result is changed
     tags:
       - skip_ansible_lint
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   - name: Install Pulp Platform package
     pip:
       name: '{{ pulp_devel_dir }}/pulp'
       editable: yes
       virtualenv: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}'
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   - name: Install Pulp Plugin package
     pip:
       name: '{{ pulp_devel_dir }}/pulpcore-plugin'
       editable: yes
       virtualenv: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}'
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   - name: Install developer extra-requirements
     pip:
@@ -101,6 +125,9 @@
       - test_requirements.txt
       - dev_requirements.txt
       - doc_requirements.txt
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   - name: Enable autoenv Directory Switching for pulp
     lineinfile:
@@ -141,7 +168,7 @@
   - name: Install settings.py file
     copy:
       remote_src: true
-      src: '{{pulp_devel_dir}}/pulp/pulpcore/etc/pulp/settings.py'
+      src: '{{ pulp_devel_dir }}/pulp/pulpcore/etc/pulp/settings.py'
       dest: '/etc/pulp/settings.py'
 
   - name: Add development server configuration in settings.py
