@@ -4,6 +4,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
+Environment="DJANGO_SETTINGS_MODULE=pulpcore.app.settings"
 User={{ pulp_user }}
 WorkingDirectory=/var/run/pulp_content_app/
 RuntimeDirectory=pulp_content_app

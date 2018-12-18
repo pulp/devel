@@ -2,10 +2,7 @@
   systemd:
     name: '{{ item }}'
     state: stopped
-  with_items:
-    - pulp_resource_manager
-    - pulp_worker@1
-    - pulp_worker@2
+  with_items: '{{ pulp_services | reverse | list }}'
   become: true
   # the services might not have been installed yet
   register: result
@@ -30,10 +27,7 @@
   systemd:
     name: '{{ item }}'
     state: started
-  with_items:
-    - pulp_resource_manager
-    - pulp_worker@1
-    - pulp_worker@2
+  with_items: '{{ pulp_services }}'
   become: true
   # the services might not have been installed yet
   register: result
