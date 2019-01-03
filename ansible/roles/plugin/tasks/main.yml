@@ -1,22 +1,24 @@
 ---
 - name: Look for plugin directories
-  local_action:
-    module: find
+  find:
     paths: "{{ playbook_dir }}/../../"
     file_type: directory
     patterns: "pulp_*"
+  delegate_to: localhost
   register: plugin_dirs
 - name: Look for setup.py in plugin directories
-  local_action:
-    module: find
+  find:
     paths: "{{ item }}"
     file_type: file
     patterns: "setup.py"
+  delegate_to: localhost
   with_items: "{{ plugin_dirs.files | map(attribute='path') | list }}"
   register: plugin_setups
 - name: Set plugins fact
   set_fact:
-    plugins: "{{ plugin_setups.results | map(attribute='files') | flatten | map(attribute='path') | map('dirname') | map('basename') | list }}"
+    plugins: >-
+      {{ plugin_setups.results | map(attribute='files') | flatten |
+      map(attribute='path') | map('dirname') | map('basename') | list }}
 
 - name: Install plugins
   include_tasks: install_plugin.yml

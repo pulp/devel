@@ -68,6 +68,9 @@
     name: git
     state: present
   become: true
+  retries: "{{ package_retries }}"
+  register: result
+  until: result is succeeded
 
 - block:
 

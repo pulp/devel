@@ -4,6 +4,9 @@
     package:
       name: postgresql-server
       state: present
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   # Set environment variable to avoid encoding issues. See:
   # https://code.djangoproject.com/ticket/18710
@@ -32,6 +35,9 @@
     package:
       name: python{% if ansible_distribution == "Fedora" %}3{% endif %}-psycopg2
       state: present
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   - name: Set up database user for Pulp
     postgresql_user:

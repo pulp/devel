@@ -18,6 +18,9 @@
     become: true
     become_user: '{{ pulp_user }}'
     when: development
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   - name: Install plugin packages into core Pulp Python environment
     pip:
@@ -26,6 +29,9 @@
       executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
     become: true
     become_user: '{{ pulp_user }}'
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   - name: Make migrations for {{ app_label }}
     command: >

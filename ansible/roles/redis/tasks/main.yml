@@ -4,6 +4,9 @@
     package:
       name: redis
       state: present
+    retries: "{{ package_retries }}"
+    register: result
+    until: result is succeeded
 
   - name: Start Redis
     systemd:
