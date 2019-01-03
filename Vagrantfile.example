@@ -27,7 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # to browse that repository a bit to find the latest successful Vagrant image. The name of the image
   # should end with "vagrant-libvirt.box". To configure for CentOS, use the box "centos/7", and change
   # the value for 'ansible_python_interpreter' in 'group_vars/all' to '/usr/bin/python2'
-  config.vm.box = "fedora/28-cloud-base"
+  config.vm.box = "fedora/29-cloud-base"
 
   # Comment out if you don't want Vagrant to add and remove entries from /etc/hosts for each VM.
   # requires the vagrant-hostmanager plugin to be installed
@@ -52,7 +52,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Use SSHFS instead of NFS. Requires the vagrant-sshfs plugin to be installed.
         # Use SSHFS to share directories. The ``-o nonempty`` option is passed to allow
         # mounts on non-empty directories.
-        pulp3_dev.vm.synced_folder host_path, guest_path, type: "sshfs", sshfs_opts_append: "-o nonempty"
+        pulp3_dev.vm.synced_folder host_path, guest_path, type: "sshfs"
 
         # Comment this out if you use a different filesystem (like sshfs)
         # pulp3_dev.vm.synced_folder host_path, guest_path, type: "nfs", nfs_version: 4, nfs_udp: false
@@ -67,7 +67,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # issue and our use case, the default cpu_mode is overridden.
         domain.cpu_mode = "host-passthrough"
         domain.graphics_type = "spice"
-        domain.memory = 2048
+        domain.memory = 4096
         domain.video_type = "qxl"
 
         # Uncomment this to expand the disk to the given size, in GB (default is usually 40)
@@ -115,8 +115,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         d.privileged = true
 
         # Expose any ports other containers may want to connect to
-        # http, https, rabbitmq, postgres, redis
-        d.expose = [80, 443, 5672, 5432, 6379]
+        # http, https, postgres, redis
+        d.expose = [80, 443, 5432, 6379]
 
         VAGRANT_SYNCED_FOLDERS.each do |host_path, guest_path|
             # Let the synced folders use docker's native mechanism

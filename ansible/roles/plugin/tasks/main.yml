@@ -6,6 +6,7 @@
     patterns: "pulp_*"
   delegate_to: localhost
   register: plugin_dirs
+
 - name: Look for setup.py in plugin directories
   find:
     paths: "{{ item }}"
