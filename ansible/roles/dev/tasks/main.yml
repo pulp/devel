@@ -165,21 +165,10 @@
       path: /etc/pulp
       state: directory
 
-  - name: Install settings.py file
-    copy:
-      remote_src: true
-      src: '{{ pulp_devel_dir }}/pulp/pulpcore/etc/pulp/settings.py'
+  - name: Write development server configuration in settings.py
+    template:
+      src: settings.py.j2
       dest: '/etc/pulp/settings.py'
-
-  - name: Add development server configuration in settings.py
-    blockinfile:
-      path: '/etc/pulp/settings.py'
-      block: |
-        # Pulp Development Configuration
-        DEBUG = True
-        SECRET_KEY = '{{ random_secret.stdout }}'
-        CONTENT_HOST = 'localhost:8080'
-        CONTENT_PATH_PREFIX = '/pulp/content/'
 
   - name: Create /var/lib/pulp directory
     file:
