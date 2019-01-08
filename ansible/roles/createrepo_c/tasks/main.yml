@@ -16,6 +16,7 @@
       - openssl-devel
       - sqlite-devel
       - xz-devel
+      - zchunk-devel
       - zlib-devel
     state: present
   retries: "{{ package_retries }}"
