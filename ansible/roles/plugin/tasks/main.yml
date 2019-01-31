@@ -25,6 +25,6 @@
   include_tasks: install_plugin.yml
   vars:
     plugin_name: '{{ item }}'
-    app_label: '{{ item }}'
+    app_label: '{{ item[5:] }}'
   with_items: '{{ plugins }}'
 ...
