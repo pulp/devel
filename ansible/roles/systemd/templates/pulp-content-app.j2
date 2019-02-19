@@ -6,8 +6,8 @@ Wants=network-online.target
 [Service]
 Environment="DJANGO_SETTINGS_MODULE=pulpcore.app.settings"
 User={{ pulp_user }}
-WorkingDirectory=/var/run/pulp_content_app/
-RuntimeDirectory=pulp_content_app
+WorkingDirectory=/var/run/pulp-content-app/
+RuntimeDirectory=pulp-content-app
 ExecStart={{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/gunicorn \
           pulpcore.content:server --bind 'localhost:8080' \
           --worker-class 'aiohttp.GunicornWebWorker' -w 2
