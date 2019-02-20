@@ -1,5 +1,5 @@
 # all credit to https://raw.githubusercontent.com/rohanpm/docker-fedora-vagrant/master/Dockerfile
-FROM fedora:latest
+FROM fedora:28
 
 ARG USER_EUID=1001
 ARG USER_EGID=1001
