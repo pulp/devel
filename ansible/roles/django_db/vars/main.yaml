@@ -1,7 +1,7 @@
 ---
 pulp_services:
-  - pulp_content_app
-  - pulp_resource_manager
-  - pulp_worker@1
-  - pulp_worker@2
+  - pulp-content-app
+  - pulp-resource-manager
+  - pulp-worker@1
+  - pulp-worker@2
 ...

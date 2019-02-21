@@ -6,9 +6,9 @@
       src: 'templates/{{ item }}.j2'
       dest: '/etc/systemd/system/{{ item }}.service'
     with_items:
-      - pulp_content_app
-      - pulp_resource_manager
-      - pulp_worker@
+      - pulp-content-app
+      - pulp-resource-manager
+      - pulp-worker@
 
   - name: Start or Restart tasking services
     systemd:
@@ -17,9 +17,9 @@
       name: '{{ item }}'
       state: restarted
     with_items:
-      - pulp_content_app
-      - pulp_resource_manager
-      - pulp_worker@1
-      - pulp_worker@2
+      - pulp-content-app
+      - pulp-resource-manager
+      - pulp-worker@1
+      - pulp-worker@2
 
   become: true
