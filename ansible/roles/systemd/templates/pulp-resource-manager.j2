@@ -6,12 +6,12 @@ Wants=network-online.target
 [Service]
 Environment="DJANGO_SETTINGS_MODULE=pulpcore.app.settings"
 User={{ pulp_user }}
-WorkingDirectory=/var/run/pulp_resource_manager/
-RuntimeDirectory=pulp_resource_manager
+WorkingDirectory=/var/run/pulp-resource-manager/
+RuntimeDirectory=pulp-resource-manager
 ExecStart={{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/rq worker \
-          -w pulpcore.tasking.worker.PulpWorker -n resource_manager@%%h \
+          -w pulpcore.tasking.worker.PulpWorker -n resource-manager@%%h \
           -c 'pulpcore.rqconfig' \
-          --pid=/var/run/pulp_resource_manager/resource_manager.pid
+          --pid=/var/run/pulp-resource-manager/resource-manager.pid
 
 [Install]
 WantedBy=multi-user.target

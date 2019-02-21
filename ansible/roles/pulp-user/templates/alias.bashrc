@@ -1,7 +1,7 @@
 # If adding new functions to this file, note that you can add help text to the function
 # by defining a variable with name _<function>_help containing the help text
 
-SERVICES=("pulp_content_app pulp_worker@1 pulp_worker@2 pulp_resource_manager")
+SERVICES=("pulp-content-app pulp-worker@1 pulp-worker@2 pulp-resource-manager")
 
 _paction() {
     echo systemctl $@ ${SERVICES}
@@ -105,7 +105,7 @@ pprocs() {
     # override IFS to prevent bash splitting pgrep output on newlines
     IFS=''
     print_procs "Pulp worker processes" `pgrep -f "pulpcore.tasking.celery_app -c 1"`
-    print_procs "Pulp Resource Manager processes" `pgrep -f "pulpcore.tasking.celery_app -n resource_manager"`
+    print_procs "Pulp Resource Manager processes" `pgrep -f "pulpcore.tasking.celery_app -n resource-manager"`
     print_procs "Pulp WSGI processes:" `pgrep -f "wsgi:pulp"`
     unset IFS
 }
