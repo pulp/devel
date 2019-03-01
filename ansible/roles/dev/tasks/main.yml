@@ -1,7 +1,7 @@
 - name: Clone pulp into {{ pulp_devel_dir }}
   git:
-    dest: '{{ pulp_devel_dir }}/pulp'
-    repo: https://github.com/pulp/pulp.git
+    dest: '{{ pulp_devel_dir }}/pulpcore'
+    repo: https://github.com/pulp/pulpcore.git
     version: 'master'
     update: false
   become: true
@@ -101,7 +101,7 @@
 
   - name: Install Pulp Platform package
     pip:
-      name: '{{ pulp_devel_dir }}/pulp'
+      name: '{{ pulp_devel_dir }}/pulpcore'
       editable: yes
       virtualenv: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}'
     retries: "{{ package_retries }}"
@@ -119,7 +119,7 @@
 
   - name: Install developer extra-requirements
     pip:
-      requirements: '{{ pulp_devel_dir }}/pulp/{{ item }}'
+      requirements: '{{ pulp_devel_dir }}/pulpcore/{{ item }}'
       executable: '{{ pulp_scl_enable_python3 }}{{ pulp_venv }}/bin/pip'
     with_items:
       - test_requirements.txt
@@ -132,7 +132,7 @@
   - name: Enable autoenv Directory Switching for pulp
     lineinfile:
       dest: '{{ pulp_venv }}/.project'
-      line: '{{ pulp_devel_dir }}/pulp'
+      line: '{{ pulp_devel_dir }}/pulpcore'
       create: true
       regexp: '.*'
     when: pulp_venv is defined
