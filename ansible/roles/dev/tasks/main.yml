@@ -73,7 +73,7 @@
           - selinux-policy-devel
           - telnet
           - tito
-          - yum-utils
+          - dnf-utils
           - zlib-devel
 
 - name: Install gofer
