@@ -74,7 +74,7 @@ ptest() {
     flake8 --config flake8.cfg app
     # manage.py test will create and migrate its own database,
     # but we still need to make the migrations for it to be able to do that.
-    python manage.py makemigrations pulp_app
+    python manage.py makemigrations core
     # We have to be explicit if an app doesn't already have migrations
     python manage.py makemigrations file
     # Auth migrations must be run before pulpcore to generate schema that the User model relates to.
