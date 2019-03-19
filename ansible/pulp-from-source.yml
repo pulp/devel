@@ -28,3 +28,5 @@
     - systemd
     - role: dev_tools
       when: ansible_distribution == 'Fedora'
+  environment:
+    DJANGO_SETTINGS_MODULE: pulpcore.app.settings
