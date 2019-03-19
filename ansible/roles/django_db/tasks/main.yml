@@ -11,7 +11,7 @@
 - name: Run all migrations
   command: >
     {{ pulp_scl_enable_python3 }}
-    {{ pulp_venv }}/bin/pulp-manager {{ item }}
+    {{ pulp_venv }}/bin/django-admin {{ item }}
   with_items:
     - reset_db --noinput
     - migrate auth --noinput

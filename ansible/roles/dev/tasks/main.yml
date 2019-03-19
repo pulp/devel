@@ -189,6 +189,6 @@
   - name: Create migrations for core
     command: >
       {{ pulp_scl_enable_python3 }}
-      {{ pulp_venv }}/bin/pulp-manager makemigrations core
+      {{ pulp_venv }}/bin/django-admin makemigrations core
 
   become: true

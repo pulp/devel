@@ -36,6 +36,6 @@
   - name: Make migrations for {{ app_label }}
     command: >
       {{ pulp_scl_enable_python3 }}
-      {{ pulp_venv }}/bin/pulp-manager makemigrations {{ app_label }}
+      {{ pulp_venv }}/bin/django-admin makemigrations {{ app_label }}
 
   when: repo_path.stat.isdir is defined and repo_path.stat.isdir
