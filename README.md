@@ -1,6 +1,7 @@
-Pulp Development Repository
-===========================
-This repository contains various tools that are useful for developing Pulp.
+Pulp 2 Development Repository
+=============================
+**This repository is deprecated and useful only for Pulp 2 development.** For Pulp 3+ development,
+please see [pulplift](https://github.com/pulp/pulplift).
 
 
 ansible
