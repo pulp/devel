@@ -1,6 +1,7 @@
 ---
 - name: Disable selinux
-  selinux: state=disabled
+  selinux:
+      state: disabled
   when: selinux_enabled == true
 
 - name: Disable sshd strict modes
@@ -17,15 +18,18 @@
       url: https://repos.fedorapeople.org/repos/pulp/pulp/fedora-pulp.repo
       dest: /etc/yum.repos.d/fedora-pulp.repo
 
-- name: Install dnf config-manager
-  dnf: name=dnf-command(config-manager) state=present
+- name: Install Pulp yum repository
+  when: ansible_distribution == 'CentOS'
+  get_url:
+      url: https://repos.fedorapeople.org/repos/pulp/pulp/rhel-pulp.repo
+      dest: /etc/yum.repos.d/rhel-pulp.repo
 
 - name: Enable Pulp Nightly repository
-  command: dnf config-manager --set-enabled pulp-nightlies
+  command: yum config-manager --set-enabled pulp-nightlies
   when: ansible_distribution == 'Fedora' and pulp_nightly_repo_enabled == false
 
 - name: Disable Pulp Stable repository
-  command: dnf config-manager --set-disabled pulp-2-stable
+  command: yum config-manager --set-disabled pulp-2-stable
   when: ansible_distribution == 'Fedora'
 
 # These can go away when https://fedorahosted.org/spin-kickstarts/ticket/59 is fixed
@@ -43,7 +47,7 @@
   name: Rejigger vagrant sudoers file
 
 - name: Install packages
-  dnf:
+  yum:
       state: present
       name:
           - git
@@ -56,11 +60,9 @@
           - koji
           - httpie
           - mock
-          - plantuml
-          - policycoreutils-python-utils
+          - policycoreutils-python
           - python-django-bash-completion
           - python-gofer-qpid
-          - python-ipdb
           - python-qpid
           - python-qpid-qmf
           - python-setuptools
@@ -73,11 +75,16 @@
           - selinux-policy-devel
           - telnet
           - tito
-          - dnf-utils
+          - yum-utils
           - zlib-devel
+          # for pulp-smash
+          - python36
+          - python36-pip
+          - python36-dateutil
+          # /for pulp-smash
 
 - name: Install gofer
-  dnf:
+  yum:
       state: present
       name:
           - gofer
@@ -97,16 +104,29 @@
       append: true
 
 - name: Install Pulp RPM dependencies
-  dnf:
+  yum:
       state: present
       name: "{{ pulp_rpm_dependencies }}"
 
 - name: Ensure homedir mode suitable for ssh keys
-  file: dest=/home/{{ ansible_env.SUDO_USER }} mode=0750
+  file:
+      dest: /home/{{ ansible_env.SUDO_USER }}
+      mode: 0750
 
-- copy: src=bashrc dest=/home/{{ ansible_env.SUDO_USER }}/.bashrc
-- copy: src=drop_database.js dest=/home/{{ ansible_env.SUDO_USER }}/drop_database.js
-- copy: src=motd dest=/etc/motd
+- name: move bashrc file
+  copy:
+      src: bashrc
+      dest: /home/{{ ansible_env.SUDO_USER }}/.bashrc
+
+- name: move drop file
+  copy:
+      src: drop_database.js
+      dest: /home/{{ ansible_env.SUDO_USER }}/drop_database.js
+
+- name: move motd file
+  copy:
+      src: motd
+      dest: /etc/motd
 
 - include: debug.yml
   # set this to true in extra vars to enable debug-related tasks
