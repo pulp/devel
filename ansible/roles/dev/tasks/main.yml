@@ -12,6 +12,11 @@
       line: "StrictModes no"
   notify: restart sshd
 
+- name: Install yum utils
+  yum:
+    state: present
+      - yum-utils
+
 - name: Install Pulp dnf repository
   when: ansible_distribution == 'Fedora'
   get_url:
@@ -74,7 +79,6 @@
           - selinux-policy-devel
           - telnet
           - tito
-          - yum-utils
           - zlib-devel
           # for pulp-smash
           - python36
