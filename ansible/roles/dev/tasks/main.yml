@@ -24,12 +24,17 @@
       url: https://repos.fedorapeople.org/repos/pulp/pulp/rhel-pulp.repo
       dest: /etc/yum.repos.d/rhel-pulp.repo
 
+- name: Install yum-utils for yum config-manager
+  yum:
+    name: yum-utils
+    state: present
+
 - name: Enable Pulp Nightly repository
-  command: yum config-manager --set-enabled pulp-nightlies
+  command: yum-config-manager --enable pulp-nightlies
   when: pulp_nightly_repo_enabled == false
 
 - name: Disable Pulp Stable repository
-  command: yum config-manager --set-disabled pulp-2-stable
+  command: yum-config-manager --disable pulp-2-stable
 
 # These can go away when https://fedorahosted.org/spin-kickstarts/ticket/59 is fixed
 - stat:
