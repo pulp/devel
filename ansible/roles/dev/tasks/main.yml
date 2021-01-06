@@ -29,6 +29,11 @@
       url: https://repos.fedorapeople.org/repos/pulp/pulp/rhel-pulp.repo
       dest: /etc/yum.repos.d/rhel-pulp.repo
 
+- name: Install yum-utils for yum config-manager
+  yum:
+    name: yum-utils
+    state: present
+
 - name: Enable Pulp Nightly repository
   command: yum-config-manager --enable pulp-nightlies
   when: pulp_nightly_repo_enabled == false

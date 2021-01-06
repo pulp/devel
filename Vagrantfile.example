@@ -36,7 +36,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.hostmanager.manage_host = true
   end
 
-  config.vm.provision "shell", inline: "sudo yum install epel-release"
+  config.vm.provision "shell", inline: "sudo yum install -y epel-release"
 
   # Comment this line if you would like to disable the automatic update during provisioning
   config.vm.provision "shell", inline: "sudo yum upgrade -y"
